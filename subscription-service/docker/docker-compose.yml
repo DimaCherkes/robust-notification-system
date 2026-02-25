@@ -1,0 +1,48 @@
+name: subscription-microservice-isolated
+
+# docker-compose for starting only subscription microservice
+services:
+  subscription-service-db-isolated:
+    image: postgres:15-alpine
+    container_name: subscription-service-db-isolated
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: subscription_db
+    volumes:
+      - subscription-service-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d subscription_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - subscription-service-isolated-network
+
+  subscription-service-isolated:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: subscription-service-isolated
+    depends_on:
+      subscription-service-db-isolated:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://subscription-service-db-isolated:5432/subscription_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8181:8181"
+    networks:
+      - subscription-service-isolated-network
+
+volumes:
+  subscription-service-db-data:
+    name: subscription-service-db-data
+
+networks:
+  subscription-service-isolated-network:
+    driver: bridge

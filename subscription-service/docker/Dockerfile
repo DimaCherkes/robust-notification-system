@@ -12,9 +12,9 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /srv
 # Copy only the built JAR from the builder stage
-COPY --from=build /app/target/*.jar /srv/iam-service.jar
-COPY docker/iam-service.sh /srv/
-RUN chmod +x /srv/iam-service.sh
+COPY --from=build /app/target/*.jar /srv/subscription-service.jar
+COPY docker/subscription-service.sh /srv/
+RUN chmod +x /srv/subscription-service.sh
 
-EXPOSE 8180
-ENTRYPOINT ["/srv/iam-service.sh"]
+EXPOSE 8181
+ENTRYPOINT ["/srv/subscription-service.sh"]
