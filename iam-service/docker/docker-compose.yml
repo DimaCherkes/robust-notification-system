@@ -1,10 +1,10 @@
-version: '3.8'
+name: iam-microservice-isolated
 
 # docker-compose for starting only iam microservice
 services:
-  iam-service-db:
+  iam-service-db-isolated:
     image: postgres:15-alpine
-    container_name: iam-service-db
+    container_name: iam-service-db-isolated
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -23,19 +23,19 @@ services:
 
   iam-service-isolated:
     build:
-      context: ../..
+      context: ..
       dockerfile: docker/Dockerfile
-    container_name: iam-service
+    container_name: iam-service-isolated
     depends_on:
-      iam-service-db:
+      iam-service-db-isolated:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://iam-service-db:5432/iam_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://iam-service-db-isolated:5432/iam_db
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
-      - "8189:8189"
+      - "8180:8180"
     networks:
       - iam-service-isolated-network
 
