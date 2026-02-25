@@ -12,8 +12,10 @@
     <name>robust-notification-system</name>
     <description>Aggregator for microservices of Robust Notification System</description>
 
+<!-- Don't add any global dependencies here because Dockerfile in each microservice pull dependencies from local .pom file -->
     <modules>
         <module>iam-service</module>
+        <module>subscription-service</module>
     </modules>
 
     <properties>

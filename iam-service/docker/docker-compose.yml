@@ -1,0 +1,48 @@
+version: '3.8'
+
+# docker-compose for starting only iam microservice
+services:
+  iam-service-db:
+    image: postgres:15-alpine
+    container_name: iam-service-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: iam_db
+    volumes:
+      - iam-service-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d iam_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - iam-service-isolated-network
+
+  iam-service-isolated:
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    container_name: iam-service
+    depends_on:
+      iam-service-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://iam-service-db:5432/iam_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8189:8189"
+    networks:
+      - iam-service-isolated-network
+
+volumes:
+  iam-service-db-data:
+    name: iam-service-db-data
+
+networks:
+  iam-service-isolated-network:
+    driver: bridge
