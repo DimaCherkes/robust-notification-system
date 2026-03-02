@@ -1,6 +1,7 @@
 package com.dmytrocherkes.iamservice.utils;
 
 import com.dmytrocherkes.iamservice.model.constants.ApiConstants;
+import com.dmytrocherkes.iamservice.security.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -14,9 +15,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ApiUtils {
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     public static String getMethodName() {
         try {
-            return Thread.currentThread().getStackTrace()[2].getMethodName();
+            return Thread.currentThread().getStackTrace()[1].getMethodName();
         } catch (Exception cause) {
             return ApiConstants.UNDEFINED;
         }
@@ -39,9 +42,9 @@ public class ApiUtils {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
-//    public Integer getUserIdFromAuthentication() {
-//        String jwtToken = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
-//        return Integer.parseInt(jwtTokenProvider.getUserId(jwtToken));
-//    }
+    public Integer getUserIdFromAuthentication() {
+        String jwtToken = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
+        return Integer.parseInt(jwtTokenProvider.getUserId(jwtToken));
+    }
 
 }

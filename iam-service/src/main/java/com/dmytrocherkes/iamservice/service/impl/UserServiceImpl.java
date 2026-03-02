@@ -15,6 +15,7 @@ import com.dmytrocherkes.iamservice.model.response.PaginationResponse;
 import com.dmytrocherkes.iamservice.repository.RoleRepository;
 import com.dmytrocherkes.iamservice.repository.UserRepository;
 import com.dmytrocherkes.iamservice.repository.UserSearchCriteria;
+import com.dmytrocherkes.iamservice.security.validation.AccessValidator;
 import com.dmytrocherkes.iamservice.service.model.IamServiceUserRole;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,12 +38,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl {
+public class UserServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final AccessValidator accessValidator;
 
     @Transactional
     public UserDTO getById(@NonNull Integer userId) {
@@ -83,7 +86,7 @@ public class UserServiceImpl {
         if (userRepository.existsByEmail(request.getEmail()))
             throw new DataExistException(ApiErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
-//        accessValidator.validateAdminOrOwnerAccess(userId);
+        accessValidator.validateAdminOrOwnerAccess(userId);
 
         userMapper.updateUser(user, request);
         user.setUpdatedAt(LocalDateTime.now());
@@ -97,7 +100,7 @@ public class UserServiceImpl {
         User user = userRepository.findByIdAndDeletedFalse(userId)
                 .orElseThrow(() -> new NotFoundException(ApiErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
-//        accessValidator.validateAdminOrOwnerAccess(userId);
+        accessValidator.validateAdminOrOwnerAccess(userId);
 
         user.setDeleted(true);
         userRepository.save(user);

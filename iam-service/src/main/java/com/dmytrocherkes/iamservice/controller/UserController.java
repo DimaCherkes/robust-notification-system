@@ -28,8 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "User Controller", description = "Endpoints for user management")
 public class UserController {
 
-    public static final String ENDPOINT_BASE_PATH = ApiPath.BASE_PATH + "/users";
-
+    public static final String ENDPOINT_BASE_PATH = ApiPath.BASE_PATH + ApiPath.API_USERS_PATH;
     private final UserServiceImpl userService;
 
     @GetMapping(ApiPath.API_ID_PATH)
