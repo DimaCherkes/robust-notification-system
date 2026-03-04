@@ -52,4 +52,12 @@ public class AccessValidator {
         }
     }
 
+    public void validateAdminAccess() {
+        Integer currentUserId = apiUtils.getUserIdFromAuthentication();
+
+        if (!isAdminOrSuperAdmin(currentUserId)) {
+            throw new CustomAccessDeniedException(ApiErrorMessage.HAVE_NO_ACCESS.getMessage());
+        }
+    }
+
 }

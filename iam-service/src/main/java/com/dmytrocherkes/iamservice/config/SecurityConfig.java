@@ -1,5 +1,6 @@
 package com.dmytrocherkes.iamservice.config;
 
+import com.dmytrocherkes.iamservice.controller.ApiPath;
 import com.dmytrocherkes.iamservice.security.filter.JwtRequestFilter;
 import com.dmytrocherkes.iamservice.security.handler.AccessRestrictionHandler;
 import com.dmytrocherkes.iamservice.service.impl.UserServiceImpl;
@@ -36,9 +37,9 @@ public class SecurityConfig {
     private static final String POST = "POST";
 
     private static final AntPathRequestMatcher[] NOT_SECURED_URLS = new AntPathRequestMatcher[]{
-            new AntPathRequestMatcher("/auth/login", POST),
-            new AntPathRequestMatcher("/auth/register", POST),
-            new AntPathRequestMatcher("/auth/refresh/token", GET),
+            new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + ApiPath.API_LOGIN_PATH, POST),
+            new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + ApiPath.API_REGISTER_PATH, POST),
+            new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + ApiPath.API_REFRESH_TOKEN_PATH, GET),
 
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),

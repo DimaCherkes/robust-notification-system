@@ -110,6 +110,9 @@ public class UserServiceImpl implements UserDetailsService {
         Page<UserSearchDTO> users = userRepository.findAll(pageable)
                 .map(userMapper::toUserSearchDTO);
 
+        // Security validation. Only admin can read all users
+        accessValidator.validateAdminAccess();
+
         return new PaginationResponse<>(
                 users.getContent(),
                 new PaginationResponse.Pagination(
@@ -123,6 +126,9 @@ public class UserServiceImpl implements UserDetailsService {
 
     public PaginationResponse<UserSearchDTO> searchUsers(UserSearchRequest request, Pageable pageable) {
         Specification<User> specification = new UserSearchCriteria(request);
+
+        // Security validation. Only admin can read all users
+        accessValidator.validateAdminAccess();
 
         Page<UserSearchDTO> usersPage = userRepository.findAll(specification, pageable)
                 .map(userMapper::toUserSearchDTO);
