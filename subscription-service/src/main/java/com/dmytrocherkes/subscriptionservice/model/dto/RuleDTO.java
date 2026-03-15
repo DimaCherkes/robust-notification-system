@@ -1,10 +1,10 @@
 package com.dmytrocherkes.subscriptionservice.model.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.dmytrocherkes.subscriptionservice.model.enums.ParameterType;
+import com.dmytrocherkes.subscriptionservice.model.enums.RuleOperator;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -15,14 +15,14 @@ import java.util.UUID;
 public class RuleDTO {
     private UUID id;
 
-    @NotBlank(message = "Parameter type is required")
-    private String parameterType;
+    @NotNull(message = "Parameter type is required")
+    private ParameterType parameterType;
 
-    @NotBlank(message = "Operator is required")
-    private String operator;
+    @NotNull(message = "Operator is required")
+    private RuleOperator operator;
 
     @NotNull(message = "Value 1 is required")
-    private BigDecimal value1;
+    private Integer value1;
 
-    private BigDecimal value2;
+    private Integer value2;
 }

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -60,6 +61,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription.setCity(city);
         subscription.setNotifyBeforeHours(request.getNotifyBeforeHours());
         subscription.setIsActive(request.getIsActive() != null ? request.getIsActive() : subscription.getIsActive());
+        subscription.setUpdatedAt(OffsetDateTime.now());
 
         // Sync rules
         subscription.getRules().clear();

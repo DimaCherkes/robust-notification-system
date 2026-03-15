@@ -1,9 +1,10 @@
 package com.dmytrocherkes.subscriptionservice.model.entity;
 
+import com.dmytrocherkes.subscriptionservice.model.enums.ParameterType;
+import com.dmytrocherkes.subscriptionservice.model.enums.RuleOperator;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -23,18 +24,17 @@ public class SubscriptionRule {
     @JoinColumn(name = "subscription_id", nullable = false)
     private Subscription subscription;
 
-    // add enum
+    @Enumerated(EnumType.STRING)
     @Column(name = "parameter_type", nullable = false)
-    private String parameterType;
+    private ParameterType parameterType;
 
-    // todo: add enum for operator
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String operator;
+    private RuleOperator operator;
 
-    // todo: here can be just Integer
     @Column(name = "value_1", nullable = false)
-    private BigDecimal value1;
+    private Integer value1;
 
     @Column(name = "value_2")
-    private BigDecimal value2;
+    private Integer value2;
 }
