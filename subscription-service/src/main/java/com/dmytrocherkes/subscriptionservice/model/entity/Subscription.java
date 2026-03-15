@@ -17,14 +17,19 @@ public class Subscription {
     private Long id;
 
     @Column(nullable = false)
-    private Long userId; // Тот самый ID из IAM
+    private Long userId;
 
     @Column(nullable = false)
-    private String planName; // Например "PREMIUM", "FREE"
+    private String city;
 
     @Column(nullable = false)
-    private String status; // ACTIVE, EXPIRED, CANCELLED
+    private Double temperatureThreshold;
 
+    @Column(nullable = false)
+    private String condition; // ABOVE, BELOW
+
+    private LocalDateTime lastNotifiedAt;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime expiresAt;
 }

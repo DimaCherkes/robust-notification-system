@@ -4,5 +4,7 @@ import lombok.Data;
 
 @Data
 public class SubscriptionRequestDTO {
-    private String planName;
+    private String city;
+    private Double temperatureThreshold;
+    private String condition; // ABOVE, BELOW
 }

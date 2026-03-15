@@ -1,0 +1,48 @@
+name: weather-microservice-isolated
+
+# docker-compose for starting only subscription microservice
+services:
+  weather-service-db-isolated:
+    image: postgres:15-alpine
+    container_name: weather-service-db-isolated
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: weather_db
+    volumes:
+      - weather-service-db-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d weather_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weather-service-isolated-network
+
+  weather-service-isolated:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: weather-service-isolated
+    depends_on:
+      weather-service-db-isolated:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://weather-service-db-isolated:5432/weather_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8182:8182"
+    networks:
+      - weather-service-isolated-network
+
+volumes:
+  weather-service-db-data:
+    name: weather-service-db-data
+
+networks:
+  weather-service-isolated-network:
+    driver: bridge
