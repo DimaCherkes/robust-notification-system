@@ -95,7 +95,8 @@ BEGIN
 
     RETURN NULL;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = v1_subscription_service, public;
 
 -- 6. Attach Trigger to subscriptions table
 CREATE TRIGGER trg_subscriptions_change

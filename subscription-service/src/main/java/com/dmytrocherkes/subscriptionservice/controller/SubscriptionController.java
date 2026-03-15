@@ -1,68 +1,59 @@
 package com.dmytrocherkes.subscriptionservice.controller;
 
-import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionRequestDTO;
-import com.dmytrocherkes.subscriptionservice.model.entity.Subscription;
-import com.dmytrocherkes.subscriptionservice.security.JwtTokenProvider;
+import com.dmytrocherkes.subscriptionservice.model.constants.ApiLogMessage;
+import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
+import com.dmytrocherkes.subscriptionservice.model.response.SubscriptionResponse;
 import com.dmytrocherkes.subscriptionservice.service.SubscriptionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/subscriptions")
 @RequiredArgsConstructor
 public class SubscriptionController {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private final SubscriptionService subscriptionService;
 
     @PostMapping("/create")
-    public ResponseEntity<Subscription> createSubscription(@RequestBody SubscriptionRequestDTO request,
-                                                           @RequestHeader("Authorization") String authHeader) {
-        Long userId = extractUserId(authHeader);
-        Subscription saved = subscriptionService.createSubscription(userId, request);
-        return ResponseEntity.ok(saved);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Subscription>> getAllMySubscriptions(@RequestHeader("Authorization") String authHeader) {
-        Long userId = extractUserId(authHeader);
-        List<Subscription> subscriptions = subscriptionService.getAllSubscriptionsByUserId(userId);
-        return ResponseEntity.ok(subscriptions);
+    public ResponseEntity<SubscriptionResponse> create(@Valid @RequestBody SubscriptionRequest request) {
+        log.info(ApiLogMessage.REST_CREATE_SUBSCRIPTION.getValue(), request.getUserId());
+        SubscriptionResponse response = subscriptionService.createSubscription(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Subscription> getSubscription(@PathVariable Long id,
-                                                        @RequestHeader("Authorization") String authHeader) {
-        Long userId = extractUserId(authHeader);
-        Subscription subscription = subscriptionService.getSubscriptionById(id);
-        if (!subscription.getUserId().equals(userId)) {
-            return ResponseEntity.status(403).build();
-        }
-        return ResponseEntity.ok(subscription);
+    public ResponseEntity<SubscriptionResponse> getById(@PathVariable UUID id) {
+        log.info(ApiLogMessage.REST_GET_SUBSCRIPTION_BY_ID.getValue(), id);
+        SubscriptionResponse response = subscriptionService.getSubscriptionById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<SubscriptionResponse>> getAllByUserId(@PathVariable Long userId) {
+        log.info(ApiLogMessage.REST_GET_SUBSCRIPTIONS_BY_USER.getValue(), userId);
+        List<SubscriptionResponse> response = subscriptionService.getAllByUserId(userId);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Subscription> updateSubscription(@PathVariable Long id,
-                                                           @RequestBody SubscriptionRequestDTO request,
-                                                           @RequestHeader("Authorization") String authHeader) {
-        Long userId = extractUserId(authHeader);
-        Subscription updated = subscriptionService.updateSubscription(id, userId, request);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<SubscriptionResponse> update(@PathVariable UUID id, @Valid @RequestBody SubscriptionRequest request) {
+        log.info(ApiLogMessage.REST_UPDATE_SUBSCRIPTION.getValue(), id);
+        SubscriptionResponse response = subscriptionService.updateSubscription(id, request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSubscription(@PathVariable Long id,
-                                                   @RequestHeader("Authorization") String authHeader) {
-        Long userId = extractUserId(authHeader);
-        subscriptionService.deleteSubscription(id, userId);
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        log.info(ApiLogMessage.REST_DELETE_SUBSCRIPTION.getValue(), id);
+        subscriptionService.deleteSubscription(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private Long extractUserId(String authHeader) {
-        String token = authHeader.substring(7);
-        return jwtTokenProvider.getUserId(token);
     }
 }
