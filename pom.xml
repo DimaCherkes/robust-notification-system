@@ -17,6 +17,7 @@
         <module>iam-service</module>
         <module>subscription-service</module>
         <module>weather-service</module>
+        <module>decision-service</module>
     </modules>
 
     <properties>

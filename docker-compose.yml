@@ -124,17 +124,61 @@ services:
     networks:
       - robust-notification-system-network
 
+  # decision service
+  decision-service-db:
+    image: postgres:15-alpine
+    container_name: decision-service-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: decision_db
+    volumes:
+      - decision-service-db-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d decision_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - robust-notification-system-network
+
+  decision-service:
+    build:
+      context: ./decision-service
+      dockerfile: docker/Dockerfile
+    container_name: decision-service
+    depends_on:
+      decision-service-db:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    environment:
+      PROFILE: ${PROFILE:-docker}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://decision-service-db:5432/decision_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      AWS_ENDPOINT: http://localstack:4566
+      WEATHER_API_KEY: ${WEATHER_API_KEY:-dummy_key}
+    ports:
+      - "8183:8183"
+    networks:
+      - robust-notification-system-network
+
+  # AWS infra
   localstack:
     image: localstack/localstack:3.4
     container_name: localstack
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=sqs
+      - SERVICES=sqs,sns
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - ./docker/localstack-init.sh:/etc/localstack/init/ready.d/localstack-init.sh
+      - ./localstack-init.sh:/etc/localstack/init/ready.d/localstack-init.sh
       - "/var/run/docker.sock:/var/run/docker.sock"
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:4566/_localstack/health"]
@@ -151,6 +195,8 @@ volumes:
     name: subscription-service-db-data
   weather-service-db-data:
     name: weather-service-db-data
+  decision-service-db-data:
+    name: decision-service-db-data
 
 networks:
   robust-notification-system-network:
