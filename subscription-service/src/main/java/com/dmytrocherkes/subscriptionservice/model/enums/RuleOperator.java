@@ -6,7 +6,9 @@ public enum RuleOperator {
     GREATER_THAN,
     LESS_THAN,
     EQUALS,
-    BETWEEN;
+    BETWEEN,
+    OUT_OF,
+    ;
 
     @JsonCreator
     public static RuleOperator fromString(String value) {
@@ -16,6 +18,7 @@ public enum RuleOperator {
             case "LT", "LESS_THAN" -> LESS_THAN;
             case "EQ", "EQUALS" -> EQUALS;
             case "BETWEEN" -> BETWEEN;
+            case "OUT_OF", "OUTOF" -> OUT_OF;
             default -> throw new IllegalArgumentException("Unknown operator: " + value);
         };
     }

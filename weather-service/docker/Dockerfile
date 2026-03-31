@@ -16,5 +16,5 @@ COPY --from=build /app/target/*.jar /srv/weather-service.jar
 COPY docker/weather-service.sh /srv/
 RUN chmod +x /srv/weather-service.sh
 
-EXPOSE 8181
+EXPOSE 8182
 ENTRYPOINT ["/srv/weather-service.sh"]

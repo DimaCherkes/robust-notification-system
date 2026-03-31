@@ -16,10 +16,10 @@ CREATE TABLE monitored_cities
 -- 2. Hourly Forecast Data (Structured storage for 48h forecast)
 CREATE TABLE weather_hourly
 (
-    id            BIGSERIAL PRIMARY KEY,
+    id            UUID PRIMARY KEY,
     city_id       INT                      NOT NULL REFERENCES monitored_cities (city_id) ON DELETE CASCADE,
     forecast_time TIMESTAMP WITH TIME ZONE NOT NULL, -- "dt" field from JSON
-    temp          DECIMAL(5, 2),
+    temp          INT,
     humidity      INT,
     wind_speed    DECIMAL(5, 2),
     pop           DECIMAL(3, 2),                     -- Probability of precipitation (0.0 - 1.0)
@@ -38,8 +38,8 @@ CREATE TABLE active_rules_cache
     user_id             BIGINT         NOT NULL, -- Needed for Notification Service event
     parameter_type      VARCHAR(20)    NOT NULL, -- TEMPERATURE, HUMIDITY, etc.
     operator            VARCHAR(10)    NOT NULL, -- GT, LT, BETWEEN
-    value_1             DECIMAL(10, 2) NOT NULL,
-    value_2             DECIMAL(10, 2),
+    value_1             INT NOT NULL,
+    value_2             INT,
     notify_before_hours INT DEFAULT 0
 );
 
@@ -47,13 +47,15 @@ CREATE TABLE active_rules_cache
 -- Resilience: If the system restarts, it won't re-send alerts for the same event
 CREATE TABLE alert_history
 (
-    id            BIGSERIAL PRIMARY KEY,
+    id            UUID PRIMARY KEY,
     rule_id       UUID                     NOT NULL REFERENCES active_rules_cache (rule_id) ON DELETE CASCADE,
     forecast_time TIMESTAMP WITH TIME ZONE NOT NULL, -- The time point that triggered the alert
     sent_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     UNIQUE (rule_id, forecast_time)                  -- Ensure one alert per rule per forecast hour
 );
+
+-- TODO: add Configuration table for app config.
 
 -- Index for the Condition Checker (Performance optimization)
 CREATE INDEX idx_weather_lookup ON weather_hourly (city_id, forecast_time);
