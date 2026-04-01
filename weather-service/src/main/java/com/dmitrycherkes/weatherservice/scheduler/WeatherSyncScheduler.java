@@ -13,7 +13,7 @@ public class WeatherSyncScheduler {
 
     private final WeatherSyncService weatherSyncService;
 
-    @Scheduled(cron = "${app.weather.sync-cron:0 0 * * * *}")
+    @Scheduled(fixedDelayString = "30000")
     public void scheduleSync() {
         log.info("Scheduled weather synchronization started");
         weatherSyncService.syncAllCities();

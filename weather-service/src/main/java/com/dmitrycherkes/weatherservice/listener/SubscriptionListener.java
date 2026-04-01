@@ -1,8 +1,5 @@
 package com.dmitrycherkes.weatherservice.listener;
 
-import com.dmitrycherkes.weatherservice.model.dto.SubscriptionMessage;
-import com.dmitrycherkes.weatherservice.service.SubscriptionSyncService;
-import io.awspring.cloud.sqs.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,17 +9,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SubscriptionListener {
 
-    private final SubscriptionSyncService subscriptionSyncService;
+//    private final SubscriptionSyncService subscriptionSyncService;
 
-    @SqsListener("${app.sqs.subscription-queue}")
-    public void listen(SubscriptionMessage message) {
-        log.info("Received subscription message: {}", message);
-        try {
-            subscriptionSyncService.processSubscriptionMessage(message);
-        } catch (Exception e) {
-            log.error("Error processing subscription message", e);
-            // In a real system, you might want to throw exception to retry or move to DLQ
-            throw e;
-        }
-    }
+//    @SqsListener("${app.sqs.subscription-queue}")
+//    public void listen(SubscriptionMessage message) {
+//        log.info("Received subscription message: {}", message);
+//        try {
+//            subscriptionSyncService.processSubscriptionMessage(message);
+//        } catch (Exception e) {
+//            log.error("Error processing subscription message", e);
+//            // In a real system, you might want to throw exception to retry or move to DLQ
+//            throw e;
+//        }
+//    }
 }

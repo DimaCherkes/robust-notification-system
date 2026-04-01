@@ -17,7 +17,7 @@ import java.util.UUID;
 public class WeatherHourly {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,15 +27,41 @@ public class WeatherHourly {
     @Column(name = "forecast_time", nullable = false)
     private OffsetDateTime forecastTime;
 
-    private Integer temp;
+    private BigDecimal temp;
+
+    @Column(name = "feels_like")
+    private BigDecimal feelsLike;
+
+    private Integer pressure;
 
     private Integer humidity;
 
-    @Column(name = "wind_speed")
-    private Integer windSpeed;
+    @Column(name = "dew_point")
+    private BigDecimal dewPoint;
 
-    private Integer pop;
+    private BigDecimal uvi;
+
+    private Integer clouds;
+
+    private Integer visibility;
+
+    @Column(name = "wind_speed")
+    private BigDecimal windSpeed;
+
+    @Column(name = "wind_deg")
+    private Integer windDeg;
+
+    @Column(name = "wind_gust")
+    private BigDecimal windGust;
+
+    private BigDecimal pop;
 
     @Column(name = "weather_main")
     private String weatherMain;
+
+    @Column(name = "weather_description")
+    private String weatherDescription;
+
+    @Column(name = "weather_icon")
+    private String weatherIcon;
 }

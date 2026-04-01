@@ -16,46 +16,32 @@ CREATE TABLE monitored_cities
 -- 2. Hourly Forecast Data (Structured storage for 48h forecast)
 CREATE TABLE weather_hourly
 (
-    id            UUID PRIMARY KEY,
-    city_id       INT                      NOT NULL REFERENCES monitored_cities (city_id) ON DELETE CASCADE,
-    forecast_time TIMESTAMP WITH TIME ZONE NOT NULL, -- "dt" field from JSON
-    temp          INT,
-    humidity      INT,
-    wind_speed    DECIMAL(5, 2),
-    pop           DECIMAL(3, 2),                     -- Probability of precipitation (0.0 - 1.0)
-    weather_main  VARCHAR(50),                       -- "Rain", "Clouds", etc.
+    id                  UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    city_id             INT                      NOT NULL REFERENCES monitored_cities (city_id) ON DELETE CASCADE,
+    forecast_time       TIMESTAMP WITH TIME ZONE NOT NULL, -- "dt" field from JSON
+    temp                DECIMAL(5, 2),
+    feels_like          DECIMAL(5, 2),
+    pressure            INT,
+    humidity            INT,
+    dew_point           DECIMAL(5, 2),
+    uvi                 DECIMAL(5, 2),
+    clouds              INT,
+    visibility          INT,
+    wind_speed          DECIMAL(5, 2),
+    wind_deg            INT,
+    wind_gust           DECIMAL(5, 2),
+    pop                 DECIMAL(3, 2),                     -- Probability of precipitation (0.0 - 1.0)
+    weather_main        VARCHAR(50),                       -- "Rain", "Clouds", etc.
+    weather_description VARCHAR(100),
+    weather_icon        VARCHAR(10),
 
     UNIQUE (city_id, forecast_time)
 );
 
--- 3. Active Rules Cache (Synced from Subscription Service via SQS)
--- Allows checking conditions without calling other services
-CREATE TABLE active_rules_cache
-(
-    rule_id             UUID PRIMARY KEY,        -- Original ID from Subscription Service
-    subscription_id     UUID           NOT NULL,
-    city_id             INT            NOT NULL REFERENCES monitored_cities (city_id),
-    user_id             BIGINT         NOT NULL, -- Needed for Notification Service event
-    parameter_type      VARCHAR(20)    NOT NULL, -- TEMPERATURE, HUMIDITY, etc.
-    operator            VARCHAR(10)    NOT NULL, -- GT, LT, BETWEEN
-    value_1             INT NOT NULL,
-    value_2             INT,
-    notify_before_hours INT DEFAULT 0
-);
-
--- 4. Alert History (Prevent duplicate notifications/spam)
--- Resilience: If the system restarts, it won't re-send alerts for the same event
-CREATE TABLE alert_history
-(
-    id            UUID PRIMARY KEY,
-    rule_id       UUID                     NOT NULL REFERENCES active_rules_cache (rule_id) ON DELETE CASCADE,
-    forecast_time TIMESTAMP WITH TIME ZONE NOT NULL, -- The time point that triggered the alert
-    sent_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-    UNIQUE (rule_id, forecast_time)                  -- Ensure one alert per rule per forecast hour
-);
-
--- TODO: add Configuration table for app config.
-
 -- Index for the Condition Checker (Performance optimization)
 CREATE INDEX idx_weather_lookup ON weather_hourly (city_id, forecast_time);
+
+INSERT INTO monitored_cities (city_id, name, latitude, longitude, is_active, last_api_call, timezone)
+VALUES (1, 'London', 51.5073, -0.1276, false, current_timestamp,  'Europe/London'),
+       (2, 'Bratislava',48.1435, 17.1083, true, current_timestamp,  'Europe/Bratislava'),
+       (3, 'Prague',50.0874, 14.4212, false, current_timestamp,  'Europe/Prague');
