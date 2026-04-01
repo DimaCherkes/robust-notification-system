@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface MonitoredCityRepository extends JpaRepository<MonitoredCity, Integer> {
+
     List<MonitoredCity> findAllByIsActiveTrue();
+
 }

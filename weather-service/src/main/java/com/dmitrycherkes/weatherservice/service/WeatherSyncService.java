@@ -41,13 +41,18 @@ public class WeatherSyncService {
 
         for (MonitoredCity city : activeCities) {
             try {
-                syncCityWeather(city);
+                int currentMinute = OffsetDateTime.now().getMinute();
+                int lastApiCall = city.getLastApiCall().getMinute();
+
+                // TODO: should be configurable value in properties
+                if (lastApiCall - currentMinute >= 15)
+                    syncCityWeather(city);
             } catch (Exception e) {
                 log.error("Failed to sync weather for city: {}", city.getName(), e);
             }
         }
         
-        log.info("Weather synchronization completed, triggering condition checker");
+        log.info("Weather synchronization completed");
     }
 
     @CircuitBreaker(name = "weatherApi", fallbackMethod = "syncCityFallback")
