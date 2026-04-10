@@ -1,6 +1,15 @@
 #!/bin/bash
 echo "Initializing LocalStack Infrastructure..."
 
+export AWS_ACCESS_KEY_ID=test
+export AWS_SECRET_ACCESS_KEY=test
+export AWS_DEFAULT_REGION=eu-central-1
+
+# Helper function for awslocal
+function awslocal() {
+  aws --endpoint-url=http://localhost:4566 "$@"
+}
+
 # 1. SNS Topics (Producers)
 awslocal sns create-topic --name iam.produce.topic
 awslocal sns create-topic --name subscription.produce.topic
