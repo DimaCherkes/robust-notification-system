@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "alert_history", uniqueConstraints = @UniqueConstraint(columnNames = {"rule_id", "forecast_time"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +16,7 @@ public class AlertHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rule_id", nullable = false)

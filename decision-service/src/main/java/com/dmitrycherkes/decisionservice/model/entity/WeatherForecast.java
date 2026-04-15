@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "replica_weather_forecast", uniqueConstraints = @UniqueConstraint(columnNames = {"city_id", "forecast_time"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +17,7 @@ public class WeatherForecast {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "city_id", nullable = false)
     private Integer cityId;
@@ -41,6 +40,6 @@ public class WeatherForecast {
     private String weatherMain;
 
     @CreationTimestamp
-    @Column(name = "replicated_at")
-    private OffsetDateTime replicatedAt;
+    @Column(name = "created_at")
+    private OffsetDateTime createdAt;
 }

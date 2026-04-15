@@ -13,7 +13,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /srv
 # Copy only the built JAR from the builder stage
 COPY --from=build /app/target/*.jar /srv/decision-service.jar
-COPY docker/service.sh /srv/
+COPY docker/decision-service.sh /srv/
 RUN chmod +x /srv/decision-service.sh
 
 EXPOSE 8183

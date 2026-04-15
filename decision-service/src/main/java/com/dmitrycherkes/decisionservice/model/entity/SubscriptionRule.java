@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "replica_subscription_rules")
+@Table(name = "subscription_rules")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,14 +20,13 @@ import java.util.UUID;
 public class SubscriptionRule {
 
     @Id
-    @Column(name = "rule_id")
-    private UUID ruleId;
+    private Integer id;
 
     @Column(name = "subscription_id", nullable = false)
-    private UUID subscriptionId;
+    private Integer subscriptionId;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "city_id", nullable = false)
     private Integer cityId;
