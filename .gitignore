@@ -39,3 +39,4 @@ build/
 a-notes/
 guides.md
 **/.env
+out/

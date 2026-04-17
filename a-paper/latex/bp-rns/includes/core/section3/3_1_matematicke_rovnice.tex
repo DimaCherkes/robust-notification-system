@@ -1,0 +1,256 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Matematické rovnice}
+Systém na sadzbu textu \TeX\ pôvodne vyvinul Donald Knuth.
+Jeho motivácia bola poskytnúť producentom vedeckej tlače
+počítačový nástroj,
+ktorý bude správne sádzať matematické rovnice.
+\LaTeX, ako jeho nadstavba, má sadzbu rovníc takpovediac
+v~genetickej výbave.
+Autori textov z prírodovedeckej a technickej komunity siahajú po tomto nástroji
+práve z~dôvodu bezkonkurenčnej práce s~rovnicami pri tvorbe
+vedeckého alebo akademického obsahu.
+
+Matematické rovnice používame v tlačenom texte dvomi spôsobmi:
+1. píšeme ich v~rámci textového odseku;
+2. rovnicu vytlačíme zvlášť medzi dva textové odseky
+a~vtedy ju spravidla aj číslujeme, aby sme sa na ňu mohli
+ďalej odvolávať.
+
+\subsubsection{Rovnica v textovom riadku}
+Riešenie kvadratickej rovnice s koeficientami $a,b,c$
+a~s~neznámou $x$ vypočítame pomocou známeho vzťahu
+$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$.
+Je to príklad rovnice zapísanej v~rámci textového odseku.
+Ak tú istú rovnicu napíšeme do samostatného odseku,
+vyzerá trochu inak:
+$$
+  x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}
+$$
+
+Očividný rozdiel je vo veľkosti zlomku a~znaku odmocniny,
+môžeme si všimnúť aj malé rozdiely v~medzerách,
+vo vertikálnom zarovnávaní, atď.
+
+Vložené rovnice v~rámci textového riadku zapisujeme pomocou
+znaku \$.
+Matematický zápis ohraničíme znakmi dolára sprava aj zľava.
+Napríklad zápis \verb|$y = ax^2 + bx + c$| vytvorí rovnicu $y = ax^2 + bx + c$. Rovnakú funkciu ako znak dolára má dvojica znakov \verb|\(...\)|.
+
+Označenia fyzikálnych veličín píšeme tiež ako vloženú rovnicu:
+veľkosť sily $F$, hmotnosť $m$, čas $t$ a~podobne.
+Všetky veličiny sme zapísali takto: \verb|$F$|,
+\verb|$m$|, \verb|$t$|.
+
+\subsubsection{Zobrazená rovnica}
+Matematický text ohraničený dvomi znakmi dolára zľava
+a~dvomi dolármi sprava interpretuje kompilátor \LaTeX-u
+ako zobrazenú rovnicu, ktorú vysádza do zvláštneho odseku
+zarovnaného na stred, napríklad
+$$
+  y = ax^2 + bx + c
+$$
+sme získali kódom \verb|$$y = ax^2 + bx + c$$|.
+Namiesto dolárov môžeme použiť dvojicu príkazov
+\verb|\[...\]| s rovnakým výsledkom.
+
+Rovnicu s referenčným číslom vytvoríme tak, že zápis matematickej
+rovnice vložíme do prostredia \verb|equation|:
+\begin{verbatim}
+  \begin{equation}
+    y = ax^2 + bx + c
+  \end{equation}
+\end{verbatim}
+vytvorí rovnicu s číslom uzavretým v zátvorkách:
+\begin{equation}
+  y = ax^2 + bx + c
+\end{equation}
+
+Program \LaTeX\ čísluje rovnice automaticky od čísla 1.
+
+\subsubsection{Zásady matematickej sadzby}
+Pravidlá sadzby matematických, fyzikálnych veličín a~ich vzťahov
+sumarizuje medzinárodná norma u~nás známa pod označením
+STN ISO 80 000: 2022 Veličiny a~jednotky \cite{iso800001, iso800002}.
+Označenie fyzikálnych a~matematických veličín píšeme vždy
+šikmým rezom písma.
+Čísla, názvy funkcií a~jednotky fyzikálnych veličín zapisujeme
+normálnym rezom.
+Správny zápis elektrického napätia s veľkosťou 5,07 voltu
+vyzerá takto:
+\begin{equation}\label{Eq:quantity}
+  U = 5{,}07\,\mathrm{V}
+\end{equation}
+kde $U$ je elektrické napätie.
+Môžeme si všimnúť, že okolo znaku rovnosti sú medzery,
+desatinná čiarka sa píše bez medzier a~medzi číslom a~jednotkou
+je úzka medzera -- v~\LaTeX-u príkaz \verb|\,|.
+
+Rovnicu (\ref{Eq:quantity}) sme zapísali v zdrojovom kóde nasledujúcim spôsobom:
+\begin{verbatim}
+\begin{equation}
+  U = 5{,}07\,\mathrm{V}
+\end{equation}
+\end{verbatim}
+\TeX\ v~matematickom móde automaticky sádže veličiny kurzívou.
+Ak chceme, aby bola jednotka V vzpriamená, použijeme
+v~matematickom móde príkaz \verb|\mathrm{}|. Medzery okolo znaku rovnosti sú taktiež automatické.
+Zaujímavá je desatinná čiarka, ktorú musíme uzavrieť do
+zložených zátvoriek, aby sme potlačili automatickú sadzbu
+medzery za čiarkou.
+V~anglicky hovoriacich krajinách sa ako desatinný oddeľovač
+používa bodka.
+Čiarka má väčšinou význam oddeľovača prvkov zoznamov
+a~v~matematickom režime vkladá \TeX\, za čiarku úzku medzeru.
+Najčastejšie chyby pri zápise fyzikálnych veličín sme zhrnuli
+v~tabuľke 1.
+
+\begin{table}[h]
+\centering
+\caption{Prehľad najčastejších chýb pri nesprávnom zápise
+skalárnej fyzikálnej veličiny.
+Správny zápis predstavuje rovnica (\ref{Eq:quantity}).}
+\vspace{12pt}
+\begin{tabular}{@{}ll@{}}
+  \toprule
+  \textbf{nesprávny zápis} & \textbf{opis chyby}\\
+  \midrule
+  $U = 5{,}07\,V$ & jednotka je kurzívou\\
+  $U = 5{,}07\mathrm V$ & medzi číslom a jednotkou chýba medzera\\
+  $\mathrm U = 5{,}07\,\mathrm V$ & označenie veličiny nie je kurzívou \\
+  $U$=$5{,}07\,\mathrm V$ & okolo znaku rovnosti chýbajú medzery\\
+  $U = 5,07\,\mathrm{V}$ & za desatinnou čiarkou je medzera\\
+  $U = \mathit{5{,}07}\,\mathrm{V}$ & číslo je kurzívou\\
+  U=$\mathit{5,07}V$ & kumulácia predchádzajúcich chýb\\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Dôležité pravidlá písania rovníc}
+\begin{itemize}
+
+    \item Značky veličín píšeme šikmým rezom písma (kurzívou):
+    $x$, $y$, $a$, $F$, $P$, $W$.
+
+    \item Fyzikálne jednotky píšeme vzpriameným písmom:
+    $a = 10\,\mathrm{cm}$.
+
+    \item Čísla píšeme vzpriameným písmom:
+    $1$; $2$; $3$; $1\,024$; $3{,}14$ a podobne.
+
+    \item Skratky matematických funkcií píšeme vzpriameným
+    písmom: $\sin(\alpha + \beta)$, $\cos\omega t$,
+    $\log_a x = \frac{\ln x}{\ln a}$, $\mathrm{e^{i\uppi}}=-1$.
+
+    \item Označenia nemenných konštánt sú tiež vzpriamené
+    písmená: $\uppi$, $\mathrm i$, $\mathrm e$ --
+    tri základné matematické konštanty --
+    Ludolfovo číslo, komplexná jednotka a~Eulerovo číslo.
+    Niektoré konštanty sa zo zvyku môžu písať kurzívou,
+    napríklad $\pi$ alebo dielektrická konštanta $\varepsilon_0$.
+    Komplexná jednotka je však vždy vzpriamená:
+    $\mathrm i^2 = -1$.
+
+    \item Vzpriameným písmom píšeme v matematických vzťahoch
+    aj všetky zátvorky.
+
+    \item Sumačné indexy píšeme kurzívou:
+    $p_N(x) = \sum_{i=1}^N a_ix^i$.
+    Symbol $i$ v tomto príklade predstavuje sumačný index,
+    nie komplexnú jednotku.
+
+    \item Vektory uvádzame buď polotučným šikmým rezom
+    ($\vectorsym a$, $\vectorsym b$, $\vectorsym F$)
+    alebo šikmým netučným rezom so šípkou nad symbolom:
+    $\vec a$, $\vec b$, $\vec F$.
+    Treba si vybrať jeden spôsob a~ten používať v~celej práci.
+
+    Označenia matíc a tenzorov zapisujeme polotučným šikmým rezom:
+    $$\matrixsym M = \left( \begin{array}{cc}
+                            m_{11} & m_{12}\\
+                            m_{21} & m_{22}
+                        \end{array}\right)
+    $$
+    Prvky matice $m_{ij}$ sú skalárne veličiny, preto sú to
+    netučné šikmé písmená.
+
+    \item Ak treba z nejakého dôvodu odlíšiť tenzor
+    od bežnej matice, môžeme tenzory označiť dvomi čiarkami:
+    $\overline{\overline T}$.
+
+    \item Značku úplného diferenciálu píšeme vzpriameným rezom:
+    $\mathrm dy$ je úplný diferenciál veličiny $y$.
+
+    \item Derivácia dráhy podľa času:
+    $v = \frac{\mathrm ds}{\mathrm dt}$.
+    Veličiny $v$, $s$ a~$t$ sú stále písané kurzívou
+
+    \item Určitý integrál vyzerá takto:
+    $$
+    \int_a^b f(x)\,\mathrm dx
+    $$
+    V~integráli spravidla vkladáme pred diferenciál
+    úzku medzeru \verb|\,|.
+\end{itemize}
+
+\subsubsection*{\normalsize Príklad}
+Z Coulombovho zákona vyplýva,
+že pre vektor elektrostatickej sily $\mathbfit F_\mathrm e$
+medzi dvomi bodovými nábojmi platí nasledujúci vzťah
+\begin{equation}\label{Eq:CoulombVec}
+  \mathbfit F_\mathrm e = \frac1{4\pi\varepsilon_0}
+  \frac{q_1q_2}{r^2}\frac{\mathbfit r}r
+\end{equation}
+kde $q_1$, $q_2$ sú veľkosti bodových nábojov,
+$\mathbf r$ je polohový vektor náboja $q_2$
+vzhľadom na náboj $q_1$
+a~$\varepsilon_0$ je elektrická konštanta.
+
+Aby sme zhrnuli predchádzajúce pravidlá, detailnejšie opíšeme spôsob zápisu jednotlivých prvkov
+v~rovnici (\ref{Eq:CoulombVec}).
+Skalárne veličiny veľkosť náboja a~vzájomná vzdialenosť sú
+napísané kurzívou,
+vektorové veličiny sila a~polohový vektor sú polotučným rezom.
+Všetky čísla (indexy a~násobok 4 v~menovateli)
+píšeme normálnym rezom.
+Konštanty $\pi$ a $\varepsilon_0$ sú podľa zvyklosti vysádzané
+šikmým rezom.
+Norma v~súčasnosti odporúča vzpriamené písmo:
+$\uppi$, $\upvarepsilon_0$, čo možno dosiahnuť použitím balíka
+\verb|upgreek|.
+Index $\mathrm e$ pri symbole vektora sily,
+ktorý označuje fakt, že ide o~elektrickú silu,
+píšeme normálnym neskloneným rezom písma.
+
+V~texte, ktorý nasleduje bezprostredne za rovnicou vysvetlíme
+a~stručne opíšeme jednotlivé symboly.
+Tento odsek formálne patrí k~rovnici,
+preto nemá odsadený prvý riadok.
+Ak to chceme dosiahnuť,
+nevynecháme za rovnicou v~zdrojovom kóde
+prázdny riadok.
+
+Zdrojový kód rovnice \eqref{Eq:CoulombVec}:
+\begin{verbatim}
+\begin{equation}\label{Eq:CoulombVec}
+  \mathbfit F_\mathrm e = \frac1{4\pi\varepsilon_0}
+  \frac{q_1q_2}{r^2}\frac{\mathbfit r}r
+\end{equation}
+\end{verbatim}
+Všimnite si, že niekedy argument funkcie nemusí byť
+uzavretý zloženými zátvorkami (\verb|\mathrm e| je vo výsledku rovnaký ako \verb|\mathrm{e}|).
+Tento fenomén je dôsledok priebehu kompilácie na úrovni tzv. procesorov \TeX-u.
+Parameter bez zátvorky funguje správne vtedy,
+ak je parameter práve jeden \emph{token}.%
+\footnote{Čo je token? Je to akási najmenšia časť spracovaného
+kódu, ktorý vstupuje do tzv. \emph{token procesora}
+počas kompilácie.
+Tokeny sú písmená, čísla, ale aj jednoduchý príkaz,
+napr. \texttt{\textbackslash mathrm} je jeden token.
+Problematika je síce komplexná, ale na pochopenie
+toho, čo sa v~\TeX-u deje, dôležitá.
+Existuje veľmi pekná kniha od Petra Olšáka \TeX book naruby z roku 2001 \cite{Olsak2001Texbook}.
+Keďže sa už nedá zohnať, autor sa rozhodol, že ju sprístupní pre širokú verejnosť v digitálnej forme na stránke
+\href{https://petr.olsak.net/tbn.html}{\texttt{petr.olsak.net/tbn.html}}.
+}
+\end{document}

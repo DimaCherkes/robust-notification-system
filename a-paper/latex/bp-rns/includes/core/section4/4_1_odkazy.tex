@@ -1,0 +1,29 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Odkazy na citované diela}
+Vo vedecko-technických oblastiach, do ktorých patria aj študijné programy na našej fakulte, je zvykom používať numerický systém citovania. Jednotlivé zdroje sú očíslované podľa poradia výskytu v texte, pričom číslo zdroja uvádzame v hranatých zátvorkách.
+Citovanie sa riadi technickou normou STN ISO 690: 2022 Informácie a dokumentácia: Návod na tvorbu bibliografických odkazov na informačné pramene a~ich citovanie~\cite{iso690}.
+
+Systém \LaTeX\ umožňuje pracovať s citáciami niekoľkými spôsobmi.
+Šablóna FEIstyle pracuje s balíčkom \verb|biblatex| na správu citácií. Jeho základom je externý databázový súbor \texttt{bibliography.bib},
+ktorý sa nachádza v hlavnom priečinku projektu záverečnej práce.
+Súbor obsahuje bibliografické záznamy citovaných diel
+v špecifickom formáte.
+Každý záznam začína jedinečným identifikátorom, ktorý zvyčajne
+volíme tak, aby sme si ho jednoducho pamätali.
+Ak totiž v texte chceme dielo citovať, napíšeme makro \verb|\cite{identifikator}| a~v~práci sa automaticky objaví poradové číslo citovaného diela v hranatej zátvorke.
+Číslo citácii pridelí externý program \textsl{biber},
+ktorý prejde celý dokument, identifikuje výskyty makra \verb|\cite|, zoradí citované diela podľa výskytu v~práci,
+pridelí im čísla a vytvorí podklady na zoznam literatúry na konci práce.
+Pri ďalšom spustení kompilátora \TeX-u dôjde k~nahradeniu makier
+\verb|\cite| číslami v hranatých zátvorkách a makro šablóny
+\verb|\FEIbibliography| vytvorí zoznam literatúры s nadpisom
+prvej úrovne Literatúra.
+
+Pri použití bibliografie odporúčame použiť dávkový súbor
+\texttt{Makefile} alebo spustiť externý progрam \texttt{biber}
+po prvej kompilácii a~potom skompilovať dokument ešte dvakrát.
+Posledná kompilácia zabezpečí správne čísla strán v obsahu.
+Online nástroj Overleaf robí všetky potrebné kroky v jednom behu,
+kompiláciu tu stačí spustiť iba raz.
+\end{document}

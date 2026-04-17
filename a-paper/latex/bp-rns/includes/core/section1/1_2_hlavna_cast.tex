@@ -1,0 +1,245 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Hlavná textová časť}
+Samotný autorský obsah práce začína až tu.
+Tradične text členíme na úvod, jadro a~záver,
+pričom úvod a~záver sú samostatné kapitoly,
+ktoré nečíslujeme a~je vhodné,
+ak ich označíme nadpismi \emph{Úvod} a~\emph{Záver}.
+Strednú časť -- jadro -- neozначаujeme.
+
+\subsubsection{Úvod}
+Prvá kapitola hlavnej časti práce má názov úvod, nečíslujeme ju.
+Ide o~ucelený text v~rozsahu niekoľkých súvislých odsekov textu,
+v~ktorých stručne a~výstižne charakterizujeme stav poznania
+a~praxe v~danej oblasti,
+oboznámime čitateľa s~cieľmi a~závermi práce.
+Nosnou myšlienkou úvodu okrem uvedenia čitateľa do problematiky
+je jasná motivácia autora a~jeho postoje,
+ktoré viedli k~spracovaniu témy práce [3].
+
+Nepísané pravidlo hovorí,
+že úvod a~záver práce sa píšu až ako posledné.
+Tento poznatok vyplýva z~praxe a~má dva dôvody:
+1.~na začiatku nemusí byť úplne zrejmé, čo všetko sa v~práci naozaj objaví;
+2.~úvod predstavuje samostatnú literárnu formu,
+na ktorej sa neskúsený autor zasekne už na začiatku.
+Aby sme sa tomu vyhli,
+necháme si jeho napísanie až na záver,
+keď už bude väčšina hlavného obsahu práce hotová.
+
+Text úvodu sa nachádza v súbore \verb|includes/introduction.tex|
+a~jeho sadzbu zariadi makro \verb|\FEIintroduction{includes/introduction}|.
+
+\subsubsection{Jadro}
+Táto časť práce \emph{nezačína} nadpisom \emph{Jadro}.
+Obsah jadra členíme zvyčajne na niekoľko číslovaných
+kapitol počínajúc číslom 1.
+Prvá kapitola býva prehľad súčasného stavu problematiky,
+ale môže mať aj iný názov,
+napríklad \emph{Teoretická časť,} alebo rovno názov oblasti,
+o~ktorej sa v nej bude písať
+(trebárs \emph{Metóda prenosových matíc}).
+
+Pri písaní strednej časti práce nemusíme postupovať úplne
+striktne podľa tohto návodu.
+Treba však pamätať na to,
+aby sme jasne oddelili poznatky,
+ktoré pochádzajú od iných autorov,
+a~sú súčasťou všeobecného prehľadu,
+od poznatkov a~výsledkov samotnej práce autora.
+Nemusia byť oddelené fyzicky v~rôznych odsekoch,
+či kapitolách, z~textu však musí byť jasné,
+ktoré výsledky sú originálne a~ktoré sú prebrané.
+Odporúčaná štruktúra tejto časti je na
+strane~\pageref{sec:StrukturaPrace}.
+
+Samotný obsah jadra sa nachádza v~súbore \verb|includes/core.tex|.
+Do hlavného dokumentu \verb|thesis.tex| ho načíta makro \verb|\FEIcore{includes/core}|.
+Parameter makra je názov súboru bez prípony.
+Ak je \verb|core.tex| príliš obsiahly,
+môžeme jednotlivé kapitoly uložiť do samostatných
+súborov a tie načítať do \verb|core.tex|
+pomocou \TeX-ového príkazu \verb|\input|.
+
+\subsubsection*{\normalsize Súčasný stav riešenej problematiky
+doma a~v~zahraničí}
+Podľa zvyklostí by malo približne 30\,\% práce obsahovať prehľad
+súčasného stavu a~poznatkov v~oblasti,
+ktorej sa týka predkladaná práca.
+Ide o~veľmi dôležitý aspekt,
+ktorým študent preukáže,
+že je schopný problematiku naštudovať,
+porozumieť jej a~napísať o~nej súvisly text.
+Dokáže na základe existujúcich poznatkov vysvetliť javy,
+ktoré v~práci študuje.
+
+Kľúčová činnosť pri príprave textu je štúdium prác publikovaných
+u~nás a~v~zahraničí.
+Nejde iba o~to, že autor píše myšlienky, ktoré sa kdesi dozvedel,
+mal by tiež poznať ich primárne zdroje,
+správne s~nimi pracovať a~citovať ich.
+Dôležitý prínos študenta spočíva v~spájaní viacerých poznatkov
+z~rôznych zdrojov do nového celku.
+
+\subsubsection*{\normalsize Cieľ práce}
+Bakalárska a diplomová práca má jasne uvedené ciele v zadaní práce. Nie je preto nutné uvádzať samostatnú kapitolu, kde budú ciele ešte raz vymenované. Je však žiadúce, ak sa zmienka o jednotlivých cieľoch v texte vyskytuje a poukazuje sa na ich splnenie, nesplnenie, prípadne ak hlavné ciele pozostávajú z čiastkových cieľov, treba ich jasne špecifikovať.
+
+\subsubsection*{\normalsize Metodika práce a metódy skúmania}
+V experimentálnych prácach býva v tejto časti podrobne zdokumentované prístrojové vybavenie, riadiaci a simulačný softvér, laboratórne podmienky a podobne. Metodické usmernenie [3] odporúča nasledujúci obsah tejto časti práce: a) charakteristika objektu skúmania, b) pracovné postupy, c) spôsob získavania údajov a ich zdroje, d) použité metódy vyhodnotenia a interpretácie výsledkov, e) štatistické metódy.
+
+\subsubsection*{\normalsize Výsledky práce a diskusia}
+Študent zaujme k získaným výsledkom jasné postoje,
+porovnáva ich s inými autormi, prípadne navrhuje ich ďalšie aplikácie.
+Zhodnotí a~komentuje ich na základe štatistického spracovania dát (smerodajné odchýlky, priemery, regresie a podobne).
+Odporúčame, aby táto časť tvorila 30 až 40 percent záverečnej práce.
+Môžeme ju rozdeliť na dve samostatné podkapitoly: sumarizáciu výsledkov a~diskusiu formou eseje.
+
+\subsubsection{Záver}
+Záver práce predstavuje samostatnú nečíslovanú kapitolu
+v~rozsahu niekoľkých odsekov alebo strán.
+Obsahuje zhrnutie výsledkov vo vzťahu k~stanoveným cieľom~[3].
+Rovnako, ako pri úvode, treba si dať
+aj na kompozícii záveru zvlášť záležať.
+Väčšina čitateľov si prečíta v~prvom rade úvod a~záver práce,
+aby zistili, či im stojí za to pustiť sa do podrobnejšieho
+štúdia celého textu.
+Aj oponent vychádza najmä z dobre spracovaného záveru.
+
+Jasne deklarujeme splnenia cieľov a naznačíme ďalšie možné smerovanie študovanej problematiky. Vyjadrujeme sa pozitívne. Ak sa nepodarilo úplne naplniť niektorú z~pôvodných predstáv, nerozpisujeme sa o tom.
+
+Ako príklad použijeme nepríjemnú modelovú situáciu,
+ktorá môže počas výskumu nastať.
+Povedzme, že cieľ záverečnej práce bol odmerať
+optické parametre tenkých TiO$_2$ vrstiev.%
+\footnote{TiO$_2$ je chemická značka oxidu titaničitého,
+ktorý sa používa napríklad pri solárnych článkoch
+ako priehľadná vrchná elektróda.
+Ide totiž o~typ oxidu s~vlastnosťami polovodičov,
+čiže môže za určitých podmienok viesť elektrický prúd.
+Zároveň je pre viditeľné svetlo priehľadný,
+čo nebýva pri polovodičoch bežné.
+Optické a~elektrické vlastnosti vrstvy TiO$_2$
+často závisia od parametrov technologického procesu.}
+Z~dôvodu havárie zariadenia sa nepodarilo takéto vzorky získať
+a~v~skutočnosti sme mohli pracovať iba
+s~tradičnými SiO$_2$ vrstvami.%
+\footnote{Oxid kremičitý sa v~mikroelektronike používa
+ako nevodivá izolačná vrstva.
+Jeho materiálové vlastnosti sú veľmi dobre preskúmané
+a~všeobecne známe.
+S~jeho amorfnou formou sa v~každodennom živote bežne stretávame,
+je to obyčajné sklo.}
+Vzniknutú situáciu zhodnotíme v~závere vecne a~pravdivo:
+
+\begin{quote}
+  \emph{Aj napriek poruche technologického zariadenia sme
+  dokázali zabezpečiť náhradné vzorky a realizovať merania
+  optických vlastností tenkých vrstiev termálneho
+  SiO$_\mathit{2}$.
+  Poznatky, ktoré sme získali pri práci s~pokročilými
+  experimentálnymi zariadeniami následne využijeme vo výskume
+  materiálových vlastností TiO$_\mathit{2}$ vrstiev.
+  V~diskusii sme naznačili možné rozšírenie existujúcich
+  metód na tento druh materiálu.}
+\end{quote}
+
+Ak priznáme, že zariadenie sa pokazilo
+a tým pádom sme nesplnili ciele,
+stane sa záverečná práca neobhájiteľnou.
+Nasledujúci príklad je ukážka takejto nevhodnej formulácie:
+
+\begin{quote}
+  \emph{Počas prípravy tenkých vrstiev došlo k neočakávanej
+  poruche technologického zariadenia,
+  ktorá znemožnila výrobu plánovaných vzoriek.
+  Merania optických parametrov TIO$_\mathit2$
+  sme preto nerealizovali.
+  Veríme, že experimenty s~náhradnými vzorkami tenkých vrstiev
+  termálneho SiO$_\mathit2$ pomôžu v~budúcnosti
+  aj pri výskume iných materiálov.}
+\end{quote}
+
+Text obsahuje tri zápory, je pesimistický,
+s~nejasným výhľadom do budúcnosti.
+Cítiť z~neho sklamanie a~frustráciu zo vzniknutej situácie,
+ktorá sa javí ako neriešiteľná.
+Jednoznačne sme priznali nesplnenie cieľa.
+Aj keď sme urobili úspešné náhradné merania,
+z~textu to nie je zrejmé.
+Záverečné tvrdenie o~možnosti využitia výsledkov
+v~sebe navonok ukrýva istú nádej,
+v~skutočnosti však iba potvrdzuje to,
+že chceme mať toto fiasko čím skôr za sebou.
+
+Pozor ale aj na prílišnú pozitivitu.
+Tá môže, paradoxne, nedostatky ešte viac zvýrazniť.
+Nasledujúca ukážka je síce optimistická,
+avšak do textu práce taktiež nevhodná:
+
+\begin{quote}
+  \emph{Vďaka drobnej poruche technologického zariadenia sme
+  mohli realizovať merania optických vlastností tenkých vrstiev
+  termálneho SiO$_\mathit2$ a~získať tak unikátne výsledky.
+  Nesmierne bohaté skúsenosti s~najkvalitnejšími meracími
+  aparatúrami využijeme aj v~nadväzujúcom výskume.
+  Rozšírenie nadobudnutých kompetencií na iné materiály
+  považujeme za najväčší prínos predkladanej práce.}
+\end{quote}
+
+V tomto príklade vidieť prílišnú snahu zahladiť škody
+a~vychvaľovať sa výsledkami,
+ktoré v~skutočnosti nemajú zvláštny význam.
+Je totiž málo pravdepodobné,
+aby s~SiO$_2$ vznikli unikátne výsledky.
+Text obsahuje nevhodné absolútne kvantifikátory
+(\emph{nesmierne bohaté skúsenosti, najkvalitnejšie aparatúry,
+najväčší prínos});
+bagatelizuje nehodu, dokonca jej ďakuje
+(\emph{vďaka drobnej poruche}),
+čím na ňu zbytočne upozorňuje;
+zámerne sa nezmieňuje o~pôvodných TiO$_2$ vrstvách.
+Nadužívaním cudzích slov (\emph{kompetencie})
+autori zväčša maskujú rôzne nedostatky,
+napríklad vlastnú neistotu.
+
+Zapamätáme si, že vedecký text musí byť jasný, pravdivý a vecný.
+Očistíme ho od akýchkoľvek citových výlevov v prvom rade tým,
+že sa vyhýbame extrémnym kvantifikátorom. Nepoužívame ani tieto:
+\emph{všetci, nikdy, žiaden, každý jeden,}
+pokiaľ nepíšeme matematické vety alebo logické výrazy.
+Ak sa napríklad nepodarilo naprogramovať ani jeden fungujúci kód,
+nenapíšeme,
+že \emph{žiaden program, ktorý sme sa snažili vytvoriť nefunguje}.
+Povieme to miernejšie: \emph{snaha o~vytvorenie funkčného
+programu viedla k~menej presvedčivým výsledkom}.
+Negatívnu skutočnosť formulujeme pozitívne.
+
+Ani pozitívne prínosy zbytočne nepreceňujeme.
+Necháme ich, nech sa chvália samé.
+Namiesto prehnaného zdôrazňovania:
+\emph{Úžasné výsledky všetkých meraní sme dosiahli
+vďaka perfektne pripraveným vzorkám},
+napíšeme vecne:
+\emph{Jednotlivé merania boli úspešné aj
+vďaka kvalitným vzorkám.}
+
+Súbor so záverom v~priečinku \verb|includes| má
+názov \verb|conclusion.tex|
+a~do dokumentu sa dostane prostredníctvom makra
+\verb|\FEIconclusion{includes/conclusion}|
+v~hlavnom súbore projektu \verb|thesis.tex|.
+
+\subsubsection{Zoznam použitej literatúry}
+Citované zdroje označujeme v texte číslom v hranatých zátvorkách. Ide o poradové číslo uvedenia publikácií tak, ako sa postupne s nimi v texte pracuje.
+
+Po kapitole \emph{Záver} nasleduje ďalšia nečíslovaná kapitola
+s~názvom \emph{Literatúra},
+ktorá obsahuje číslovaný zoznam všetkých
+citovaných literárnych zdrojov v spomínanom poradí.
+Forma tohto zoznamu je pomerne komplikovaná a~podrobne
+ju opisuje norma ISO 690: 2023 Dokumentácia -- Bibliografické odkazy -- Obsah, forma a štruktúra \cite{iso690}.
+Citovanie je v~\LaTeX-u vynikajúco vyriešené.
+V~tomto dokumente citujeme pomocou nadstavby Bib\LaTeX.
+Podrobne sa citáciám budeme venovať v~\ref{sec:citation}. kapitole.
+\end{document}

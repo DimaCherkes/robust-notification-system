@@ -1,0 +1,179 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Úvodná časť práce}
+Hlavným obsahom úvodnej časti sú formálne náležitosti práce a musia byť zaradené v~poradí podľa zoznamu v~úvode tejto kapitoly.
+
+\subsubsection{Obálka, titulný list, zadanie}
+Začiatočné stránky práce automaticky generuje univerzitný
+informačný systém AIS vo formáte PDF.
+Môžeme ich do záverečnej práce vložiť pomocou príkazu \verb|\includepdf| z~balíčka \verb|pdfpages|
+alebo využijeme makrá \verb|FEIcover| a~\verb|FEItitle| na vytvorenie obálky a prvej
+stránky práce.
+Aby boli všetky informácie aktuálne,
+treba venovať pozornosť vyplneniu údajových
+premenných v~úvode hlavného súboru \verb|thesis.tex|.
+
+Zadanie odporúčame vložiť pomocou spomínaného makra
+\verb|\includepdf| tak, že najprv uložíme PDF súbor
+so zadaním do priečinka \verb|includes| a prepíšeme
+názov súboru v argumente makra.
+
+\subsubsection{Poďakovanie}
+Nepovinná, ale veľmi obľúbená časť práce.
+Je umiestnené na samostatnej strane zväčša v~dolnej časti.
+Jej obsah je ponechaný na autora.
+Obsah poďakovania sa nachádza v~súbore
+\verb|includes/thanks.tex| a~sadzbu má na starosti
+príkaz \verb|\FEIthanks|.
+
+\subsubsection{Slovenský a anglický abstrakt}
+Definícia abstraktu vychádza z technickej normy STN ISO 214 Dokumentácia.
+Abstrakty (referáty) pre publikácie a dokumentáciu \cite{iso214}.
+Termín abstrakt je skrátené, presné vyjadrenie obsahu
+bez pridanej interpretácie a kritiky.
+Mal by poskytovať čo najviac informácií obsiahnutých v~dokumente.
+
+Abstrakt si netreba zamieňať s termínmi anotácia,
+extrakt alebo rezumé.
+Anotácia je stručná poznámka, alebo vysvetlenie,
+prípadne veľmi stručný opis dokumentu alebo jeho obsahu.
+Extrakt predstavuje časti dokumentu vybratých
+na reprezentáciu celku.
+Rezumé obsahuje stručné zopakovanie významných prínosov
+a~záverov v práci.
+Nachádza sa zvyčajne na konci dokumentu
+a~slúži na doplnenie orientácie čitateľa,
+ktorý študoval predchádzajúci text.
+Ak je práca napísaná v~anglickom jazyku,
+musí obsahovať rezumé v~slovenčine.
+V~slovenskej práci nemusí byť rezumé.
+
+\paragraph{Účel a použitie abstraktov}
+\begin{itemize}\it
+  \item \uv{Dobre vypracovaný abstrakt umožní čitateľom identifikovať
+  základný obsah dokumentu, rýchlo a presne stanoviť jeho
+  relevanciu, a tak sa rozhodnúť, či potrebujú čítať celý
+  dokument.}
+
+  \item \uv{Čitatelia, pre ktorých predstavuje dokument len okrajový
+  záujem, často získajú z~abstraktu dostatok informácií a nemusia
+  čítať celý dokument.}
+
+  \item \uv{Abstrakty sú často cenné aj pri automatickom vyhľadávaní
+  v~plných textoch na získanie predbežných informácií a na
+  informačný prieskum.}
+\end{itemize}
+\begin{flushright}
+(Citované z normy STN ISO 214 \cite{iso214})
+\end{flushright}
+
+Podľa metodického usmernenia Ministerstva školstva, vedy, výskumu a športu SR č. 56/2011 (čl. 1, ods. 1)
+\emph{\uv{abstrakt obsahuje informáciu o cieľoch práce,
+jej stručnom obsahu a~v~závere abstraktu
+sa charakterizuje splnenie cieľa,
+výsledky a~význam celej práce.
+Súčasťou abstraktu je 3 -- 5 kľúčových slov.
+Abstrakt se píše súvisle ako jeden odsek a jeho rozsah je
+spravidla 100 až 500 slov}}~\cite{usmernenie562011}.
+
+Text slovenského a~anglického abstraktu sa nachádzajú
+v~súboroch \verb|attachment.tex| a~\verb|attachmentEN.tex| v~priečinku \verb|includes|.
+
+Do dokumentu ich vložia makrá šablóny
+\verb|\FEIabstract| a~\verb|\FEIabstractEN|
+v~hlavnom súbore \verb|thesis.tex|.
+Každé makro má jeden povinný parameter --
+cesta a~názov súboru s~textom abstraktu.
+Makrá zároveň vytlačia pod abstrakty
+v každom jazyku zoznam kľúčových slov.
+
+\subsubsection{Obsah a zoznamy}
+Obsah je povinný prehľad jednotlivých kapitol
+a~častí práce s~uvedením nadpisov a~strán.
+Začína na samostatnej stránke ako nová kapitola
+s~nadpisom Obsah bez číslovania,
+ktorý sa ale v~samotnom prehľade kapitol nezobrazí.
+
+V~\LaTeX-u zabezpečuje generovanie obsahu príkaz \verb|\tableofcontents|,
+ktorý v~mieste použitia vloží automatický zoznam kapitol s~číslami strán.
+Obsah vytvára na základe použitia nadpisov \verb|\section|,
+\verb|\subsection| a \verb|\subsubsection|.
+Toto makro vytvorí v~pracovnom adresári pomocný textový súbor
+s~príponou .toc a~na základe neho generuje finálnu podobu obsahu.
+Z~toho dôvodu je potrebné kompilátor \LaTeX-u
+spustiť minimálne dvakrát za sebou.
+
+V tejto šablóne má na starosti vytvorenie obsahu makro \verb|\FEIcontent|.
+
+\subsubsection*{\normalsize Zoznam ilustrácií,
+obrázkov a tabuliek}
+Sú to nepovinné prehľady tzv. plávajúcich objektov.
+\LaTeX\ pozná na tento účel dva príkazy: \verb|\listoffigures| a~\verb|\listoftables|. Šablóna FEIstyle ponúka alternatívne makrá \verb|\FEIlistOfFigures| a~\verb|\FEIlistOfTables|, ktoré okrem toho nastavia požadovaný typ stránky bez číslovania.
+
+Zvlášť užitočný je príkaz \verb|\FEIlistOfFiguresAndTables|.
+Vytvorí totiž spojený zoznam obrázkov a tabuliek s jedným nadpisom.
+
+Ak zoznamy v práci nechceme, môžeme príslušné príkazy z~hlavného súboru \verb|thesis.tex| vymazať alebo ich označiť ako komentár.
+
+\subsubsection*{\normalsize Zoznam skratiek a značiek}
+V textových výstupoch vedecko-technických odborov sa používa
+množstvo značiek a~skratiek najmä na označenie fyzikálnych
+veličín v matematických vzťahoch,
+ale aj zostručnenie textového prejavu najmä pri zložitých názvoch
+vedeckých metód, zariadení alebo javov.
+Sú to napríklad RTG (röntgenové žiarenie),
+AFM (mikroskop atómových síl),
+TEM (transmisný elektrónový mikroskop),
+IR (infračervené žiarenie),
+AC (obvod striedavého prúdu) a~mnoho iných.
+Ak sa v práci objavia, musí ich autor pri ich prvom výskyte
+jasne zadefinovať,
+prípadne vysvetliť anglický preklad.
+Rovnako to platí pre všetky použité fyzikálne veličiny.
+
+Aj keď je tento zoznam nepovinná súčasť práce,
+odporúčame ho zaradiť kvôli lepšej orientácii čitateľa.
+Zoznam má podobu slovníka,
+značky uvádzame v~abecednom poradí.
+
+Šablóna ponúka dva spôby vytvorenia zoznamu a~práce so skratkami a~značkami v~texte.
+\begin{enumerate}
+\item Použitie nástrojov balíka \verb|glossary| umožňuje plne automatickú kontrolu nad veľkým množstvom skratiek. Skratky treba najprv definovať v externom súbore \verb|glossary.tex| a~potom ich môžeme v práci používať dvomi spôsobmi. Pri prvom výskyte použijeme skratku aj s~jej opisom, čo zariadi príkaz \verb|acrfull|.
+Pri ďalších výskytoch v texte už stačí používať iba skrátený tvar pomocou príkazu \verb|acrshort|.
+
+Po prvom skompilovaní je potrebné spustiť externý program \verb|makeglossaries| a~text skompilovať znova, prípadne kvôli správnemu radeniu strán v~obsahu, treba kompiláciu spustiť aj tretíkrát.
+Podobná procedúra sa vyžaduje aj pri práci s~citáciami v systéme Bib\LaTeX.
+Makro \verb|\FEIlistOfGlossaries| vytvorí abecedne zoradený zoznam.
+
+Ak sa rozhodneme pre túto možnosť,
+treba v hlavnom súbore \verb|thesis.tex| odstrániť
+znak komentára pred príkazmi
+\verb|\FEIglossaries{includes/glossary}|
+a~\verb|\FEIlistOfGlossaries|. Pozor, tieto dva
+riadky sa v súbore \verb|thesis.tex|
+nachádzajú na rôznych miestach.
+Nepremiestňujeme ich.
+
+Balík \verb|glossaries| je nesporne praktická pomôcka, plnohodnotne však funguje iba v anglickom jazyku.
+Pri jeho používaní narazíme na problém so skratkami, ktoré pochádzajú z anglických slov.
+V slovenskom texte však musíme používať ich terminologické ekvivalenty.
+Aj keď si nakoniec vytvoríme slovenský zoznam skratiek, ich automatické použitie bude limitované pri skloňovaní alebo časovaní jednotlivých výrazov.
+
+Viac sa o možnostiach balíka dozvieme z tutoriálu na stránke \href{https://www.ctan.org/pkg/glossaries}{\texttt{www.ctan.org/pkg/ glossaries}}
+
+\item Skratky zadáme manuálne.
+Automatické riešenie v predchádzajúcom bode úplne zlyháva pri práci s veličinami, ktorých zoznam predstavuje praktickú pomôcku najmä vo fyzikálnych a~matematických oblastiach techniky. Na označovanie veličín používame rôzne symboly a ich modifikácie, napríklad písmená gréckej abecedy ($\alpha, \omega, \xi$), symboly so šípkami v prípade vektorov ($\vec r, \vec\varphi, \vec\imath$), preškrtnuté h ($\hbar$), zdvojené symboly ako $\mathbb Z$, prípadne aj niečo takéto: $\aleph_0$, čo je hebrejské písmeno alef.
+
+Súbor \verb|manual_glossary.tex| obsahuje príklad, ako by mohol takýto ručne vyrobený zoznam vyzerať.
+Makro
+\verb|\FEImanualListOfGlossaries|, ktorého parameter je cesta a názov spomínaného súboru, zariadi samotnú sadzbu.
+Zoznam si môžeme postupne vytvárať pri písaní a~udržiavať ho v abecednom poradí.
+\end{enumerate}
+
+\subsubsection*{\normalsize Zoznamy algoritmov a výpisov kódov programov}
+Tieto typy zoznamov vytvoria makrá \verb|\FEIlistOfAlgorithms|, \verb|\FEIlistOfListings| a~sú špecifické pre informatické odbory.
+
+Ak v práci nemáme výpisy kódov alebo algoritmy,
+bude potrebné riadky s týmito príkazmi vymazať alebo označiť ako komentár. O~uvádzaní častí kódov
+a~zápisov algoritmov píšeme v kapitole \ref{sec:listings}.
+\end{document}

@@ -1,0 +1,41 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Webová stránka, sociálna sieť, video}
+Pri multimediálnom online obsahu často nepoznáme autora,
+prípadne je komplikované zistiť názov webovej stránky.
+Snažíme sa teda zahrnúť čo najviac jednoznačných informácií,
+najmä webovú adresu, dátum publikovania a dátum citovania.
+\begin{trivlist}
+  \item TVORCOVIA. \textit{Názov obsahu} [online]. Platforma, dátum publikovania [cit. dátum citovania]. Dostupnosť.
+\end{trivlist}
+
+\subsubsection*{\normalsize Príklady}
+\begin{enumerate}
+  \item VALKO, P. \textit{M31, M32 a jeden Starlink k tomu} [online]. Facebook, 2024-08-30 [cit. 2024-09-06]. Dostupné z: \texttt{https://www.facebook.com/share/p/S93xZoz9Rbnh
+  dQ7M}.
+
+  \item \textit{Why lenses can't make perfect images} [online]. Youtube, 2017-10-18 [cit. 2024-08-25]. Dostupné z: \texttt{https://youtu.be/DDoryfCXxPI?si=hC5Kuuf4p3OxOOsm}.
+\end{enumerate}
+
+\subsubsection*{\normalsize Zápis v zdrojovom .bib súbore}
+\begin{verbatim}
+@online{Valko2024M31,
+  author       = {Pavol Valko},
+  title        = {31, M32 a jeden Starlink k tomu},
+  howpublished = {online},
+  date         = {2025-08-30T00:03:00},
+  url          = {https://www.facebook.com/share/p/S93xZoz9RbnhdQ7M},
+  urldate      = {2024-09-06},
+  publisher    = {Facebook},
+}
+
+@online{WhyLenses2017,
+  title        = {Why lenses can’t make perfect images},
+  howpublished = {online},
+  date         = {2025-10-18},
+  url          = {https://youtu.be/DDoryfCXxPI?si=hC5Kuuf4p3OxOOsm},
+  urldate      = {2024-08-25},
+  publisher    = {Youtube},
+}
+\end{verbatim}
+\end{document}

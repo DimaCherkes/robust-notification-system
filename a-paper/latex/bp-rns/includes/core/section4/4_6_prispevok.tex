@@ -1,0 +1,50 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Príspevok v zborníku konferencie, časť knihy}
+Ak citujeme iba jednu kapitolu knihy,
+prípadne ide o~príspevok z~neperiodického zborníka,
+uvedieme za názvom príspevku (kapitoly)
+kľúčové slovo In:, po dvojbodke nasleduje zoznam editorov zborníka a názov zborníka alebo knihy:
+\begin{trivlist}
+  \item TVORCOVIA. Názov príspevku. In: EDITORI (ed.). \textit{Názov zborníka.} Mesto: Vydavateľ, Rok vydania, zväzok, s. rozsah strán, zv. číslo. ISBN. ISSN. Dostupnosť.
+\end{trivlist}
+
+\subsubsection*{\normalsize Príklady}
+\begin{enumerate}
+  \item ZEMÁNEK, P. The machines for ``green works'' in vineyards and their economical evaluation. In: \textit{9th International Conference: proceedings. Vol. 2. Fruit Growing and viticulture.} Lednice: Mendel University of Agriculture a Forestry, 2001, zv. 2, s. 262–268. ISBN 80-7157-524-0.
+
+  \item CHLPÍK, J.; KURTULÍK, M.; KOTOROVÁ, S.; CIRÁK, J. Spectroscopic ellipsometry of Au nanoparticles layers. In: SITEK, J.; VAJDA, J.; JAMNICKÝ, I. (ed.). \textit{AIP Conference Proceedings.} 2024, zv. 3054, s. 080004. Č. 1. ISSN 0094-243X. Dostupné z doi: 10.1063/5.0187526.
+\end{enumerate}
+
+\subsubsection*{\normalsize Zápis v zdrojovom .bib súbore}
+\begin{verbatim}
+@InProceedings{Zemanek2001TheMachines,
+  author    = {P. Zemánek},
+  booktitle = {9th International Conference: proceedings. Vol. 2. Fruit
+               Growing and viticulture},
+  title     = {The machines for ``green works'' in vineyards and their
+               economical evaluation},
+  volume    = {2},
+  year      = {2001},
+  pages     = {262--268},
+  publisher = {Mendel University of Agriculture and Forestry},
+  address   = {Lednice},
+  isbn      = {80-7157- 524-0},
+}
+
+@InProceedings{ChlpikSpectroscopic2024,
+  author    = {Chlpík, Juraj and Kurtulík, Matej and Kotorová, Soňa
+               and Cirák, Július},
+  date      = {2024-01},
+  title     = {Spectroscopic ellipsometry of Au nanoparticles
+               layers},
+  editor    = {Jozef Sitek and Ján Vajda and Igor Jamnický},
+  doi       = {10.1063/5.0187526},
+  number    = {1},
+  pages     = {080004},
+  volume    = {3054},
+  issn      = {0094-243X},
+  booktitle = {AIP Conference Proceedings},
+}
+\end{verbatim}
+\end{document}

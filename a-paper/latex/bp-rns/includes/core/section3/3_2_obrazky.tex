@@ -1,0 +1,114 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Obrázky}
+V akademickej oblasti prírodných a~technických vied sa v~záverečných prácach
+objavujú v~pomerne veľkom počte aj netextové grafické objekty. Patria sem grafy, schémy, diagramy, fotografie,
+prípadne iné dvojrozmerné vizualizácie obsahu.
+Nehovoríme o~ozdobných grafických prvkoch,
+tie do práce tohto typu nepatria.
+Obsahové grafické prvky budeme spoločne nazývať slovom obrázok.
+Obrázok môže byť súčasť textového odseku,
+ale tejto možnosti sa vyhýbame,
+ak to nie je úplne nevyhnutné.
+Uprednostňujeme tzv. plávajúcu formu obrázkov,
+teda objektov, ktoré sa nemusia nachádzať bezprostredne
+na mieste v texte, kde sú spomenuté.
+V zdrojovom kóde umiestňujeme príkazy na sadzbu obrázku za odsek,
+v~ktorom sa o~ňom hovorí po prvýkrát.
+Pod každým obrázkom je textové označenie,
+začínajúce skratkou slova obrázok (Obr.) a~nasleduje
+poradové číslo obrázku v práci.
+
+Na obrázku \ref{fig:measurement} je znázornený proces správneho merania výšky dieťaťa.
+Grafický objekt je súčasťou plávajúceho prostredia \verb|figure|.
+Samotnú grafiku pripravíme v externom editore,
+exportujeme ju do niektorého z bežných formátov (JPG, PNG, PDF)
+a~jej vloženie do finálneho PDF súboru
+záverečnej práce zariadi makro
+\verb|\includegraphics| z~balíka \verb|graphix|.
+Automatické číslovanie má na starosti príkaz \verb|\caption|,
+ktorého argument je text pod obrázkom.
+\begin{verbatim}
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=1.00]{img/Measurement.png}
+    \caption{Pravidelné meranie výšky dieťaťa}
+    \label{fig:measurement}
+\end{figure}
+\end{verbatim}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=1.00]{img/Measurement.png}
+    \caption{Pravidelné meranie výšky dieťaťa}
+    \label{fig:measurement}
+\end{figure}
+
+\subsubsection{Umiestnenie obrázkov}\label{sec:figPlacement}
+Na obrázok sa v~texte odkazujeme prostredníctvom čísla.
+Môžeme písať o~tom, že na obrázku 1 vidíme to a~to
+alebo použijeme skratku -- obr. 1.
+Slovo obrázok aj skratku píšeme v~odkaze v~texte
+malým začiatočným písmenom, ak sa nachádza vo vnútri vety.
+Na každý obrázok v~práci by mal existovať odkaz v~texte.
+
+Umiestnenie obrázku v rámci dokumentu riadi pomerne
+komplikovaný algoritmus, čo nie vždy vedie k uspokojivým výsledkom.
+Polohu plávajúceho objektu môžeme čiastočne ovplyvniť
+nepovinným parametrom prostredia \verb|figure|.
+V príklade, ktorý sme uviedli si môžeme všimnúť prítomnosť parametra \verb|h!| v hranatých zátvorkách
+na konci prvého riadka.
+Predstavuje požiadavku, že preferujeme,  aby sa obrázok nachádzal vo výslednom dokumente presne na tomto mieste. \LaTeX\ niekedy umiestni obrázok na začiatok nasledujúcej strany, prípadne aj inam.
+Ak sa mu obrázok nepodarí umiestniť, zaradí ho až na
+samý koniec kapitoly aj spolu so všetkými nasledujúcimi obrázkami.
+To nebýva žiaduce a žiaľ, nemáme príliš veľa možností, ako takýto výsledok ovplyvniť.
+Pomôže zmena rozmerov obrázku, prípadne jeho premiestnenie inam v zdrojovom kóde.
+Odporúča sa, aby sa prostredie \verb|\begin{figure}...\end{figure}| nachádzalo mimo textového odseku, t. j. treba ho od okolitého textu oddeliť minimálne jedným prázdnym riadkom zhora aj zdola.
+
+Na ovládanie umiestnenia plávajúceho objektu môžeme použiť tieto
+parametre \verb|h|~(here) -- umiestnenie v mieste výskytu,
+\verb|t|~(top) -- umiestnenie na stránke hore, \verb|b|~(bottom) --
+umiestnenie na stránke dole, \verb|p|~(page) -- umiestnenie
+na samostatnej stránke na konci kapitoly. Prvé tri
+parametre môžu byť doplnené znakom výkриčníka (\verb|!|),
+ktorý požiadavku zosilňuje.
+Jednotlivé parametre možno aj kombinovať.
+Napríklad inštrukcia \verb|[!ht]| znamená, že chceme mať
+obrázok na tom mieste, kde sa nachádza v zdrojovom kóde
+a~ak to za žiadnu cenu nie je možné,
+trebárs z~dôvodu nedostatku miesta pred koncom strany,
+môže sa obrázok nachádzať aj v~hornej časti stránky.
+Ani to však nemusí stačiť a~obrázok napokon nájdeme
+na konci dokumentu.
+V~takom prípade treba skúsiť niektoré
+z~riešení spomenutých v~predchádzajúcom odseku.
+
+\subsubsection{Označenie obrázku a text pod obrázkom}
+Text pod obrázkom pozostáva z~označenia obrázku a z~vysvetľujúceho obsahu.
+Mal by sa nachádzať spolu s~obrázkom na tej istej strane.
+
+Text je dostatočne opisný,
+aby bol jasný obsah obrázku aj pri rýchlom prechádzaní
+práce bez nutnosti detailného čítania hlavného textu.
+Ak opis pod obrázkom pozostáva iba z~jednej vety,
+prípadne ide o~heslo bez vetnej štruktúry,
+nepíšeme zaň bodku.
+V~prípade viacerých viet už bodku alebo príslušné interpunkčné
+znamienka použijeme na konci každej vety,
+aj poslednej.
+V príklade na obrázku \ref{fig:measurement} je text bez bodky
+a~to je správne.
+
+\subsubsection{Číslovanie a odkazy}
+Obrázky číslujeme podľa výskytu v práci od čísla 1.
+Používame jednoúrovňové číslovanie,
+teda obrázok 1, obrázok 2, atď.
+V~\LaTeX-u je automatické číslovanie obrázkov zabezpečené v definícii makra \verb|\caption|.
+
+Odvolávanie sa na číslo obrázku rieši dvojica príkazov \verb|\label| a~\verb|\ref|.
+Prvý príkaz zistí prítomnosť najbližšieho číselného
+registra a priradí k nemu menovku, ktorú zadáme do argumentu.
+Napríklad obrázok \ref{fig:measurement} má menovku \verb|fig:measurement|. Menovku volí autor textu, môže byť ľubovoľná, musí však začínať písmenom a nesmie obsahovať špeciálne znaky, ktoré majú v \TeX-u kategóriu vykonateľných príkazov (napr. \verb|\|, \verb|%|, \verb|#|, \verb|$|, zátvorky a podobne). Tiež treba venovať pozornosť tomu, aby sa rovnaká menovka nevyskytla v~texte v príkaze \verb|\label| viackrát, pretože by došlo k jej preťaženiu a znefunkčneniu odkazov.
+
+Z praktických dôvodov sa ustálila prax začínať menovku skratkou typu číslovanej položky: \verb|fig| pre obrázok, \verb|eq| pri rovniciach, \verb|tab| ako menovka tabuľky, \verb|sec| v~prípade nadpisu, atď.
+\end{document}

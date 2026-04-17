@@ -1,0 +1,72 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Článok v odbornom periodiku}
+Záznam musí obsahovať mená autorov (tvorcov), názov článku, názov časopisu, dátum alebo iba rok vydania, ročník alebo zväzok (volume) a číslo vo zväzku (issue), číslo prvej strany, prípadne rozsah strán, na ktorých sa nachádza.
+
+\subsubsection*{\normalsize Nepovinné údaje}
+Ak je článok dostupný online, je dobré, ak sa v zápise objaví aj webová adresa digitálnej verzie článku. Vedecké publikácie majú pridelený jedinečný kód, tzv. DOI (Digital Object Identifier – identifikátor digitálneho objektu), ktorý tiež môže byť súčasťou bibliografického zápisu. Ďalšou nepovinnou časťou je International Standard Serial Number (ISSN), teda medzinárodné štandardné sériové číslo, ktoré sa prideľuje časopisom.
+
+\subsubsection*{\normalsize Printový časopis}
+\begin{trivlist}
+\item TVORCOVIA. Názov článku. \textit{Názov periodika.} Rok vydania, \textbf{zväzok}(časť), rozsah strán. Dostupnosť.
+\end{trivlist}
+
+\subsubsection*{\normalsize Online časopis}
+\begin{trivlist}
+\item TVORCOVIA. Názov článku. \textit{Názov periodika} [online]. Rok vydania, \textbf{zväzok}(časť), rozsah strán (ak je k dispozícii). [cit. yyyy-mm-dd]. Dostupnosť.
+\end{trivlist}
+
+\subsubsection*{\normalsize Príklady}
+Prvý príklad je z~časti
+\ref{sec:citExample} odkazuje na článok s názvom Princípy formovania vzdelania v informačnej vede od autorky Jely Steinerovej, ktorý vyšiel v roku 2000 v 3. čísle 2. ročníka časopisu Pedagogická revue. Článok sa v časopise nachádza na stranách 8 až 16.
+
+V druhom príklade skratka et. al. (skratka latinského slovného spojenia \textit{et alii}, vo význame a~iní) za menom autora znamená, že článok má viacero autorov (bežne viac než 5) a nemusíme ich všetkých uvádzať.
+V slovenských textoch sa môže použiť skratka a~kol. (a~kolektív).
+
+Tretí príklad je príklad online časopisu, ktorý možno nájsť na internete. Príznak [online] a~dátum citovania [cit. 2023-01-10] sa objaví v zozname literatúry, keď v súbore \verb|bibliography.bib| použijeme pole \verb|urldate|.
+
+\begin{enumerate}
+\item STEINEROVÁ, J. Princípy formovania vzdelania v informačnej vede. \textit{Pedagogická revue}. 2000, \textbf{2}(3), 8–16.
+\item BEŇAČKA, J. et al. A better cosine approximate solution to pendulum equation. \textit{International Journal of Mathematical Education in Science and Technology}, 2009, \textbf{40}(2), 206–215.
+\item HOGGAN, D. B. Challenges, Strategies, and Tools for Research Scientists. Electronic Journal of \textit{Academic and Special Librarianship} [online]. 2009, \textbf{3}(3). [cit. 2023-01-10]. Dostupné z: \texttt{http://southernlibrarianship.icaap.org/content/ v03n03/Hoggan\_d01.htm}. ISSN 1525-321X.
+\end{enumerate}
+
+\subsubsection*{\normalsize Zápis v zdrojovom .bib súbore}
+\begin{verbatim}
+@article{Steinerova2000Principy,
+  author  = {J. Steinerová},
+  journal = {Pedagogická revue},
+  title   = {Princípy formovania vzdelania v informačnej vede},
+  year    = {2000},
+  number  = {3},
+  pages   = {8--16},
+  volume  = {2},
+}
+
+@article{Benacka2009Abetter,
+  author  = {Ján Benačka and others},
+  title   = {A better cosine approximate solution to pendulum
+             equation},
+  journal = {International Journal of Mathematical Education in Science
+             and Technology},
+  volume  = {40},
+  number  = {2},
+  pages   = {307--308},
+  year    = {2009},
+  doi     = {10.1080/00207390802419594},
+}
+
+@article{Hoggan2002Challenges,
+  author  = {Danielle Bodrero Hoggan},
+  journal = {Electronic Journal of Academic and Special Librarianship},
+  title   = {Challenges, Strategies, and Tools for Research Scientists:
+             Using Web-Based Information Resources},
+  year    = {2002},
+  number  = {3},
+  volume  = {3},
+  url     = {https://southernlibrarianship.icaap.org/content/v03n03/
+             Hoggan_d01.htm},
+  urldate = {2023-01-10},
+}
+\end{verbatim}
+\end{document}

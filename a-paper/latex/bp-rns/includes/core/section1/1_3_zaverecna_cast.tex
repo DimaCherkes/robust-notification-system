@@ -1,0 +1,29 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Záverečná časť}
+Na záver práce uvádzame dodatky a prílohy.
+Prílohy práce sú zväčša materiály,
+ktoré majú odlišný formát voči samotnej práci.
+Sú to napríklad pamäťové nosiče,
+dátové súbory, veľkoformátové mapy, výkresy a podobne.
+Každú prílohu treba jasne označiť, očíslovať a~nazvať.
+Zoznam príloh potom uvedieme v~jednom z~dodatkov.
+
+Do tzv. dodatkov umiestňujeme informácie,
+ktoré kvôli rozsahu nemôžu byť v hlavnom texte práce.
+Sú to napríklad údajové listy k~použitým prístrojom
+a~zariadeniam, zdĺhavejšie matematické odvodenia,
+rozsiahlejšie kódy programov, dokumentácia
+k~vytvoreným programom, definície neštandardných objektov,
+ktoré v práci používame,
+série rozsiahlych výsledkov alebo meraní
+a~ich grafy, fotografie a podobne.
+
+Jednotlivé kapitoly v~dodatkoch číslujeme veľkými písmenami, čísla podkapitol majú formu A.1, B.3.2, atď.
+Na tento účel vytvoríme pre každý dodatok samostatný súbor v~priečinku \verb|includes/|, odporúčame názov súboru v~tvare \verb|attachmentA.tex| alebo podobne.
+Každý dodatok je potom potrebné načítať v~hlavnom súbore \verb|thesis.tex| nasledujúcim spôsobom:
+\begin{verbatim}
+\FEIappendix{Názov prílohy\label{att:A}}{includes/attachmentA}
+\end{verbatim}
+Prvý parameter makra je názov dodatku a ten sa nesmie nachádzať v~zdrojovom súbore \verb|attachemntA.tex|.
+\end{document}

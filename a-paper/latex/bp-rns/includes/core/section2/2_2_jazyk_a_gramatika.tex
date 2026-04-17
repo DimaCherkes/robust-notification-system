@@ -1,0 +1,162 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+\subsection{Jazyk a gramatika}
+Záverečná práca na FEI STU v~Bratislave musí byť napísaná
+buď po slovensky alebo po anglicky.
+Ak je jazyk práce angličtina, musí po závere nasledovať
+rezumé v~slovenskom jazyku.
+
+Záverečná práca univerzitného štúdia sa vyznačuje
+vysokou jazykovou úrovňou.
+Gramatické a štylistické chyby sú neprípustné.
+Študent by mal tejto stránke diela venovať patričnú
+pozornosť a~podľa možností nechať rukopis prejsť
+kvalifikovanou jazykovou kontrolou.
+Najmä bakalárska práca predstavuje v~živote väčšiny študentov
+prvý rozsiahlejší autorský útvar,
+ktorý má významný vplyv na jeho ďalší život a~kariéru.
+
+Aj keď väčšina textových editorov dokáže odhaľovať preklepy,
+neporadí si s~komplikovanejšou gramatikou a~štylistikou.
+Treba sa riadiť najmä pravidlami slovenského pravopisu,
+slovníkmi slovenského jazyka a~ďalšími zdrojmi,
+ktoré možno nájsť na webových stránkach
+Jazykovedného ústavu Ľudovíta Štúra SAV.%
+\footnote{\href{https://www.juls.savba.sk/}{\tt www.juls.savba.sk}}
+Využiť môžeme aj jazykovú poradňu,
+ktorú poskytuje ústav bezplatne a~to buď telefonicky alebo
+prostredníctvom emailovej komunikácie.
+Cenným zdrojom informácií môže byť aj Jazyková poradňa
+denníka SME v spolupráci
+s~Jazykovedným ústavom Ľudovíta Štúra SAV%
+\footnote{\href{https://jazykovaporadna.sme.sk/}{\tt jazykovaporadna.sme.sk}}
+alebo online slovníky slovenského jazyka,%
+\footnote{\href{https://slovnik.juls.savba.sk/}{\tt slovnik.juls.savba.sk}}
+prípadne národný jazykový korpus.%
+\footnote{\href{https://korpus.sk/}{\tt korpus.sk}}
+
+Pri písaní práce dbáme najmä na pravopisné javy ako sú písanie
+tvrdého a~mäkkého y/i vo vybraných slovách,
+v~príponách a~koncovkách pri skloňovaní
+(pekný muž, ale pekní muži),
+v~číslovkách (rozprávali sme sa so siedmimi v~poradí
+-- skončili siedmi v~poradí,
+ale hrali sme sa so siedmymi deťmi -- detí bolo sedem), atď.
+Rovnako dôležité je správne písanie rodov,
+skloňovanie a časovanie.
+
+Veľmi komplexná a~dôležitá zložka gramatiky
+je písanie čiarok v~súvetiach.
+
+Popri gramatike je podstatná aj štylistická tvorba viet,
+ktorú musí študent univerzity zvládať na vysokej úrovni.
+
+\subsubsection{Delenie slov}
+Tzv. \emph{textové procesory} ako MS Word, LibreOffice a~Apache OpenOffice
+ponúkajú automatické delenie slov na konci riadka.
+Systém na sadzbu textu \LaTeX\ má túto funkciu automaticky zapnutú a~jej slovenská lokalizácia je veľmi kvalitne spracovaná.
+
+Vo veľkej väčšine prípadov je delenie
+v~súlade s~pravidlami jazyka.
+Môžu sa vyskytnúť sporné okolnosti,
+kedy počítač nerozdelí slovo správne.
+Väčšinou máme možnosť do procesu zasiahnuť
+a~ručne kontrolovať delenie slov na miestach,
+s ktorými si softvér nevie poradiť.
+Príkaz na preferované rozdelenie slova je \verb|\-|.
+Napríklad slovo \verb|predstave\-nie| \LaTeX\
+preferovane rozdelí v mieste prípony.
+
+V každom prípade je žiadúce slová na konci riadka deliť
+a\ túto možnosť nevypínať.
+Prospieva to práci ako po technickej,
+tak aj po estetickej stránke.
+Odseky obsahujú menej dier,
+textová oblasť stránky je vyplnená homogénnejšie,
+čo prispieva k~lepšej čitateľnosti.
+V prípade, že používame zarovnávanie do bloku tak,
+ako aj v~tomto dokumente,
+je prítomnosť dier v~odseku značne rušivá.
+Ak používame zarovnanie textu doľava,
+nepoužívanie delenia slov má vplyv na vznik tzv. riek,
+čo je náhle striedanie dlhých a~krátkych riadkov.
+Pravý okraj textu je nepekne zubatý.
+
+Pravidlá rozdeľovania slov na konci riadka sú pomerne zložité.
+Základné pravidlo, ktoré si pamätáme zo základnej školy,
+je, že slová delíme na slabiky pred spoluhláskou alebo medzi
+dvomi spoluhláskami.
+Ak si nie sme istí, uprednostňujeme delenie v mieste,
+kde sa ku koreňu slova pripájajú predpony alebo prípony,
+prípadne v~mieste spojenia slov v~zloženom slove.
+
+Pri slovách utvorených predponou alebo príponou
+uprednostňujeme morfologické delenie
+pred rozdelením koreňa slova.
+Najskôr sa snažíme deliť slovo za predponou,
+ak to nejde, skúsime to pred príponou.
+Napríklad slovo \emph{predstavenie}
+delíme na slabiky takto: \emph{pred-sta-ve-nie}.
+Pri rozdeľovaní slov uprednostňujeme model
+\emph{pred-stavenie}, výnimočne aj \emph{pred-stave-nie}.
+V slove \emph{výklenok} sa uplatňuje pravidlo morfologického
+delenia pred delením v~mieste zhluku spoluhlások.
+Sylabická stavba tohto slova je \emph{vý-kle-nok},
+nie \emph{výk-le-nok},
+pretože slovo pozostáva z troch častí: predpony \emph{vý},
+koreňa \emph{kle} a prípony \emph{nok}.
+Mohli by sme namietať, že prípona je \emph{ok},
+pomocou ktorej bolo vytvorené podstatné meno zo slovesa
+klenúť alebo z~prídavného mena klenutý,
+kde identifikujeme koreň \emph{klen}.
+V skutočnosti je však príponou \emph{-nok}.
+Morfológia je pomerne komplexná problematika,
+a~nedokážeme tu obsiahnuť všetky jej detaily.
+Väčšinou sa môžeme spoľahnúť na softvér,
+že slová rozdelí správne.
+V prípade pochybností využijeme externé pomôcky spomenuté
+v~úvode tejto kapitoly.
+
+Slová spojené spojovníkom rozdeľujeme v~mieste spojovníka tak,
+že spojovník napíšeme na konci aj na začiatku riadka.
+Slovo \emph{vedecko-pedagogický} môžeme rozdeliť takto:
+\emph{ve-dec-ko-pe-da-go-gic-ký}.
+Ak delenie padne na miesto spojenia slov,
+rozdelíme ho nasledujúcim spôsobom:\\
+\indent\emph{vedecko-}\\
+\indent\emph{-pedagogický}
+
+V šablóne rieši tento problém príkaz
+\verb|\languageattribute{slovak}{split}|,
+ktorý je súčasťou jazykového balíka \verb|babel|.
+
+Nesprávne delenie slov sa v~práci zvyčajne objaví
+len zriedkavo a~nemá vplyv na jej hodnotenie.
+Netreba sa naň príliš sústrediť a~robiť si starosti.
+Celkový vzhľad práce viac naruší vypnutie delenia slov,
+než občasná malá chyba.
+
+\subsubsection{Jednopísmenové predložky a spojky}
+Hovoríme o predložkách k, o, v, s, z,
+ktoré by nemali ostať osamotené na konci riadka.
+Do tejto kategórie patria aj spojky a, i.
+Jednopísmenové slová pripájame k~nasledujúcemu slovu pomocou
+tzv. \emph{nedeliteľnej medzery},
+čo je špeciálny netlačiteľný znak.
+V kódovaní UTF-8 má číslo 00A0 (ASCII 160)
+a~hovorí textovému procesoru,
+že na tomto mieste nesmie byť za žiadnych okolností
+koniec riadka.
+V programe MS Word ho zadáme použitím klávesovej skratky
+Ctrl-Shift-Medzera.
+V \LaTeX-u\ zapíšeme nedeliteľnú medzeru s~premenlivou šírkou
+ako symbol vlnovka (\verb|~|)
+Napríklad slovné spojenie \emph{v~priestore} napíšeme takto:
+\verb|v~priestore|.
+Na rozdiel od Wordu, \LaTeX\ takéto medzery nevkladá automaticky
+a treba to urobiť ručne.
+
+Existuje viacero medzier, ktoré sú tiež nedeliteľné a~majú pevnú šírku.
+Najpoužívanejšia tzv. úzka medzera a zapíšeme ju ako \verb|\,|.
+Takýto typ medzery používame pri zápise hodnôt fyzikálnych veličín a vkladáme ju medzi číslo a jednotku.
+\end{document}
