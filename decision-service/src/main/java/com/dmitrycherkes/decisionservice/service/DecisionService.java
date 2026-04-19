@@ -6,7 +6,6 @@ import com.dmitrycherkes.decisionservice.model.entity.WeatherForecast;
 import com.dmitrycherkes.decisionservice.repository.AlertHistoryRepository;
 import com.dmitrycherkes.decisionservice.repository.SubscriptionRuleRepository;
 import com.dmitrycherkes.decisionservice.repository.WeatherForecastRepository;
-import com.dmitrycherkes.decisionservice.utils.EntityFactory;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,19 +26,16 @@ public class DecisionService {
 
     @Scheduled(fixedDelayString = "30000")
     public void runDecisionProcess() {
-        List<SubscriptionRule> rules = EntityFactory.createSampleRules();
-        List<WeatherForecast> forecasts = EntityFactory.createSampleForecasts();
+        // todo: impl loop to iterate through all cities ids
+        List<Integer> allCitiesIds = subscriptionRuleRepository.getAllCityIds();
+        Integer cityId = 1;
 
-        subscriptionRuleRepository.saveAll(rules);
-        weatherForecastRepository.saveAll(forecasts);
+        List<SubscriptionRule> rules = subscriptionRuleRepository.getAllByCityId(cityId);
+        List<WeatherForecast> relevantForecasts = weatherForecastRepository.getAllByCityIdAndForecastTimeIsGreaterThan(cityId, OffsetDateTime.now());
 
         for (SubscriptionRule rule : rules) {
             log.info("Processing rule for city {}: {} {} {}",
                     rule.getCityId(), rule.getParameterType(), rule.getOperator(), rule.getValue1());
-
-            List<WeatherForecast> relevantForecasts = forecasts.stream()
-                    .filter(f -> f.getCityId().equals(rule.getCityId()))
-                    .toList();
 
             for (WeatherForecast forecast : relevantForecasts) {
                 if (isRuleSatisfied(rule, forecast)) {
