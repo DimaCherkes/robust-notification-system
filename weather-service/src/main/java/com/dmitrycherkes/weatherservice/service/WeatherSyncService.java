@@ -6,6 +6,7 @@ import com.dmitrycherkes.weatherservice.model.entity.MonitoredCity;
 import com.dmitrycherkes.weatherservice.model.entity.WeatherHourly;
 import com.dmitrycherkes.weatherservice.repository.MonitoredCityRepository;
 import com.dmitrycherkes.weatherservice.repository.WeatherHourlyRepository;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -30,12 +32,16 @@ public class WeatherSyncService {
     private final MonitoredCityRepository monitoredCityRepository;
     private final WeatherHourlyRepository weatherHourlyRepository;
     private final RestClient restClient;
+    private final SqsTemplate sqsTemplate;
 
     @Value("${app.weather.api-key}")
     private String apiKey;
 
     @Value("${app.weather.base-url}")
     private String baseUrl;
+
+    @Value("${app.sqs.decision-queue}")
+    private String decisionQueue;
 
     @Transactional
     public List<WeatherUpdateEvent> syncAllCities() {
@@ -51,6 +57,7 @@ public class WeatherSyncService {
                     WeatherUpdateEvent event = syncCityWeather(city);
                     if (event != null && !event.getChanges().isEmpty()) {
                         events.add(event);
+                        sendEventToQueue(event);
                     }
                 }
             } catch (Exception e) {
@@ -60,6 +67,11 @@ public class WeatherSyncService {
         
         log.info("Weather synchronization completed. Generated {} update events", events.size());
         return events;
+    }
+
+    private void sendEventToQueue(WeatherUpdateEvent event) {
+        log.info("Sending weather update event to queue {}: {}", decisionQueue, event.getCityName());
+        sqsTemplate.send(decisionQueue, event);
     }
 
     @CircuitBreaker(name = "weatherApi", fallbackMethod = "syncCityFallback")
@@ -91,7 +103,8 @@ public class WeatherSyncService {
         List<WeatherUpdateEvent.HourlyChange> changes = new ArrayList<>();
 
         for (WeatherApiResponseDTO.HourlyWeatherDTO dto : hourlyData) {
-            OffsetDateTime forecastTime = OffsetDateTime.ofInstant(Instant.ofEpochSecond(dto.getDt()), ZoneOffset.UTC);
+            OffsetDateTime forecastTime = OffsetDateTime.ofInstant(Instant.ofEpochSecond(dto.getDt()), ZoneOffset.UTC)
+                    .truncatedTo(ChronoUnit.HOURS);
             
             WeatherHourly weather = weatherHourlyRepository.findByCityCityIdAndForecastTime(city.getCityId(), forecastTime)
                     .orElse(WeatherHourly.builder()
