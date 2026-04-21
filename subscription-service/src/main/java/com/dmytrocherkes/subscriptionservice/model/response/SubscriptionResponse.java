@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 public class SubscriptionResponse {
     private UUID id;
-    private Long userId;
+    private Integer userId;
     private Integer cityId;
     private String cityName;
     private Integer notifyBeforeHours;

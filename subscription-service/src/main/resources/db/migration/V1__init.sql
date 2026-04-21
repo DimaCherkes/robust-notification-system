@@ -27,8 +27,8 @@ CREATE TABLE cities
 CREATE TABLE subscriptions
 (
     id                  UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    user_id             BIGINT NOT NULL, -- Reference to IAM User
-    city_id             INT    NOT NULL REFERENCES cities (id),
+    user_id             INT NOT NULL, -- Reference to IAM User
+    city_id             INT NOT NULL REFERENCES cities (id),
     notify_before_hours INT                      DEFAULT 0,
     is_active           BOOLEAN                  DEFAULT true,
     created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -96,7 +96,7 @@ BEGIN
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql
-SET search_path = v1_subscription_service, public;
+    SET search_path = v1_subscription_service, public;
 
 -- 6. Attach Trigger to subscriptions table
 CREATE TRIGGER trg_subscriptions_change

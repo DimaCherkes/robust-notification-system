@@ -15,7 +15,7 @@ import java.util.List;
 public class SubscriptionRequest {
 
     @NotNull(message = "User ID is required")
-    private Long userId;
+    private Integer userId;
 
     @NotNull(message = "City ID is required")
     private Integer cityId;

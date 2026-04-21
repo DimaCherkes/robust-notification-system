@@ -1,35 +1,55 @@
 package com.dmytrocherkes.subscriptionservice.mapper;
 
-import com.dmytrocherkes.subscriptionservice.model.dto.RuleDTO;
-import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
-import com.dmytrocherkes.subscriptionservice.model.response.SubscriptionResponse;
+import com.dmytrocherkes.subscriptionservice.model.entity.City;
 import com.dmytrocherkes.subscriptionservice.model.entity.Subscription;
 import com.dmytrocherkes.subscriptionservice.model.entity.SubscriptionRule;
-import org.mapstruct.*;
+import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
+import com.dmytrocherkes.subscriptionservice.model.response.SubscriptionResponse;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SubscriptionMapper {
+@AllArgsConstructor
+public class SubscriptionMapper {
 
-    @Mapping(target = "city.id", source = "cityId")
-    @Mapping(target = "rules", source = "rules")
-    Subscription toEntity(SubscriptionRequest request);
+    public static Subscription toEntity(SubscriptionRequest request, City city) {
+         Subscription subscription = Subscription.builder()
+                .userId(request.getUserId())
+                .city(city)
+                .notifyBeforeHours(request.getNotifyBeforeHours())
+                .isActive(request.getIsActive())
+                .build();
 
-    @Mapping(target = "cityId", source = "city.id")
-    @Mapping(target = "cityName", source = "city.name")
-    SubscriptionResponse toResponse(Subscription entity);
+        List<SubscriptionRule> rules = request.getRules().stream()
+                .map(dto -> {
+                    SubscriptionRule rule = SubscriptionRuleMapper.toEntity(dto);
+                    rule.setSubscription(subscription);
+                    return rule;
+                })
+                .toList();
 
-    List<SubscriptionResponse> toResponseList(List<Subscription> entities);
+        subscription.setRules(rules);
+        return subscription;
+    }
 
-    SubscriptionRule toRuleEntity(RuleDTO dto);
+    public static SubscriptionResponse toResponse(Subscription entity) {
+        return SubscriptionResponse.builder()
+                .id(entity.getId())
+                .userId(entity.getUserId())
+                .cityId(entity.getCity().getId())
+                .notifyBeforeHours(entity.getNotifyBeforeHours())
+                .isActive(entity.getIsActive())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .rules(entity.getRules().stream()
+                        .map(SubscriptionRuleMapper::toDTO)
+                        .toList())
+                .build();
+    }
 
-    RuleDTO toRuleDTO(SubscriptionRule entity);
-
-    @AfterMapping
-    default void setSubscriptionToRules(@MappingTarget Subscription subscription) {
-        if (subscription.getRules() != null) {
-            subscription.getRules().forEach(rule -> rule.setSubscription(subscription));
-        }
+    public static List<SubscriptionResponse> toResponseList(List<Subscription> entities) {
+         return entities.stream()
+                .map(SubscriptionMapper::toResponse)
+                .toList();
     }
 }
