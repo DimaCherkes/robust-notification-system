@@ -46,13 +46,20 @@ public class UserServiceImpl implements UserDetailsService {
     private final UserMapper userMapper;
     private final AccessValidator accessValidator;
 
-    @Transactional
     public UserDTO getById(@NonNull Integer userId) {
         User user = userRepository.findByIdAndDeletedFalse(userId)
                 .orElseThrow(() -> new NotFoundException(ApiErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         return userMapper.toDto(user);
     }
+
+    public UserDTO getByUsername(@NonNull String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException(ApiErrorMessage.USERNAME_NOT_FOUND.getMessage(username)));
+
+        return userMapper.toDto(user);
+    }
+
 
     public UserDTO createUser(@NonNull NewUserRequest newUserRequest) {
         if (userRepository.existsByEmail(newUserRequest.getEmail()))

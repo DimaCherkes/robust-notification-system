@@ -32,11 +32,18 @@ public class UserController {
     private final UserServiceImpl userService;
 
     @GetMapping(ApiPath.API_ID_PATH)
-    public ResponseEntity<DefaultApiResponse<UserDTO>> getUserById(
-            @PathVariable(name = "id") Integer userId) {
+    public ResponseEntity<DefaultApiResponse<UserDTO>> getUserById(@PathVariable(name = "id") Integer userId) {
         log.trace(ApiLogMessage.NAME_OF_CURRENT_METHOD.getValue(), ApiUtils.getMethodName());
 
         UserDTO user = userService.getById(userId);
+        return ResponseEntity.ok(DefaultApiResponse.createSuccessfulResponse(user));
+    }
+
+    @GetMapping(ApiPath.API_USERNAME_PATH)
+    public ResponseEntity<DefaultApiResponse<UserDTO>> getUserByUsername(@PathVariable String username) {
+        log.trace(ApiLogMessage.NAME_OF_CURRENT_METHOD.getValue(), ApiUtils.getMethodName());
+
+        UserDTO user = userService.getByUsername(username);
         return ResponseEntity.ok(DefaultApiResponse.createSuccessfulResponse(user));
     }
 
