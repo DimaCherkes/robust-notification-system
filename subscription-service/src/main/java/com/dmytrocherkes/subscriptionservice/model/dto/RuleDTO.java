@@ -5,6 +5,7 @@ import com.dmytrocherkes.subscriptionservice.model.enums.RuleOperator;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -22,7 +23,7 @@ public class RuleDTO {
     private RuleOperator operator;
 
     @NotNull(message = "Value 1 is required")
-    private Integer value1;
+    private BigDecimal value1;
 
-    private Integer value2;
+    private BigDecimal value2;
 }

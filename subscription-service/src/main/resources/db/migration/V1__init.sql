@@ -19,7 +19,7 @@ CREATE TABLE cities
     latitude                   DECIMAL(9, 6) NOT NULL,
     longitude                  DECIMAL(9, 6) NOT NULL,
     timezone                   VARCHAR(50),
-    status                     city_status DEFAULT 'NOT_USED',
+    city_status                VARCHAR(16) DEFAULT 'NOT_USED',
     active_subscriptions_count INT         DEFAULT 0
 );
 
@@ -70,7 +70,7 @@ BEGIN
 
     -- Update status based on the new count
     UPDATE cities
-    SET status = CASE
+    SET city_status = CASE
                      WHEN active_subscriptions_count > 0 THEN 'ON_USE'::city_status
                      ELSE 'NOT_USED'::city_status
         END
@@ -86,7 +86,7 @@ BEGIN
         WHERE id = OLD.city_id;
 
         UPDATE cities
-        SET status = CASE
+        SET city_status = CASE
                          WHEN active_subscriptions_count > 0 THEN 'ON_USE'::city_status
                          ELSE 'NOT_USED'::city_status
             END

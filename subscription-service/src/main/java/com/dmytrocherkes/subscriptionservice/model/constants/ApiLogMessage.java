@@ -7,11 +7,14 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ApiLogMessage {
+    // spring cloud OpenFeign
+    SEND_REQUEST_TO_IAM_SERVICE_USERNAME("Sending request to IAM service, username: {}"),
+
     // service log messages
     CREATING_SUBSCRIPTION("Creating subscription for user {} and city {}"),
     UPDATING_SUBSCRIPTION("Updating subscription with id: {}"),
     FETCHING_SUBSCRIPTION_BY_ID("Fetching subscription with id: {}"),
-    FETCHING_ALL_SUBSCRIPTIONS_BY_USER("Fetching all subscriptions for user: {}"),
+    FETCHING_ALL_SUBSCRIPTIONS_BY_USER_ID("Fetching all subscriptions for user ID: {}"),
     DELETING_SUBSCRIPTION("Deleting subscription with id: {}"),
 
     // controller log messages

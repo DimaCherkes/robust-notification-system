@@ -5,6 +5,7 @@ import com.dmytrocherkes.subscriptionservice.model.enums.RuleOperator;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -33,8 +34,9 @@ public class SubscriptionRule {
     private RuleOperator operator;
 
     @Column(name = "value_1", nullable = false)
-    private Integer value1;
+    private BigDecimal value1;
 
     @Column(name = "value_2")
-    private Integer value2;
+    private BigDecimal value2;
+
 }

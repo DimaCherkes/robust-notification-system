@@ -31,7 +31,7 @@ public class City {
     private String timezone;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "city_status")
+    @Column(name = "city_status")
     private CityStatus status;
 
     @Column(name = "active_subscriptions_count")
