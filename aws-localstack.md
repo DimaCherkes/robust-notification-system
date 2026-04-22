@@ -53,4 +53,36 @@ docker exec -it aws-infra awslocal sqs receive-message  \
   --region eu-central-1
 ```
 
+## Decision service infra
 
+Read message from the decision-consume-queue queue:
+```bash
+docker exec -it aws-infra awslocal sqs receive-message  \
+  --queue-url http://localhost:4566/000000000000/decision-consume-queue  \
+  --max-number-of-messages 10 \
+  --region eu-central-1
+```
+
+Delete all messages from the weather-consume-queue queue:
+```bash
+docker exec -it aws-infra awslocal sqs purge-queue \
+    --queue-url http://localhost:4566/000000000000/weather-consume-queue \
+    --region eu-central-1
+```
+
+## Weather service infra
+
+Read message from the weather-consume-queue queue:
+```bash
+docker exec -it aws-infra awslocal sqs receive-message  \
+  --queue-url http://localhost:4566/000000000000/weather-consume-queue  \
+  --max-number-of-messages 10 \
+  --region eu-central-1
+```
+
+Delete all messages from the weather-consume-queue queue:
+```bash
+docker exec -it aws-infra awslocal sqs purge-queue \
+    --queue-url http://localhost:4566/000000000000/weather-consume-queue \
+    --region eu-central-1
+```

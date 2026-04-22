@@ -5,11 +5,9 @@ import com.dmytrocherkes.subscriptionservice.model.entity.Subscription;
 import com.dmytrocherkes.subscriptionservice.model.entity.SubscriptionRule;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
 import com.dmytrocherkes.subscriptionservice.model.response.SubscriptionResponse;
-import lombok.AllArgsConstructor;
 
 import java.util.List;
 
-@AllArgsConstructor
 public class SubscriptionMapper {
 
     public static Subscription toEntity(SubscriptionRequest request, City city) {

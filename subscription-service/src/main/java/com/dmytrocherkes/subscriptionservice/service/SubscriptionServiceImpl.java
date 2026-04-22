@@ -8,6 +8,7 @@ import com.dmytrocherkes.subscriptionservice.model.dto.UserDTO;
 import com.dmytrocherkes.subscriptionservice.model.entity.City;
 import com.dmytrocherkes.subscriptionservice.model.entity.Subscription;
 import com.dmytrocherkes.subscriptionservice.model.entity.SubscriptionRule;
+import com.dmytrocherkes.subscriptionservice.model.enums.AwsMessageTypes;
 import com.dmytrocherkes.subscriptionservice.model.exception.ResourceNotFoundException;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
 import com.dmytrocherkes.subscriptionservice.model.response.IamApiResponse;
@@ -16,11 +17,13 @@ import com.dmytrocherkes.subscriptionservice.repository.CityRepository;
 import com.dmytrocherkes.subscriptionservice.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -31,6 +34,11 @@ public class SubscriptionServiceImpl {
     private final SubscriptionRepository subscriptionRepository;
     private final CityRepository cityRepository;
     private final IamClient iamClient;
+    private final SnsPublisher snsPublisher;
+    private final CityServiceImpl cityService;
+
+    @Value("${app.aws.sns.subscription-topic-arn}")
+    private String subscriptionTopicArn;
 
     @Transactional
     public SubscriptionResponse createSubscription(SubscriptionRequest request) {
@@ -39,10 +47,22 @@ public class SubscriptionServiceImpl {
         City city = cityRepository.findById(request.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.CITY_NOT_FOUND_BY_ID.getMessage(request.getCityId())));
 
-        Subscription subscription = SubscriptionMapper.toEntity(request, city);
+        // increment active subscriptions count
+        cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() + 1);
 
+        Subscription subscription = SubscriptionMapper.toEntity(request, city);
         Subscription savedSubscription = subscriptionRepository.save(subscription);
-        return SubscriptionMapper.toResponse(savedSubscription);
+        SubscriptionResponse subscriptionDto = SubscriptionMapper.toResponse(savedSubscription);
+        subscriptionDto.setCityName(city.getName());
+
+        // send event to decision-consume-queue
+        snsPublisher.publishMessage(
+                subscriptionTopicArn,
+                subscriptionDto,
+                Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_CREATED.getType())
+        );
+
+        return subscriptionDto;
     }
 
     @Transactional
@@ -62,6 +82,7 @@ public class SubscriptionServiceImpl {
         subscription.setUpdatedAt(OffsetDateTime.now());
 
         // Sync rules
+        // todo: check and test this logic
         subscription.getRules().clear();
         if (request.getRules() != null) {
             List<SubscriptionRule> newRules = request.getRules().stream()
@@ -102,6 +123,19 @@ public class SubscriptionServiceImpl {
         if (!subscriptionRepository.existsById(id)) {
             throw new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id));
         }
+
+        // todo: refactor
+        City city = subscriptionRepository.findById(id).get().getCity();
         subscriptionRepository.deleteById(id);
+
+        // decrement active subscriptions count
+        cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() - 1);
+
+        // send event to decision-consume-queue
+        snsPublisher.publishMessage(
+                subscriptionTopicArn,
+                id,
+                Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_DELETED.getType())
+        );
     }
 }
