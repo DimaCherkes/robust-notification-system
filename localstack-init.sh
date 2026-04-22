@@ -10,53 +10,51 @@ function awslocal() {
   aws --endpoint-url=http://localhost:4566 "$@"
 }
 
-# 1. SNS Topics (Producers)
-# Заменили точки на дефисы
+# SNS Topics (Producers)
 awslocal sns create-topic --name iam-produce-topic
 awslocal sns create-topic --name subscription-produce-topic
 
-# 2. SQS Queues (Consumers)
-# Заменили точки на дефисы
+# SQS Queues (Consumers)
 awslocal sqs create-queue --queue-name subscription-consume-queue
 awslocal sqs create-queue --queue-name weather-consume-queue
 awslocal sqs create-queue --queue-name decision-consume-queue
 awslocal sqs create-queue --queue-name notification-consume-queue
 
-# 3. Configure subscriptions SNS -> SQS (Fan-out)
+# Configure subscriptions SNS -> SQS (Fan-out)
 
-# 4. Configure IAM Topic
+## Configure IAM Topic
 
-# send message to subscription-queue when user delete account
+### send message to subscription-consume-queue when user delete account
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
     --protocol sqs \
     --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:subscription-consume-queue \
     --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\"]}"}'
 
-# send message to notification-queue when user create, update, delete account
+### send message to notification-queue when user create, update, delete account
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
     --protocol sqs \
     --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:notification-consume-queue \
     --attributes '{"FilterPolicy": "{\"action\": [\"user_create\", \"user_update\", \"user_delete\"]}"}'
 
-# send message to decision-queue when user delete account
+### send message to decision-queue when user delete account
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
     --protocol sqs \
     --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:decision-consume-queue \
     --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\"]}"}'
 
-# 5. Configure Subscription Topic
+##  Configure Subscription Topic
 
-# send message to weather-queue when city.active_status change (ON_USE, NOT_USED)
+### send message to weather-queue when city.active_status change (ON_USE (1), NOT_USED (1))
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:subscription-produce-topic \
     --protocol sqs \
     --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:weather-consume-queue \
     --attributes '{"FilterPolicy": "{\"action\": [\"city_activate\", \"city_deactivate\"]}"}'
 
-# send message to decision-queue when subscription created (1), updated (0), deleted (0)
+### send message to decision-queue when subscription created (1), updated (1), deleted (1)
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:subscription-produce-topic \
     --protocol sqs \

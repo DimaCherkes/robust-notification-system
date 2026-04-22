@@ -23,9 +23,6 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
@@ -36,15 +33,19 @@ public class Subscription {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
-
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<SubscriptionRule> rules = new ArrayList<>();
+
+    @Column(name = "created_at", updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
+    @Column(name = "created_by_user_id", nullable = false)
+    private Integer createdByUserId;
+
+    @Column(name = "updated_by_user_id")
+    private Integer updatedByUserId;
 }

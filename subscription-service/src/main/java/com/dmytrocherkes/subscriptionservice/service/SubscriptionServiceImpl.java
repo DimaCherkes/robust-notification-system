@@ -12,7 +12,7 @@ import com.dmytrocherkes.subscriptionservice.model.enums.AwsMessageTypes;
 import com.dmytrocherkes.subscriptionservice.model.exception.ResourceNotFoundException;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
 import com.dmytrocherkes.subscriptionservice.model.response.IamApiResponse;
-import com.dmytrocherkes.subscriptionservice.model.response.SubscriptionResponse;
+import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 import com.dmytrocherkes.subscriptionservice.repository.CityRepository;
 import com.dmytrocherkes.subscriptionservice.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class SubscriptionServiceImpl {
     private String subscriptionTopicArn;
 
     @Transactional
-    public SubscriptionResponse createSubscription(SubscriptionRequest request) {
+    public SubscriptionDTO createSubscription(SubscriptionRequest request) {
         log.trace(ApiLogMessage.CREATING_SUBSCRIPTION.getValue(), request.getUserId(), request.getCityId());
 
         City city = cityRepository.findById(request.getCityId())
@@ -52,8 +52,10 @@ public class SubscriptionServiceImpl {
 
         Subscription subscription = SubscriptionMapper.toEntity(request, city);
         Subscription savedSubscription = subscriptionRepository.save(subscription);
-        SubscriptionResponse subscriptionDto = SubscriptionMapper.toResponse(savedSubscription);
+        SubscriptionDTO subscriptionDto = SubscriptionMapper.toDTO(savedSubscription);
         subscriptionDto.setCityName(city.getName());
+        subscriptionDto.setCreatedAt(OffsetDateTime.now());
+        subscriptionDto.setUpdatedAt(OffsetDateTime.now());
 
         // send event to decision-consume-queue
         snsPublisher.publishMessage(
@@ -65,8 +67,9 @@ public class SubscriptionServiceImpl {
         return subscriptionDto;
     }
 
+    // you can't change the city of the subscription, you can only change the rules and notifyBeforeHours
     @Transactional
-    public SubscriptionResponse updateSubscription(UUID id, SubscriptionRequest request) {
+    public SubscriptionDTO updateSubscription(UUID id, SubscriptionRequest request) {
         log.trace(ApiLogMessage.UPDATING_SUBSCRIPTION.getValue(), id);
 
         Subscription subscription = subscriptionRepository.findById(id)
@@ -75,14 +78,13 @@ public class SubscriptionServiceImpl {
         City city = cityRepository.findById(request.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.CITY_NOT_FOUND_BY_ID.getMessage(request.getCityId())));
 
-        subscription.setUserId(request.getUserId());
+        subscription.setUpdatedByUserId(request.getUserId());
         subscription.setCity(city);
         subscription.setNotifyBeforeHours(request.getNotifyBeforeHours());
         subscription.setIsActive(request.getIsActive() != null ? request.getIsActive() : subscription.getIsActive());
         subscription.setUpdatedAt(OffsetDateTime.now());
 
         // Sync rules
-        // todo: check and test this logic
         subscription.getRules().clear();
         if (request.getRules() != null) {
             List<SubscriptionRule> newRules = request.getRules().stream()
@@ -96,27 +98,37 @@ public class SubscriptionServiceImpl {
         }
 
         Subscription updatedSubscription = subscriptionRepository.save(subscription);
-        return SubscriptionMapper.toResponse(updatedSubscription);
+        SubscriptionDTO updatedSubscriptionDTO = SubscriptionMapper.toDTO(updatedSubscription);
+
+        // send event to decision-consume-queue
+        snsPublisher.publishMessage(
+                subscriptionTopicArn,
+                updatedSubscriptionDTO,
+                Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_UPDATED.getType())
+        );
+
+        return updatedSubscriptionDTO;
     }
 
     @Transactional(readOnly = true)
-    public SubscriptionResponse getSubscriptionById(UUID id) {
+    public SubscriptionDTO getSubscriptionById(UUID id) {
         log.trace(ApiLogMessage.FETCHING_SUBSCRIPTION_BY_ID.getValue(), id);
         Subscription subscription = subscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
-        return SubscriptionMapper.toResponse(subscription);
+        return SubscriptionMapper.toDTO(subscription);
     }
 
     @Transactional(readOnly = true)
-    public List<SubscriptionResponse> getAllByUsername(String username) {
+    public List<SubscriptionDTO> getAllByUsername(String username) {
         log.trace(ApiLogMessage.SEND_REQUEST_TO_IAM_SERVICE_USERNAME.getValue(), username);
         IamApiResponse<UserDTO> userByUsername = iamClient.getUserByUsername(username);
 
         log.info(ApiLogMessage.FETCHING_ALL_SUBSCRIPTIONS_BY_USER_ID.getValue(), userByUsername.getBody().getId());
-        List<Subscription> subscriptions = subscriptionRepository.findAllByUserId(userByUsername.getBody().getId());
+        List<Subscription> subscriptions = subscriptionRepository.findAllByCreatedByUserId(userByUsername.getBody().getId());
         return SubscriptionMapper.toResponseList(subscriptions);
     }
 
+    // todo: impl soft delete
     @Transactional
     public void deleteSubscription(UUID id) {
         log.trace(ApiLogMessage.DELETING_SUBSCRIPTION.getValue(), id);

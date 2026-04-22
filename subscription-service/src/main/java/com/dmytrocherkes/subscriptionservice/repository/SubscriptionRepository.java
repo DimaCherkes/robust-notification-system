@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
 
-    List<Subscription> findAllByUserId(Integer userId);
+    List<Subscription> findAllByCreatedByUserId(Integer userId);
 
 }

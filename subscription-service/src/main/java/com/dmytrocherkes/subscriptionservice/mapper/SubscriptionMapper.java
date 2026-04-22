@@ -4,15 +4,16 @@ import com.dmytrocherkes.subscriptionservice.model.entity.City;
 import com.dmytrocherkes.subscriptionservice.model.entity.Subscription;
 import com.dmytrocherkes.subscriptionservice.model.entity.SubscriptionRule;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
-import com.dmytrocherkes.subscriptionservice.model.response.SubscriptionResponse;
+import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 
 import java.util.List;
 
 public class SubscriptionMapper {
 
     public static Subscription toEntity(SubscriptionRequest request, City city) {
-         Subscription subscription = Subscription.builder()
-                .userId(request.getUserId())
+        Subscription subscription = Subscription.builder()
+                .createdByUserId(request.getUserId())
+                .updatedByUserId(request.getUserId())
                 .city(city)
                 .notifyBeforeHours(request.getNotifyBeforeHours())
                 .isActive(request.getIsActive())
@@ -30,24 +31,25 @@ public class SubscriptionMapper {
         return subscription;
     }
 
-    public static SubscriptionResponse toResponse(Subscription entity) {
-        return SubscriptionResponse.builder()
+    public static SubscriptionDTO toDTO(Subscription entity) {
+        return SubscriptionDTO.builder()
                 .id(entity.getId())
-                .userId(entity.getUserId())
                 .cityId(entity.getCity().getId())
                 .notifyBeforeHours(entity.getNotifyBeforeHours())
-                .isActive(entity.getIsActive())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
                 .rules(entity.getRules().stream()
                         .map(SubscriptionRuleMapper::toDTO)
                         .toList())
+
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .createdByUserId(entity.getCreatedByUserId())
+                .updatedByUserId(entity.getUpdatedByUserId())
                 .build();
     }
 
-    public static List<SubscriptionResponse> toResponseList(List<Subscription> entities) {
-         return entities.stream()
-                .map(SubscriptionMapper::toResponse)
+    public static List<SubscriptionDTO> toResponseList(List<Subscription> entities) {
+        return entities.stream()
+                .map(SubscriptionMapper::toDTO)
                 .toList();
     }
 }

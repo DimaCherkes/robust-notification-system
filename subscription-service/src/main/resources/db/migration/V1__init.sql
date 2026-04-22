@@ -17,12 +17,13 @@ CREATE TABLE cities
 CREATE TABLE subscriptions
 (
     id                  UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    user_id             INT NOT NULL, -- Reference to IAM User
     city_id             INT NOT NULL REFERENCES cities (id),
     notify_before_hours INT                      DEFAULT 0,
     is_active           BOOLEAN                  DEFAULT true,
     created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_by_user_id  INT NOT NULL, -- Reference to IAM User
+    updated_by_user_id  INT NOT NULL  -- Reference to IAM User
 );
 
 -- Subscription Rules (Flexible conditions)

@@ -1,6 +1,5 @@
-package com.dmytrocherkes.subscriptionservice.model.response;
+package com.dmytrocherkes.subscriptionservice.model.dto;
 
-import com.dmytrocherkes.subscriptionservice.model.dto.RuleDTO;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -12,14 +11,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscriptionResponse {
+public class SubscriptionDTO {
     private UUID id;
-    private Integer userId;
     private Integer cityId;
     private String cityName;
     private Integer notifyBeforeHours;
-    private Boolean isActive;
+    private List<RuleDTO> rules;
+
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-    private List<RuleDTO> rules;
+    private Integer createdByUserId;
+    private Integer updatedByUserId;
 }
