@@ -25,30 +25,42 @@ awslocal sqs create-queue --queue-name notification-consume-queue
 # 3. Configure subscriptions SNS -> SQS (Fan-out)
 
 # 4. Configure IAM Topic
-awslocal sns subscribe \
-    --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
-    --protocol sqs \
-    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:subscription-consume-queue
 
+# send message to subscription-queue when user delete account
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
     --protocol sqs \
-    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:notification-consume-queue
+    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:subscription-consume-queue \
+    --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\"]}"}'
 
+# send message to notification-queue when user create, update, delete account
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
     --protocol sqs \
-    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:decision-consume-queue
+    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:notification-consume-queue \
+    --attributes '{"FilterPolicy": "{\"action\": [\"user_create\", \"user_update\", \"user_delete\"]}"}'
+
+# send message to decision-queue when user delete account
+awslocal sns subscribe \
+    --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
+    --protocol sqs \
+    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:decision-consume-queue \
+    --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\"]}"}'
 
 # 5. Configure Subscription Topic
-awslocal sns subscribe \
-    --topic-arn arn:aws:sns:eu-central-1:000000000000:subscription-produce-topic \
-    --protocol sqs \
-    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:weather-consume-queue
 
+# send message to weather-queue when city.active_status change (ON_USE, NOT_USED)
 awslocal sns subscribe \
     --topic-arn arn:aws:sns:eu-central-1:000000000000:subscription-produce-topic \
     --protocol sqs \
-    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:decision-consume-queue
+    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:weather-consume-queue \
+    --attributes '{"FilterPolicy": "{\"action\": [\"city_activate\", \"city_deactivate\"]}"}'
+
+# send message to decision-queue when subscription created (1), updated (0), deleted (0)
+awslocal sns subscribe \
+    --topic-arn arn:aws:sns:eu-central-1:000000000000:subscription-produce-topic \
+    --protocol sqs \
+    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:decision-consume-queue \
+    --attributes '{"FilterPolicy": "{\"action\": [\"subscription_created\", \"subscription_updated\", \"subscription_deleted\"]}"}'
 
 echo "Infrastructure initialized successfully."
