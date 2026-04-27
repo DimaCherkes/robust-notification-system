@@ -15,14 +15,17 @@ public enum ApiLogMessage {
     UPDATING_SUBSCRIPTION("Updating subscription with id: {}"),
     FETCHING_SUBSCRIPTION_BY_ID("Fetching subscription with id: {}"),
     FETCHING_ALL_SUBSCRIPTIONS_BY_USER_ID("Fetching all subscriptions for user ID: {}"),
-    DELETING_SUBSCRIPTION("Deleting subscription with id: {}"),
+    SOFT_DELETING_SUBSCRIPTION("Soft deleting subscription with id: {}"),
+    HARD_DELETING_SUBSCRIPTION("Hard deleting subscription with id: {}"),
 
     // controller log messages
     REST_CREATE_SUBSCRIPTION("REST request to create subscription for user {}"),
     REST_GET_SUBSCRIPTION_BY_ID("REST request to get subscription: {}"),
     REST_GET_SUBSCRIPTIONS_BY_USER("REST request to get subscriptions for user: {}"),
     REST_UPDATE_SUBSCRIPTION("REST request to update subscription: {}"),
-    REST_DELETE_SUBSCRIPTION("REST request to delete subscription: {}");
+    REST_SOFT_DELETE_SUBSCRIPTION("REST request to soft delete subscription: {}"),
+    REST_HARD_DELETE_SUBSCRIPTION("REST request to hard delete subscription: {}"),
+    ;
 
     private final String value;
 }

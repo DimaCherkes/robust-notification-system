@@ -3,7 +3,7 @@ package com.dmytrocherkes.subscriptionservice.controller;
 import com.dmytrocherkes.subscriptionservice.model.constants.ApiLogMessage;
 import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
-import com.dmytrocherkes.subscriptionservice.service.SubscriptionServiceImpl;
+import com.dmytrocherkes.subscriptionservice.service.SubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubscriptionController {
 
-    private final SubscriptionServiceImpl subscriptionService;
+    private final SubscriptionService subscriptionService;
 
     @PostMapping("/create")
     public ResponseEntity<SubscriptionDTO> create(@Valid @RequestBody SubscriptionRequest request) {
@@ -51,10 +51,17 @@ public class SubscriptionController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        log.trace(ApiLogMessage.REST_DELETE_SUBSCRIPTION.getValue(), id);
-        subscriptionService.deleteSubscription(id);
+    @DeleteMapping("/soft/{id}")
+    public ResponseEntity<Void> softDelete(@PathVariable UUID id) {
+        log.trace(ApiLogMessage.REST_SOFT_DELETE_SUBSCRIPTION.getValue(), id);
+        subscriptionService.softDeleteSubscription(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/soft/{id}")
+    public ResponseEntity<Void> hardDelete(@PathVariable UUID id) {
+        log.trace(ApiLogMessage.REST_HARD_DELETE_SUBSCRIPTION.getValue(), id);
+        subscriptionService.hardDeleteSubscription(id);
         return ResponseEntity.noContent().build();
     }
 }

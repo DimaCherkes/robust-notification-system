@@ -29,13 +29,13 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SubscriptionServiceImpl {
+public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final CityRepository cityRepository;
     private final IamClient iamClient;
     private final SnsPublisher snsPublisher;
-    private final CityServiceImpl cityService;
+    private final CityService cityService;
 
     @Value("${app.aws.sns.subscription-topic-arn}")
     private String subscriptionTopicArn;
@@ -72,7 +72,7 @@ public class SubscriptionServiceImpl {
     public SubscriptionDTO updateSubscription(UUID id, SubscriptionRequest request) {
         log.trace(ApiLogMessage.UPDATING_SUBSCRIPTION.getValue(), id);
 
-        Subscription subscription = subscriptionRepository.findById(id)
+        Subscription subscription = subscriptionRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
 
         City city = cityRepository.findById(request.getCityId())
@@ -113,7 +113,7 @@ public class SubscriptionServiceImpl {
     @Transactional(readOnly = true)
     public SubscriptionDTO getSubscriptionById(UUID id) {
         log.trace(ApiLogMessage.FETCHING_SUBSCRIPTION_BY_ID.getValue(), id);
-        Subscription subscription = subscriptionRepository.findById(id)
+        Subscription subscription = subscriptionRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
         return SubscriptionMapper.toDTO(subscription);
     }
@@ -128,17 +128,36 @@ public class SubscriptionServiceImpl {
         return SubscriptionMapper.toResponseList(subscriptions);
     }
 
-    // todo: impl soft delete
     @Transactional
-    public void deleteSubscription(UUID id) {
-        log.trace(ApiLogMessage.DELETING_SUBSCRIPTION.getValue(), id);
-        if (!subscriptionRepository.existsById(id)) {
-            throw new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id));
-        }
+    public void softDeleteSubscription(UUID id) {
+        log.trace(ApiLogMessage.SOFT_DELETING_SUBSCRIPTION.getValue(), id);
+        Subscription subscription = subscriptionRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
 
-        // todo: refactor
-        City city = subscriptionRepository.findById(id).get().getCity();
-        subscriptionRepository.deleteById(id);
+        subscription.setIsActive(false);
+        subscription.setUpdatedAt(OffsetDateTime.now());
+        subscriptionRepository.save(subscription);
+
+        // decrement active subscriptions count
+        City city = subscription.getCity();
+        cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() - 1);
+
+        // send event to decision-consume-queue
+        snsPublisher.publishMessage(
+                subscriptionTopicArn,
+                id,
+                Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_DELETED.getType())
+        );
+    }
+
+    @Transactional
+    public void hardDeleteSubscription(UUID id) {
+        log.trace(ApiLogMessage.HARD_DELETING_SUBSCRIPTION.getValue(), id);
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
+
+        City city = subscription.getCity();
+        subscriptionRepository.hardDeleteById(id);
 
         // decrement active subscriptions count
         cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() - 1);

@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CityServiceImpl {
+public class CityService {
 
     private final SnsPublisher snsPublisher;
 
