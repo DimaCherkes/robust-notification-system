@@ -1,24 +1,27 @@
 -- Decision Service Database Schema
 
--- 1. Replica of rules from Subscription Service
--- We store everything necessary, including userId, to avoid unnecessary synchronous calls to IAM Service
-CREATE TABLE subscription_rules
+-- Replica for Subscription Service data (for local decision)
+CREATE TABLE subscriptions
 (
-    id                  SERIAL PRIMARY KEY,                 -- Original ID from Subscription Service
-    subscription_id     INT            NOT NULL,
-    user_id             INT            NOT NULL,            -- Replicated to construct the notification command
-    city_id             INT            NOT NULL,
-    parameter_type      VARCHAR(50)    NOT NULL,            -- e.g., TEMPERATURE, RAIN, WIND_SPEED
-    operator            VARCHAR(20)    NOT NULL,            -- e.g., GREATER_THAN, LESS_THAN, BETWEEN
-    value_1             DECIMAL(10, 2) NOT NULL,
-    value_2             DECIMAL(10, 2),                     -- Used only for the 'BETWEEN' operator
-    notify_before_hours INT                      DEFAULT 0, -- How many hours before the predicted event to notify
-    last_synced_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    id                  UUID PRIMARY KEY,
+    user_id             INT NOT NULL,
+    city_id             INT NOT NULL,
+    notify_before_hours INT                      DEFAULT 0,
+    last_synced_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Replica of weather forecast data from Weather Service
--- Optimized for fast lookups by city and forecast timestamp
+CREATE TABLE subscription_rules
+(
+    id              UUID PRIMARY KEY,        -- Original ID from Subscription Service
+    subscription_id UUID           NOT NULL,
+    parameter_type  VARCHAR(50)    NOT NULL, -- e.g., TEMPERATURE, RAIN, WIND_SPEED
+    operator        VARCHAR(20)    NOT NULL, -- e.g., GREATER_THAN, LESS_THAN, BETWEEN
+    value_1         DECIMAL(10, 2) NOT NULL,
+    value_2         DECIMAL(10, 2),
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Replica of weather forecast data from Weather Service
 CREATE TABLE weather_forecast
 (
     id            SERIAL PRIMARY KEY,
@@ -34,7 +37,7 @@ CREATE TABLE weather_forecast
     UNIQUE (city_id, forecast_time)                  -- Ensures only one snapshot per city per hour
 );
 
--- 3. Alert History (Critical for Idempotency)
+-- Alert History
 -- Prevents spamming: "One notification per rule per specific forecast hour"
 CREATE TABLE alert_history
 (
@@ -47,13 +50,8 @@ CREATE TABLE alert_history
     UNIQUE (rule_id, forecast_time)                  -- Unique key to block duplicate alerts
 );
 
--- 4. Performance Indexes
--- Needed for the Decision Engine to quickly find rules applicable to a specific city
-CREATE INDEX idx_rules_city_lookup ON subscription_rules (city_id);
--- Needed to find the closest weather forecast for the notification time window
-CREATE INDEX idx_weather_time_lookup ON weather_forecast (city_id, forecast_time);
-
 -- Table comments for documentation
-COMMENT ON TABLE subscription_rules IS 'Local replica of user rules from Subscription Service';
+COMMENT ON TABLE subscriptions IS 'Local replica of user subscriptions from Subscription Service, used for decision logic';
+COMMENT ON TABLE subscription_rules IS 'Local replica of subscription rules from Subscription Service, used for decision logic';
 COMMENT ON TABLE weather_forecast IS 'Local replica of hourly weather data from Weather Service';
 COMMENT ON TABLE alert_history IS 'Prevents duplicate notifications for the same rule and forecast point';

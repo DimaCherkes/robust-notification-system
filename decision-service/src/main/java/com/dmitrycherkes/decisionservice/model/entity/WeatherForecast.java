@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
+@Table(name = "weather_forecast")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class WeatherForecast {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "city_id", nullable = false)
     private Integer cityId;
@@ -25,21 +26,18 @@ public class WeatherForecast {
     @Column(name = "forecast_time", nullable = false)
     private OffsetDateTime forecastTime;
 
-    @Column(precision = 5, scale = 2)
     private BigDecimal temp;
-
     private Integer humidity;
 
-    @Column(name = "wind_speed", precision = 5, scale = 2)
+    @Column(name = "wind_speed")
     private BigDecimal windSpeed;
 
-    @Column(precision = 3, scale = 2)
     private BigDecimal pop;
 
-    @Column(name = "weather_main", length = 50)
+    @Column(name = "weather_main")
     private String weatherMain;
 
     @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 }

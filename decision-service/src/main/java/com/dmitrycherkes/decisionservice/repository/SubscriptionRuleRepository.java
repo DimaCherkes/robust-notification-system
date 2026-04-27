@@ -2,13 +2,10 @@ package com.dmitrycherkes.decisionservice.repository;
 
 import com.dmitrycherkes.decisionservice.model.entity.SubscriptionRule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.UUID;
 
-public interface SubscriptionRuleRepository extends JpaRepository<SubscriptionRule, Integer> {
-
-    List<SubscriptionRule> getAllByCityId(Integer cityId);
-
-    List<Integer> getAllCityIds();
-
+@Repository
+public interface SubscriptionRuleRepository extends JpaRepository<SubscriptionRule, UUID> {
 }

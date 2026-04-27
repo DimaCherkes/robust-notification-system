@@ -5,8 +5,10 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
+@Table(name = "alert_history")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,11 +18,10 @@ public class AlertHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rule_id", nullable = false)
-    private SubscriptionRule rule;
+    @Column(name = "rule_id", nullable = false)
+    private UUID ruleId;
 
     @Column(name = "forecast_time", nullable = false)
     private OffsetDateTime forecastTime;

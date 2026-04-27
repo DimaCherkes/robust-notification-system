@@ -1,6 +1,6 @@
 # Plán kapitol bakalárskej práce: Robustný systém pre rozposielanie upozornení
 
-1. Úvod
+1. Teoretické východiská a analýza
     * 1.1 Význam robustnosti v ére distribuovaných systémov:
         * Paradigma "všetko sa môže pokaziť": Prechod od monolitickej stability k distribuovanej komplexnosti.
         * Očakávania od moderného softvéru: Korektnosť, výkon a bezpečnosť pri nepredvídateľnom správaní okolia.
@@ -16,7 +16,7 @@
         * Chaos Engineering: Metodológia úmyselného vstrekovania chýb pre validáciu robustnosti (napr. princípy Chaos Monkey).
     * 1.5 Ciele práce a hlavná téza: Implementácia systému schopného "postupnej degradácie" (Graceful Degradation) pri kritických výpadkoch komponentov.
 
-2. Teoretické východiská a analýza
+Merge 1 and 2 chapters 
     * 2.1 Monolit vs. Mikroslužby:
         * Výhody monolitu: Jednoduchosť nasadenia, absencia sieťových oneskorení, transakčná celistvosť (ACID).
         * Výhody mikroslužieb: Izolácia porúch (Fault Isolation), nezávislé škálovanie, technologická flexibilita.
@@ -32,13 +32,14 @@
         * SQS: Plne spravovaná (Managed) služba, nulové náklady na údržbu, jednoduchosť konfigurácie „out-of-the-box“.
         * Odôvodnenie výberu: Voľba SQS na základe kritéria minimalizácie operačných rizík a jednoduchosti nastavenia pre projekt.
 
-3. Funkčná špecifikácia aplikácie
+3.  špecifikácia aplikácie
     * 3.1 Používateľské roly: Registrácia, správa prahových hodnôt (pravidiel).
     * 3.2 Hlavné scenáre:
         * Zber údajov o počasí (každých 15 minút).
         * Kontrola podmienok podľa prediktívneho modelu (N hodín pred udalosťou).
         * Garantované odoslanie upozornenia pri aktivácii triggera.
-    * 3.3 Požiadavky na odolnosť: Systém musí zostať funkčný aj pri výpadku ktorejkoľvek služby (okrem databázy cieľovej služby).
+    * 3.3 Požiadavky na odolnosť: Systém musí zostať funkčný aj pri výpadku ktorejkoľvek služby.
+    * 3.4 Požiadavky na funckionalitu systemu.
 
 4. Architektonický návrh – zameranie na rezilienciu (odolnosť)
     * 4.1 Topológia systému: Schéma interakcie cez SNS/SQS (Fan-out).
@@ -53,12 +54,16 @@
     * 5.2 Konfigurácia infraštruktúry: Použitie LocalStack na simuláciu SQS/SNS v Docker kontajneroch.
     * 5.3 Implementácia asynchrónnych listenerov: Nastavenie Long Polling pre optimalizáciu zdrojov.
 
-6. Overenie a testovanie degradácie
+6. Frontend
+    * 6.1 Jednoduché webové rozhranie 
+    * 6.2 Použití React.js 
+
+7. Overenie a testovanie degradácie
     * 6.1 Simulácia výpadkov (Chaos Engineering light): Čo sa stane, ak „zastavíme“ kontajner Weather Service? (Decision Service musí pokračovať v práci so starými údajmi).
     * 6.2 Testovanie frontov (queues): Kontrola hromadenia správ v SQS pri vypnutej službe Notification Service a ich následné spracovanie po obnovení.
     * 6.3 Metriky: Čas reakcie systému na udalosť v podmienkach záťaže.
 
-7. Záver
+8. Záver
     * Potvrdenie, že EDA a SQS umožnili vytvoriť systém odolný voči kaskádovým poruchám.
     * Budúci rozvoj: Pridanie nových kanálov (Telegram, SMS), podpora zložitých pravidiel (Machine Learning pre predpovede).
 
