@@ -1,7 +1,9 @@
 package com.dmitrycherkes.decisionservice.listener;
 
 import com.dmitrycherkes.decisionservice.model.dto.SubscriptionMessageDTO;
+import com.dmitrycherkes.decisionservice.model.dto.WeatherUpdateEvent;
 import com.dmitrycherkes.decisionservice.service.SubscriptionSyncService;
+import com.dmitrycherkes.decisionservice.service.WeatherForecastService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.annotation.SqsListener;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class SubscriptionListener {
 
     private final SubscriptionSyncService subscriptionSyncService;
+    private final WeatherForecastService weatherForecastService;
     private final ObjectMapper objectMapper;
 
     @SqsListener("${app.aws.sqs.subscription-queue-name}")
@@ -62,9 +65,10 @@ public class SubscriptionListener {
                     subscriptionSyncService.deleteSubscription(UUID.fromString(idStr));
                 }
                 case "weather_update" -> {
-                    // Logic for weather update will go here
-                    // todo: add logic
-                    log.info("Weather update received. Skipping processing for now.");
+                    if (root == null) root = objectMapper.readTree(rawPayload);
+                    String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
+                    WeatherUpdateEvent event = objectMapper.readValue(messageContent, WeatherUpdateEvent.class);
+                    weatherForecastService.upsertWeatherForecast(event);
                 }
                 default -> log.warn("Unknown action type: {}", action);
             }
