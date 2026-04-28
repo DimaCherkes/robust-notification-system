@@ -53,7 +53,8 @@ public class AwsConfig {
         return SqsMessageListenerContainerFactory
                 .builder()
                 .sqsAsyncClient(sqsAsyncClient)
-                .configure(options -> options.messageConverter(new SqsMessagingMessageConverter()))
+                .configure(options -> options
+                        .messageConverter(new SqsMessagingMessageConverter()))
                 .build();
     }
 }

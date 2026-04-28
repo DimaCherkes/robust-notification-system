@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -21,38 +22,49 @@ public class SubscriptionListener {
     private final ObjectMapper objectMapper;
 
     @SqsListener("${app.aws.sqs.subscription-queue-name}")
-    public void listen(@Payload String rawPayload) {
+    public void listen(@Payload String rawPayload, 
+                       @Header(value = "action", required = false) String sqsHeaderAction) {
         log.debug("Received raw payload: {}", rawPayload);
 
         try {
-            JsonNode root = objectMapper.readTree(rawPayload);
-            
-            // 1. Extract Action from SNS MessageAttributes or root
-            String action = null;
-            if (root.has("MessageAttributes") && root.get("MessageAttributes").has("action")) {
-                action = root.get("MessageAttributes").get("action").get("Value").asText();
-            } else if (root.has("action")) {
-                action = root.get("action").asText();
+            // 1. Determine the action (either from SQS header or from SNS JSON body)
+            String action = sqsHeaderAction;
+            JsonNode root = null;
+
+            if (action == null) {
+                root = objectMapper.readTree(rawPayload);
+                if (root.has("MessageAttributes") && root.get("MessageAttributes").has("action")) {
+                    action = root.get("MessageAttributes").get("action").get("Value").asText();
+                } else if (root.has("action")) {
+                    action = root.get("action").asText();
+                }
             }
 
             if (action == null) {
-                log.warn("Could not find 'action' in message payload");
+                log.warn("Could not find 'action' in message headers or payload");
                 return;
             }
 
-            // 2. Extract Message content (SNS wraps it in 'Message' field as string)
-            String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
-            
-            log.info("Processing action: {} for payload: {}", action, messageContent);
+            log.info("Processing action: {}", action);
 
+            // 2. Handle different actions
             switch (action) {
                 case "subscription_created", "subscription_updated" -> {
+                    if (root == null) root = objectMapper.readTree(rawPayload);
+                    String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
                     SubscriptionMessageDTO dto = objectMapper.readValue(messageContent, SubscriptionMessageDTO.class);
                     subscriptionSyncService.upsertSubscription(dto);
                 }
                 case "subscription_deleted" -> {
+                    if (root == null) root = objectMapper.readTree(rawPayload);
+                    String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
                     String idStr = messageContent.replace("\"", "").trim();
                     subscriptionSyncService.deleteSubscription(UUID.fromString(idStr));
+                }
+                case "weather_update" -> {
+                    // Logic for weather update will go here
+                    // todo: add logic
+                    log.info("Weather update received. Skipping processing for now.");
                 }
                 default -> log.warn("Unknown action type: {}", action);
             }

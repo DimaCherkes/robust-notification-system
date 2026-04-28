@@ -6,6 +6,7 @@ import com.dmitrycherkes.weatherservice.model.entity.MonitoredCity;
 import com.dmitrycherkes.weatherservice.model.entity.WeatherHourly;
 import com.dmitrycherkes.weatherservice.repository.MonitoredCityRepository;
 import com.dmitrycherkes.weatherservice.repository.WeatherHourlyRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class WeatherSyncService {
     private final WeatherHourlyRepository weatherHourlyRepository;
     private final RestClient restClient;
     private final SqsTemplate sqsTemplate;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.weather.api-key}")
     private String apiKey;
@@ -71,7 +73,16 @@ public class WeatherSyncService {
 
     private void sendEventToQueue(WeatherUpdateEvent event) {
         log.info("Sending weather update event to queue {}: {}", decisionQueue, event.getCityName());
-        sqsTemplate.send(decisionQueue, event);
+        try {
+            String payload = objectMapper.writeValueAsString(event);
+            sqsTemplate.send(to -> to
+                    .queue(decisionQueue)
+                    .payload(payload)
+                    .header("action", "weather_update")
+            );
+        } catch (Exception e) {
+            log.error("Failed to serialize weather update event", e);
+        }
     }
 
     @CircuitBreaker(name = "weatherApi", fallbackMethod = "syncCityFallback")
