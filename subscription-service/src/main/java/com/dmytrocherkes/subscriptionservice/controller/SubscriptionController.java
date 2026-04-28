@@ -58,7 +58,7 @@ public class SubscriptionController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/soft/{id}")
+    @DeleteMapping("/hard/{id}")
     public ResponseEntity<Void> hardDelete(@PathVariable UUID id) {
         log.trace(ApiLogMessage.REST_HARD_DELETE_SUBSCRIPTION.getValue(), id);
         subscriptionService.hardDeleteSubscription(id);

@@ -18,7 +18,7 @@ public class AlertHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "rule_id", nullable = false)
     private UUID ruleId;

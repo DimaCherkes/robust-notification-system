@@ -42,7 +42,7 @@ CREATE TABLE weather_forecast
 CREATE TABLE alert_history
 (
     id            SERIAL PRIMARY KEY,
-    rule_id       INT                      NOT NULL REFERENCES subscription_rules (id) ON DELETE CASCADE,
+    rule_id       UUID                     NOT NULL REFERENCES subscription_rules (id) ON DELETE CASCADE,
     forecast_time TIMESTAMP WITH TIME ZONE NOT NULL, -- The forecast timestamp that triggered the alert
     triggered_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
