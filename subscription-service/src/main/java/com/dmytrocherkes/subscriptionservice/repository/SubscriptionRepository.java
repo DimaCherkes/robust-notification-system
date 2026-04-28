@@ -21,7 +21,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     Optional<Subscription> findByIdAndIsActiveTrue(UUID id);
 
     @Modifying
-    @Query(value = "DELETE FROM subscriptions WHERE id = :id", nativeQuery = true)
+    @Query(value = "DELETE FROM v1_subscription_service.subscriptions WHERE id = :id", nativeQuery = true)
     void hardDeleteById(@Param("id") UUID id);
 
 }

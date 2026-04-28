@@ -9,8 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,13 +32,15 @@ public class SubscriptionSyncService {
         subscription.setCityId(dto.getCityId());
         subscription.setNotifyBeforeHours(dto.getNotifyBeforeHours());
         
-        // Clear old rules and add new ones
-        if (subscription.getRules() != null) {
+        // Clear old rules and add new ones (proper way for orphanRemoval = true)
+        if (subscription.getRules() == null) {
+            subscription.setRules(new ArrayList<>());
+        } else {
             subscription.getRules().clear();
         }
         
         if (dto.getRules() != null) {
-            subscription.setRules(dto.getRules().stream()
+            List<SubscriptionRule> newRules = dto.getRules().stream()
                     .map(r -> SubscriptionRule.builder()
                             .id(r.getId())
                             .subscription(subscription)
@@ -46,7 +49,8 @@ public class SubscriptionSyncService {
                             .value1(r.getValue1())
                             .value2(r.getValue2())
                             .build())
-                    .collect(Collectors.toList()));
+                    .toList();
+            subscription.getRules().addAll(newRules);
         }
         
         subscriptionRepository.save(subscription);
