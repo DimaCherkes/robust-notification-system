@@ -14,8 +14,6 @@ import java.util.UUID;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
 
-//    List<Subscription> findAllByCreatedByUserIdAndIsActiveTrue(Integer userId);
-
     List<Subscription> findAllByCreatedByUserId(Integer userId);
 
     Optional<Subscription> findByIdAndIsActiveTrue(UUID id);

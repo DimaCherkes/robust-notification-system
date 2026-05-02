@@ -3,6 +3,7 @@ package com.dmytrocherkes.subscriptionservice.controller;
 import com.dmytrocherkes.subscriptionservice.model.constants.ApiLogMessage;
 import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
+import com.dmytrocherkes.subscriptionservice.security.SecurityUtils;
 import com.dmytrocherkes.subscriptionservice.service.SubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,8 @@ public class SubscriptionController {
 
     @GetMapping("/all")
     public ResponseEntity<List<SubscriptionDTO>> getAllForCurrentUser() {
-        log.trace(ApiLogMessage.REST_GET_SUBSCRIPTIONS_BY_USER.getValue(), "current user");
+        String currentUserEmail = SecurityUtils.getCurrentUserEmail();
+        log.trace(ApiLogMessage.REST_GET_SUBSCRIPTIONS_BY_USER.getValue(), currentUserEmail);
         List<SubscriptionDTO> response = subscriptionService.getAllForCurrentUser();
         return ResponseEntity.ok(response);
     }
