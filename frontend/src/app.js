@@ -17,21 +17,22 @@ async function router() {
 
     const route = routes[hash] || routes['#/login'];
 
-    // Route Guard
+    // Route Guard: Redirect to login if route is private and user is not authenticated
     if (route.private && !authService.isAuthenticated()) {
         window.location.hash = '#/login';
         return;
     }
 
-    // Рендерим навигацию
+    // Render navigation component
     navContainer.innerHTML = Navigation();
 
-    // Рендерим страницу
+    // Render page component
     content.innerHTML = await route.component.render();
     if (route.component.afterRender) {
         await route.component.afterRender();
     }
 }
 
+// Listen for hash changes and page load
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);

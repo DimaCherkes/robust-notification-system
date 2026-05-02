@@ -36,7 +36,8 @@ class AuthService {
         }
 
         const data = await response.json();
-        // Учитываем структуру DefaultApiResponse и UserProfileDTO
+        
+        // Handle DefaultApiResponse and UserProfileDTO structure from backend
         const token = data.body.token; 
         const refreshToken = data.body.refreshToken || ''; 
         
@@ -74,6 +75,7 @@ class AuthService {
         }
 
         const data = await response.json();
+        // Assuming refresh returns the same structure as login
         this.setTokens(data.body.token, data.body.refreshToken || '');
         return data.body.token;
     }

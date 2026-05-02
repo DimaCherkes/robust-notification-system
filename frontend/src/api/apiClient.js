@@ -2,7 +2,7 @@ import { authService } from '../services/authService.js';
 
 class ApiClient {
     async fetch(url, options = {}) {
-        // Добавляем accessToken в заголовки, если он есть
+        // Add accessToken to headers if it exists
         const token = authService.getAccessToken();
         const headers = {
             ...options.headers,
@@ -15,16 +15,16 @@ class ApiClient {
 
         let response = await fetch(url, { ...options, headers });
 
-        // Если получили 401, пробуем обновить токен
+        // If 401 Unauthorized, try to refresh the access token
         if (response.status === 401) {
             try {
                 const newToken = await authService.refresh();
                 
-                // Повторяем запрос с новым токеном
+                // Retry the original request with the new token
                 headers['Authorization'] = `Bearer ${newToken}`;
                 response = await fetch(url, { ...options, headers });
             } catch (error) {
-                // Если refresh не удался, разлогиниваем
+                // If refresh fails, force logout
                 authService.logout();
                 throw error;
             }

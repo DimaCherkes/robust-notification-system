@@ -41,23 +41,16 @@ export const Register = {
             const errorEl = document.getElementById('error-message');
             const successEl = document.getElementById('success-message');
 
-            // Очистка сообщений
             errorEl.textContent = '';
             successEl.textContent = '';
 
-            // Валидация на фронтенде
             if (password !== confirmPassword) {
                 errorEl.textContent = 'Passwords do not match!';
                 return;
             }
 
-            if (password.length < 3) { // Пример минимальной длины
-                errorEl.textContent = 'Password must be at least 3 characters long';
-                return;
-            }
-
             try {
-                // Отправляем объект, соответствующий RegistrationUserRequest на бэкенде
+                // 1. Register the user
                 await authService.register({ 
                     username, 
                     email, 
@@ -65,13 +58,18 @@ export const Register = {
                     confirmPassword 
                 });
                 
-                successEl.textContent = 'Registration successful! Redirecting to login...';
+                successEl.textContent = 'Registration successful! Logging you in...';
+
+                // 2. Perform login immediately
+                await authService.login(email, password);
+
+                // 3. Redirect to Dashboard
                 setTimeout(() => {
-                    window.location.hash = '#/login';
-                }, 2000);
+                    window.location.hash = '#/dashboard';
+                }, 1000);
+                
             } catch (err) {
-                // Если бэкенд вернул ошибку валидации (например, Map с ошибками)
-                errorEl.textContent = 'Registration failed: ' + err.message;
+                errorEl.textContent = 'Action failed: ' + err.message;
             }
         });
     }

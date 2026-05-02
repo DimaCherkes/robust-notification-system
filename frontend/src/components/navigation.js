@@ -19,9 +19,10 @@ export const Navigation = () => {
     `;
 };
 
-// Мы не можем использовать afterRender для навигации так же просто, 
-// так как она перерендеривается при каждом переходе. 
-// Поэтому добавим глобальный делегат для кнопки Logout.
+/**
+ * Since navigation is re-rendered on every route change, 
+ * we use global event delegation for the logout button.
+ */
 document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'logout-btn') {
         authService.logout();
