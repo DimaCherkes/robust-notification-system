@@ -6,32 +6,22 @@ export const Dashboard = {
             <section id="dashboard">
                 <div class="dashboard-header">
                     <h2>Your Weather Subscriptions</h2>
-                    <button id="add-sub-btn" class="primary-btn">+ New Subscription</button>
+                    <a href="#/subscriptions/create" class="primary-btn">+ New Subscription</a>
                 </div>
                 
                 <div id="subscription-list" class="subscription-grid">
                     <p class="loading">Loading your subscriptions...</p>
                 </div>
 
-                <!-- Modal for creating subscription (Simplified for now) -->
-                <div id="sub-modal" class="modal hidden">
+                <!-- Custom Confirmation Modal -->
+                <div id="confirm-modal" class="modal hidden">
                     <div class="modal-content">
-                        <h3>Create Subscription</h3>
-                        <form id="sub-form">
-                            <div class="form-group">
-                                <label>City ID (Temporary)</label>
-                                <input type="number" id="cityId" placeholder="e.g. 1" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Notify Before (Hours)</label>
-                                <input type="number" id="notifyHours" value="2" required>
-                            </div>
-                            <p class="info-text">Default rules (Temp < 0, Rain = 1) will be applied.</p>
-                            <div class="modal-actions">
-                                <button type="button" id="close-modal" class="secondary-btn">Cancel</button>
-                                <button type="submit" class="primary-btn">Save</button>
-                            </div>
-                        </form>
+                        <h3>Confirm Deletion</h3>
+                        <p>Are you sure you want to permanently delete this subscription? This action cannot be undone.</p>
+                        <div class="modal-actions">
+                            <button id="cancel-delete" class="secondary-btn">Cancel</button>
+                            <button id="confirm-delete" class="danger-btn">Delete</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -39,14 +29,11 @@ export const Dashboard = {
     },
     afterRender: async () => {
         const listEl = document.getElementById('subscription-list');
-        const modal = document.getElementById('sub-modal');
-        const addBtn = document.getElementById('add-sub-btn');
-        const closeBtn = document.getElementById('close-modal');
-        const form = document.getElementById('sub-form');
-
-        // Logic to open/close modal
-        addBtn.onclick = () => modal.classList.remove('hidden');
-        closeBtn.onclick = () => modal.classList.add('hidden');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmBtn = document.getElementById('confirm-delete');
+        const cancelBtn = document.getElementById('cancel-delete');
+        
+        let subToDelete = null;
 
         // Helper to format rule strings
         const formatRule = (rule) => {
@@ -61,7 +48,6 @@ export const Dashboard = {
             return `<strong>${rule.parameterType}</strong> ${op} ${val}`;
         };
 
-        // Fetch subscription list
         const loadSubscriptions = async () => {
             try {
                 const subs = await apiClient.get('/api/v1/subscriptions/all');
@@ -70,7 +56,6 @@ export const Dashboard = {
                     listEl.innerHTML = `
                         <div class="empty-state">
                             <p>You don't have any subscriptions yet.</p>
-                            <p>Stay ahead of the weather by creating one!</p>
                         </div>
                     `;
                     return;
@@ -90,37 +75,45 @@ export const Dashboard = {
                         </div>
                         <div class="sub-card-footer">
                             <small>Created: ${new Date(sub.createdAt).toLocaleDateString()}</small>
+                            <div class="card-actions">
+                                <a href="#/subscriptions/edit/${sub.id}" class="edit-link">Edit</a>
+                                <button class="delete-link-btn" data-id="${sub.id}">Delete</button>
+                            </div>
                         </div>
                     </div>
                 `).join('');
+
+                // Add listeners to delete buttons
+                document.querySelectorAll('.delete-link-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        subToDelete = btn.dataset.id;
+                        confirmModal.classList.remove('hidden');
+                    };
+                });
 
             } catch (err) {
                 listEl.innerHTML = `<p class="error">Failed to load subscriptions: ${err.message}</p>`;
             }
         };
 
-        await loadSubscriptions();
+        // Modal actions
+        cancelBtn.onclick = () => {
+            confirmModal.classList.add('hidden');
+            subToDelete = null;
+        };
 
-        // Handle form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                cityId: parseInt(document.getElementById('cityId').value),
-                notifyBeforeHours: parseInt(document.getElementById('notifyHours').value),
-                rules: [
-                    { parameterType: 'TEMPERATURE', operator: 'LESS_THAN', value1: 0 },
-                    { parameterType: 'RAIN', operator: 'EQUALS', value1: 1 }
-                ]
-            };
-
-            try {
-                await apiClient.post('/api/v1/subscriptions/create', payload);
-                modal.classList.add('hidden');
-                form.reset();
-                await loadSubscriptions();
-            } catch (err) {
-                alert('Error creating subscription: ' + err.message);
+        confirmBtn.onclick = async () => {
+            if (subToDelete) {
+                try {
+                    await apiClient.fetch(`/api/v1/subscriptions/hard/${subToDelete}`, { method: 'DELETE' });
+                    confirmModal.classList.add('hidden');
+                    await loadSubscriptions();
+                } catch (err) {
+                    alert('Delete failed: ' + err.message);
+                }
             }
-        });
+        };
+
+        await loadSubscriptions();
     }
 };

@@ -35,6 +35,11 @@ class ApiClient {
             throw new Error(errorData.message || `Request failed with status ${response.status}`);
         }
 
+        // Handle empty response body (e.g., status 204 No Content)
+        if (response.status === 204 || response.headers.get('Content-Length') === '0') {
+            return null;
+        }
+
         return response.json();
     }
 
