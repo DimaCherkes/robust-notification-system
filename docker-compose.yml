@@ -193,6 +193,17 @@ services:
     networks:
       - robust-notification-system-network
 
+  # Frontend web app
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: docker/Dockerfile
+    container_name: frontend-app
+    ports:
+      - "80:80"
+    networks:
+      - robust-notification-system-network
+
 volumes:
   iam-service-db-data:
     name: iam-service-db-data
