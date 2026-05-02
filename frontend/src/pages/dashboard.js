@@ -13,7 +13,7 @@ export const Dashboard = {
                     <p class="loading">Loading your subscriptions...</p>
                 </div>
 
-                <!-- Custom Confirmation Modal -->
+                <!-- Custom Confirmation Modal (Hard Delete) -->
                 <div id="confirm-modal" class="modal hidden">
                     <div class="modal-content">
                         <h3>Confirm Deletion</h3>
@@ -24,16 +24,40 @@ export const Dashboard = {
                         </div>
                     </div>
                 </div>
+
+                <!-- Custom Deactivation Modal (Soft Delete) -->
+                <div id="deactivate-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Deactivate Subscription</h3>
+                        <p>Are you sure you want to deactivate this subscription? You will stop receiving notifications, but you can see it in your dashboard.</p>
+                        <div class="modal-actions">
+                            <button id="cancel-deactivate" class="secondary-btn">Cancel</button>
+                            <button id="confirm-deactivate" class="secondary-btn danger">Deactivate</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Activation Modal -->
+                <div id="activate-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Activate Subscription</h3>
+                        <p>Are you sure you want to reactivate this subscription? You will start receiving notifications again.</p>
+                        <div class="modal-actions">
+                            <button id="cancel-activate" class="secondary-btn">Cancel</button>
+                            <button id="confirm-activate" class="primary-btn">Activate</button>
+                        </div>
+                    </div>
+                </div>
             </section>
         `;
     },
     afterRender: async () => {
         const listEl = document.getElementById('subscription-list');
         const confirmModal = document.getElementById('confirm-modal');
-        const confirmBtn = document.getElementById('confirm-delete');
-        const cancelBtn = document.getElementById('cancel-delete');
+        const deactivateModal = document.getElementById('deactivate-modal');
+        const activateModal = document.getElementById('activate-modal');
         
-        let subToDelete = null;
+        let subToProcess = null;
 
         // Helper to format rule strings
         const formatRule = (rule) => {
@@ -62,10 +86,13 @@ export const Dashboard = {
                 }
 
                 listEl.innerHTML = subs.map(sub => `
-                    <div class="sub-card">
+                    <div class="sub-card ${sub.isActive ? 'active' : 'deactivated'}">
                         <div class="sub-card-header">
-                            <h3>${sub.cityName}</h3>
-                            <span class="badge">Every ${sub.notifyBeforeHours}h</span>
+                            <div>
+                                <h3>${sub.cityName}</h3>
+                                <span class="status-indicator">${sub.isActive ? 'Active' : 'Deactivated'}</span>
+                            </div>
+                            <span class="badge">Notify ${sub.notifyBeforeHours}h before</span>
                         </div>
                         <div class="sub-rules">
                             <p class="rule-title">Rules:</p>
@@ -77,6 +104,9 @@ export const Dashboard = {
                             <small>Created: ${new Date(sub.createdAt).toLocaleDateString()}</small>
                             <div class="card-actions">
                                 <a href="#/subscriptions/edit/${sub.id}" class="edit-link">Edit</a>
+                                ${sub.isActive 
+                                    ? `<button class="deactivate-link-btn" data-id="${sub.id}">Deactivate</button>` 
+                                    : `<button class="activate-link-btn" data-id="${sub.id}">Activate</button>`}
                                 <button class="delete-link-btn" data-id="${sub.id}">Delete</button>
                             </div>
                         </div>
@@ -86,8 +116,24 @@ export const Dashboard = {
                 // Add listeners to delete buttons
                 document.querySelectorAll('.delete-link-btn').forEach(btn => {
                     btn.onclick = () => {
-                        subToDelete = btn.dataset.id;
+                        subToProcess = btn.dataset.id;
                         confirmModal.classList.remove('hidden');
+                    };
+                });
+
+                // Add listeners to deactivate buttons
+                document.querySelectorAll('.deactivate-link-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        subToProcess = btn.dataset.id;
+                        deactivateModal.classList.remove('hidden');
+                    };
+                });
+
+                // Add listeners to activate buttons
+                document.querySelectorAll('.activate-link-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        subToProcess = btn.dataset.id;
+                        activateModal.classList.remove('hidden');
                     };
                 });
 
@@ -96,20 +142,56 @@ export const Dashboard = {
             }
         };
 
-        // Modal actions
-        cancelBtn.onclick = () => {
+        // Delete Modal actions
+        document.getElementById('cancel-delete').onclick = () => {
             confirmModal.classList.add('hidden');
-            subToDelete = null;
+            subToProcess = null;
         };
 
-        confirmBtn.onclick = async () => {
-            if (subToDelete) {
+        document.getElementById('confirm-delete').onclick = async () => {
+            if (subToProcess) {
                 try {
-                    await apiClient.fetch(`/api/v1/subscriptions/hard/${subToDelete}`, { method: 'DELETE' });
+                    await apiClient.fetch(`/api/v1/subscriptions/hard/${subToProcess}`, { method: 'DELETE' });
                     confirmModal.classList.add('hidden');
                     await loadSubscriptions();
                 } catch (err) {
                     alert('Delete failed: ' + err.message);
+                }
+            }
+        };
+
+        // Deactivate Modal actions
+        document.getElementById('cancel-deactivate').onclick = () => {
+            deactivateModal.classList.add('hidden');
+            subToProcess = null;
+        };
+
+        document.getElementById('confirm-deactivate').onclick = async () => {
+            if (subToProcess) {
+                try {
+                    await apiClient.fetch(`/api/v1/subscriptions/soft/${subToProcess}`, { method: 'DELETE' });
+                    deactivateModal.classList.add('hidden');
+                    await loadSubscriptions();
+                } catch (err) {
+                    alert('Deactivation failed: ' + err.message);
+                }
+            }
+        };
+
+        // Activate Modal actions
+        document.getElementById('cancel-activate').onclick = () => {
+            activateModal.classList.add('hidden');
+            subToProcess = null;
+        };
+
+        document.getElementById('confirm-activate').onclick = async () => {
+            if (subToProcess) {
+                try {
+                    await apiClient.fetch(`/api/v1/subscriptions/${subToProcess}/activate`, { method: 'PUT' });
+                    activateModal.classList.add('hidden');
+                    await loadSubscriptions();
+                } catch (err) {
+                    alert('Activation failed: ' + err.message);
                 }
             }
         };

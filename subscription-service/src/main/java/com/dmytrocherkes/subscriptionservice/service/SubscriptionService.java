@@ -4,13 +4,13 @@ import com.dmytrocherkes.subscriptionservice.mapper.SubscriptionMapper;
 import com.dmytrocherkes.subscriptionservice.mapper.SubscriptionRuleMapper;
 import com.dmytrocherkes.subscriptionservice.model.constants.ApiErrorMessage;
 import com.dmytrocherkes.subscriptionservice.model.constants.ApiLogMessage;
+import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 import com.dmytrocherkes.subscriptionservice.model.entity.City;
 import com.dmytrocherkes.subscriptionservice.model.entity.Subscription;
 import com.dmytrocherkes.subscriptionservice.model.entity.SubscriptionRule;
 import com.dmytrocherkes.subscriptionservice.model.enums.AwsMessageTypes;
 import com.dmytrocherkes.subscriptionservice.model.exception.ResourceNotFoundException;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
-import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 import com.dmytrocherkes.subscriptionservice.repository.CityRepository;
 import com.dmytrocherkes.subscriptionservice.repository.SubscriptionRepository;
 import com.dmytrocherkes.subscriptionservice.security.SecurityUtils;
@@ -54,7 +54,7 @@ public class SubscriptionService {
         subscription.setUpdatedByUserId(userId);
         subscription.setCreatedAt(OffsetDateTime.now());
         subscription.setUpdatedAt(OffsetDateTime.now());
-        
+
         Subscription savedSubscription = subscriptionRepository.save(subscription);
         SubscriptionDTO subscriptionDto = SubscriptionMapper.toDTO(savedSubscription);
         subscriptionDto.setCityName(city.getName());
@@ -115,7 +115,7 @@ public class SubscriptionService {
     @Transactional(readOnly = true)
     public SubscriptionDTO getSubscriptionById(UUID id) {
         log.trace(ApiLogMessage.FETCHING_SUBSCRIPTION_BY_ID.getValue(), id);
-        Subscription subscription = subscriptionRepository.findByIdAndIsActiveTrue(id)
+        Subscription subscription = subscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
         return SubscriptionMapper.toDTO(subscription);
     }
@@ -167,6 +167,32 @@ public class SubscriptionService {
                 subscriptionTopicArn,
                 id,
                 Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_DELETED.getType())
+        );
+    }
+
+    @Transactional
+    public void activateSubscription(UUID id) {
+        log.trace("Activating subscription with ID: {}", id);
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
+
+        if (Boolean.TRUE.equals(subscription.getIsActive())) {
+            return;
+        }
+
+        subscription.setIsActive(true);
+        subscription.setUpdatedAt(OffsetDateTime.now());
+        subscriptionRepository.save(subscription);
+
+        // increment active subscriptions count
+        City city = subscription.getCity();
+        cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() + 1);
+
+        // send event to decision-consume-queue
+        snsPublisher.publishMessage(
+                subscriptionTopicArn,
+                SubscriptionMapper.toDTO(subscription),
+                Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_CREATED.getType())
         );
     }
 }
