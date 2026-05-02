@@ -25,6 +25,9 @@ public enum ApiLogMessage {
     REST_UPDATE_SUBSCRIPTION("REST request to update subscription: {}"),
     REST_SOFT_DELETE_SUBSCRIPTION("REST request to soft delete subscription: {}"),
     REST_HARD_DELETE_SUBSCRIPTION("REST request to hard delete subscription: {}"),
+
+    // city controller
+    REST_GET_ALL_CITIES("REST request to get cities by user: {}"),
     ;
 
     private final String value;

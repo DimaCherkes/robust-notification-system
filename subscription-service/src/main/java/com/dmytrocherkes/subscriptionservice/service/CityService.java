@@ -5,12 +5,14 @@ import com.dmytrocherkes.subscriptionservice.model.dto.CityDTO;
 import com.dmytrocherkes.subscriptionservice.model.entity.City;
 import com.dmytrocherkes.subscriptionservice.model.enums.AwsMessageTypes;
 import com.dmytrocherkes.subscriptionservice.model.enums.CityStatus;
+import com.dmytrocherkes.subscriptionservice.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -19,6 +21,7 @@ import java.util.Map;
 public class CityService {
 
     private final SnsPublisher snsPublisher;
+    private final CityRepository cityRepository;
 
     @Value("${app.aws.sns.subscription-topic-arn}")
     private String subscriptionTopicArn;
@@ -51,5 +54,10 @@ public class CityService {
             // active subscriptions count has changed and is not 0 -> update count
             city.setActiveSubscriptionsCount(newValue);
         }
+    }
+
+    public List<CityDTO> findAllCities() {
+        List<City> cities = cityRepository.findAll();
+        return CityMapper.toResponseList(cities);
     }
 }
