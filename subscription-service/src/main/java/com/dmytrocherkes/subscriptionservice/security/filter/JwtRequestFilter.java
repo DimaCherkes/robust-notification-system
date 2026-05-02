@@ -1,6 +1,7 @@
 package com.dmytrocherkes.subscriptionservice.security.filter;
 
 import com.dmytrocherkes.subscriptionservice.security.JwtTokenProvider;
+import com.dmytrocherkes.subscriptionservice.security.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,9 +41,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            Integer userId = jwtTokenProvider.getUserId(jwt);
             List<String> roles = jwtTokenProvider.getRoles(jwt);
+            
+            UserPrincipal principal = new UserPrincipal(userId, username);
+            
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    username, null, roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+                    principal, null, roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
             );
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);

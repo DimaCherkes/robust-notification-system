@@ -36,10 +36,10 @@ public class SubscriptionController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/user/{username}")
-    public ResponseEntity<List<SubscriptionDTO>> getAllByUserId(@PathVariable String username) {
-        log.trace(ApiLogMessage.REST_GET_SUBSCRIPTIONS_BY_USER.getValue(), username);
-        List<SubscriptionDTO> response = subscriptionService.getAllByUsername(username);
+    @GetMapping("/all")
+    public ResponseEntity<List<SubscriptionDTO>> getAllForCurrentUser() {
+        log.trace(ApiLogMessage.REST_GET_SUBSCRIPTIONS_BY_USER.getValue(), "current user");
+        List<SubscriptionDTO> response = subscriptionService.getAllForCurrentUser();
         return ResponseEntity.ok(response);
     }
 

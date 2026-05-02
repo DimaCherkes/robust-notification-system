@@ -29,8 +29,17 @@ public class AwsConfig {
     @Value("${spring.cloud.aws.endpoint}")
     private String endpoint;
 
+    @Value("${spring.cloud.aws.credentials.access-key:}")
+    private String accessKey;
+
+    @Value("${spring.cloud.aws.credentials.secret-key:}")
+    private String secretKey;
+
     @Bean
     public AwsCredentialsProvider awsCredentialsProvider() {
+        if (!accessKey.isEmpty() && !secretKey.isEmpty()) {
+            return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
+        }
         return DefaultCredentialsProvider.create();
     }
 

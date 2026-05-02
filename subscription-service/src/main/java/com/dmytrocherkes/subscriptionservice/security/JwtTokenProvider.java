@@ -42,12 +42,9 @@ public class JwtTokenProvider {
         return getAllClaimsFromToken(token).get(AuthenticationConstants.USERNAME, String.class);
     }
 
-    public Long getUserId(String token) {
+    public Integer getUserId(String token) {
         Object userId = getAllClaimsFromToken(token).get(AuthenticationConstants.USER_ID);
-        if (userId instanceof Integer) {
-            return ((Integer) userId).longValue();
-        }
-        return (Long) userId;
+        return (Integer) userId;
     }
 
     public List<String> getRoles(String token) {

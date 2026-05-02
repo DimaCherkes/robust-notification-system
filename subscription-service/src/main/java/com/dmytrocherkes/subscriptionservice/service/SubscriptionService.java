@@ -4,17 +4,16 @@ import com.dmytrocherkes.subscriptionservice.mapper.SubscriptionMapper;
 import com.dmytrocherkes.subscriptionservice.mapper.SubscriptionRuleMapper;
 import com.dmytrocherkes.subscriptionservice.model.constants.ApiErrorMessage;
 import com.dmytrocherkes.subscriptionservice.model.constants.ApiLogMessage;
-import com.dmytrocherkes.subscriptionservice.model.dto.UserDTO;
 import com.dmytrocherkes.subscriptionservice.model.entity.City;
 import com.dmytrocherkes.subscriptionservice.model.entity.Subscription;
 import com.dmytrocherkes.subscriptionservice.model.entity.SubscriptionRule;
 import com.dmytrocherkes.subscriptionservice.model.enums.AwsMessageTypes;
 import com.dmytrocherkes.subscriptionservice.model.exception.ResourceNotFoundException;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
-import com.dmytrocherkes.subscriptionservice.model.response.IamApiResponse;
 import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 import com.dmytrocherkes.subscriptionservice.repository.CityRepository;
 import com.dmytrocherkes.subscriptionservice.repository.SubscriptionRepository;
+import com.dmytrocherkes.subscriptionservice.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,6 @@ public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final CityRepository cityRepository;
-    private final IamClient iamClient;
     private final SnsPublisher snsPublisher;
     private final CityService cityService;
 
@@ -42,7 +40,8 @@ public class SubscriptionService {
 
     @Transactional
     public SubscriptionDTO createSubscription(SubscriptionRequest request) {
-        log.trace(ApiLogMessage.CREATING_SUBSCRIPTION.getValue(), request.getUserId(), request.getCityId());
+        Integer userId = SecurityUtils.getCurrentUserId();
+        log.trace(ApiLogMessage.CREATING_SUBSCRIPTION.getValue(), userId, request.getCityId());
 
         City city = cityRepository.findById(request.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.CITY_NOT_FOUND_BY_ID.getMessage(request.getCityId())));
@@ -51,11 +50,14 @@ public class SubscriptionService {
         cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() + 1);
 
         Subscription subscription = SubscriptionMapper.toEntity(request, city);
+        subscription.setCreatedByUserId(userId);
+        subscription.setUpdatedByUserId(userId);
+        subscription.setCreatedAt(OffsetDateTime.now());
+        subscription.setUpdatedAt(OffsetDateTime.now());
+        
         Subscription savedSubscription = subscriptionRepository.save(subscription);
         SubscriptionDTO subscriptionDto = SubscriptionMapper.toDTO(savedSubscription);
         subscriptionDto.setCityName(city.getName());
-        subscriptionDto.setCreatedAt(OffsetDateTime.now());
-        subscriptionDto.setUpdatedAt(OffsetDateTime.now());
 
         // send event to decision-consume-queue
         snsPublisher.publishMessage(
@@ -67,9 +69,9 @@ public class SubscriptionService {
         return subscriptionDto;
     }
 
-    // you can't change the city of the subscription, you can only change the rules and notifyBeforeHours
     @Transactional
     public SubscriptionDTO updateSubscription(UUID id, SubscriptionRequest request) {
+        Integer userId = SecurityUtils.getCurrentUserId();
         log.trace(ApiLogMessage.UPDATING_SUBSCRIPTION.getValue(), id);
 
         Subscription subscription = subscriptionRepository.findByIdAndIsActiveTrue(id)
@@ -78,7 +80,7 @@ public class SubscriptionService {
         City city = cityRepository.findById(request.getCityId())
                 .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.CITY_NOT_FOUND_BY_ID.getMessage(request.getCityId())));
 
-        subscription.setUpdatedByUserId(request.getUserId());
+        subscription.setUpdatedByUserId(userId);
         subscription.setCity(city);
         subscription.setNotifyBeforeHours(request.getNotifyBeforeHours());
         subscription.setIsActive(request.getIsActive() != null ? request.getIsActive() : subscription.getIsActive());
@@ -119,12 +121,10 @@ public class SubscriptionService {
     }
 
     @Transactional(readOnly = true)
-    public List<SubscriptionDTO> getAllByUsername(String username) {
-        log.trace(ApiLogMessage.SEND_REQUEST_TO_IAM_SERVICE_USERNAME.getValue(), username);
-        IamApiResponse<UserDTO> userByUsername = iamClient.getUserByUsername(username);
-
-        log.info(ApiLogMessage.FETCHING_ALL_SUBSCRIPTIONS_BY_USER_ID.getValue(), userByUsername.getBody().getId());
-        List<Subscription> subscriptions = subscriptionRepository.findAllByCreatedByUserId(userByUsername.getBody().getId());
+    public List<SubscriptionDTO> getAllForCurrentUser() {
+        Integer userId = SecurityUtils.getCurrentUserId();
+        log.info(ApiLogMessage.FETCHING_ALL_SUBSCRIPTIONS_BY_USER_ID.getValue(), userId);
+        List<Subscription> subscriptions = subscriptionRepository.findAllByCreatedByUserId(userId);
         return SubscriptionMapper.toResponseList(subscriptions);
     }
 

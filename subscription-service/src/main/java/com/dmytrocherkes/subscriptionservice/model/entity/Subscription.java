@@ -36,10 +36,10 @@ public class Subscription {
     private List<SubscriptionRule> rules = new ArrayList<>();
 
     @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt;
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    private OffsetDateTime updatedAt = OffsetDateTime.now();
 
     @Column(name = "created_by_user_id", nullable = false)
     private Integer createdByUserId;
