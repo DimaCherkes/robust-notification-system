@@ -60,6 +60,13 @@ public class SubscriptionController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Void> activate(@PathVariable UUID id) {
+        log.trace("Rest request to activate subscription: {}", id);
+        subscriptionService.activateSubscription(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/hard/{id}")
     public ResponseEntity<Void> hardDelete(@PathVariable UUID id) {
         log.trace(ApiLogMessage.REST_HARD_DELETE_SUBSCRIPTION.getValue(), id);

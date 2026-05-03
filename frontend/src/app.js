@@ -2,20 +2,33 @@ import { authService } from './services/authService.js';
 import { Login } from './pages/login.js';
 import { Register } from './pages/register.js';
 import { Dashboard } from './pages/dashboard.js';
+import { CreateSubscription } from './pages/createSubscription.js';
+import { UpdateSubscription } from './pages/updateSubscription.js';
 import { Navigation } from './components/navigation.js';
 
 const routes = {
     '#/login': { component: Login, private: false },
     '#/register': { component: Register, private: false },
     '#/dashboard': { component: Dashboard, private: true },
+    '#/subscriptions/create': { component: CreateSubscription, private: true },
+    '#/subscriptions/edit': { component: UpdateSubscription, private: true },
 };
 
 async function router() {
     const content = document.getElementById('main-content');
     const navContainer = document.getElementById('nav-container');
-    const hash = window.location.hash || '#/login';
+    let hash = window.location.hash || '#/login';
 
-    const route = routes[hash] || routes['#/login'];
+    // Handle dynamic routes like #/subscriptions/edit/UUID
+    let routeKey = hash;
+    let params = null;
+
+    if (hash.startsWith('#/subscriptions/edit/')) {
+        routeKey = '#/subscriptions/edit';
+        params = hash.replace('#/subscriptions/edit/', '');
+    }
+
+    const route = routes[routeKey] || routes['#/login'];
 
     // Route Guard: Redirect to login if route is private and user is not authenticated
     if (route.private && !authService.isAuthenticated()) {
@@ -27,9 +40,9 @@ async function router() {
     navContainer.innerHTML = Navigation();
 
     // Render page component
-    content.innerHTML = await route.component.render();
+    content.innerHTML = await route.component.render(params);
     if (route.component.afterRender) {
-        await route.component.afterRender();
+        await route.component.afterRender(params);
     }
 }
 

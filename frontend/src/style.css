@@ -90,6 +90,96 @@ button:hover {
     opacity: 0.9;
 }
 
+.header-with-back {
+    margin-bottom: 2rem;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.875rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.back-link:hover {
+    color: var(--primary-color);
+}
+
+.standard-form {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    margin-bottom: 3rem;
+}
+
+.form-section h3 {
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: #334155;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rule-row {
+    display: flex;
+    gap: 1rem;
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    align-items: flex-end;
+    position: relative;
+    border: 1px solid #e2e8f0;
+}
+
+.rule-row .form-group {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.rule-row select, .rule-row input {
+    background: white;
+}
+
+.remove-rule-btn {
+    background: #fee2e2;
+    color: #ef4444;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.remove-rule-btn:hover {
+    background: #fecaca;
+}
+
+.hidden {
+    display: none;
+}
+
+.large {
+    width: 100%;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
 /* Dashboard Styles */
 .dashboard-header {
     display: flex;
@@ -223,6 +313,125 @@ button:hover {
     font-size: 0.875rem;
     color: #64748b;
     font-style: italic;
+}
+
+.danger-btn {
+    background: white;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.danger-btn:hover {
+    background: #fee2e2;
+}
+
+.space-between {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-actions {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    align-items: center;
+}
+
+.edit-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+}
+
+.delete-link-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0;
+}
+
+.delete-link-btn:hover {
+    text-decoration: underline;
+}
+
+.sub-card.deactivated {
+    opacity: 0.7;
+    background: #f1f5f9;
+    border-style: dashed;
+}
+
+.sub-card.deactivated h3 {
+    color: #64748b;
+}
+
+.status-indicator {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-top: 0.25rem;
+}
+
+.active .status-indicator {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.deactivated .status-indicator {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.deactivate-link-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0;
+}
+
+.deactivate-link-btn:hover {
+    text-decoration: underline;
+    color: #334155;
+}
+
+.activate-link-btn {
+    background: none;
+    border: none;
+    color: #16a34a;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0;
+}
+
+.activate-link-btn:hover {
+    text-decoration: underline;
+}
+
+.secondary-btn.danger {
+    color: #ef4444;
+}
+
+.secondary-btn.danger:hover {
+    background: #fee2e2;
 }
 
 footer {

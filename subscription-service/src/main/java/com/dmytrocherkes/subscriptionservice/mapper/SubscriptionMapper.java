@@ -37,6 +37,7 @@ public class SubscriptionMapper {
                 .cityId(entity.getCity().getId())
                 .cityName(entity.getCity().getName())
                 .notifyBeforeHours(entity.getNotifyBeforeHours())
+                .isActive(entity.getIsActive())
                 .rules(entity.getRules().stream()
                         .map(SubscriptionRuleMapper::toDTO)
                         .toList())

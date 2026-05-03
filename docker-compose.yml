@@ -181,7 +181,7 @@ services:
       - SERVICES=sqs,sns
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:-test}
+#      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:-test}
     volumes:
       - ./localstack-init.sh:/etc/localstack/init/ready.d/localstack-init.sh
       - "/var/run/docker.sock:/var/run/docker.sock"

@@ -6,32 +6,46 @@ export const Dashboard = {
             <section id="dashboard">
                 <div class="dashboard-header">
                     <h2>Your Weather Subscriptions</h2>
-                    <button id="add-sub-btn" class="primary-btn">+ New Subscription</button>
+                    <a href="#/subscriptions/create" class="primary-btn">+ New Subscription</a>
                 </div>
                 
                 <div id="subscription-list" class="subscription-grid">
                     <p class="loading">Loading your subscriptions...</p>
                 </div>
 
-                <!-- Modal for creating subscription (Simplified for now) -->
-                <div id="sub-modal" class="modal hidden">
+                <!-- Custom Confirmation Modal (Hard Delete) -->
+                <div id="confirm-modal" class="modal hidden">
                     <div class="modal-content">
-                        <h3>Create Subscription</h3>
-                        <form id="sub-form">
-                            <div class="form-group">
-                                <label>City ID (Temporary)</label>
-                                <input type="number" id="cityId" placeholder="e.g. 1" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Notify Before (Hours)</label>
-                                <input type="number" id="notifyHours" value="2" required>
-                            </div>
-                            <p class="info-text">Default rules (Temp < 0, Rain = 1) will be applied.</p>
-                            <div class="modal-actions">
-                                <button type="button" id="close-modal" class="secondary-btn">Cancel</button>
-                                <button type="submit" class="primary-btn">Save</button>
-                            </div>
-                        </form>
+                        <h3>Confirm Deletion</h3>
+                        <p>Are you sure you want to permanently delete this subscription? This action cannot be undone.</p>
+                        <div class="modal-actions">
+                            <button id="cancel-delete" class="secondary-btn">Cancel</button>
+                            <button id="confirm-delete" class="danger-btn">Delete</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Deactivation Modal (Soft Delete) -->
+                <div id="deactivate-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Deactivate Subscription</h3>
+                        <p>Are you sure you want to deactivate this subscription? You will stop receiving notifications, but you can see it in your dashboard.</p>
+                        <div class="modal-actions">
+                            <button id="cancel-deactivate" class="secondary-btn">Cancel</button>
+                            <button id="confirm-deactivate" class="secondary-btn danger">Deactivate</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Activation Modal -->
+                <div id="activate-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3>Activate Subscription</h3>
+                        <p>Are you sure you want to reactivate this subscription? You will start receiving notifications again.</p>
+                        <div class="modal-actions">
+                            <button id="cancel-activate" class="secondary-btn">Cancel</button>
+                            <button id="confirm-activate" class="primary-btn">Activate</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -39,14 +53,11 @@ export const Dashboard = {
     },
     afterRender: async () => {
         const listEl = document.getElementById('subscription-list');
-        const modal = document.getElementById('sub-modal');
-        const addBtn = document.getElementById('add-sub-btn');
-        const closeBtn = document.getElementById('close-modal');
-        const form = document.getElementById('sub-form');
-
-        // Logic to open/close modal
-        addBtn.onclick = () => modal.classList.remove('hidden');
-        closeBtn.onclick = () => modal.classList.add('hidden');
+        const confirmModal = document.getElementById('confirm-modal');
+        const deactivateModal = document.getElementById('deactivate-modal');
+        const activateModal = document.getElementById('activate-modal');
+        
+        let subToProcess = null;
 
         // Helper to format rule strings
         const formatRule = (rule) => {
@@ -61,7 +72,6 @@ export const Dashboard = {
             return `<strong>${rule.parameterType}</strong> ${op} ${val}`;
         };
 
-        // Fetch subscription list
         const loadSubscriptions = async () => {
             try {
                 const subs = await apiClient.get('/api/v1/subscriptions/all');
@@ -70,17 +80,19 @@ export const Dashboard = {
                     listEl.innerHTML = `
                         <div class="empty-state">
                             <p>You don't have any subscriptions yet.</p>
-                            <p>Stay ahead of the weather by creating one!</p>
                         </div>
                     `;
                     return;
                 }
 
                 listEl.innerHTML = subs.map(sub => `
-                    <div class="sub-card">
+                    <div class="sub-card ${sub.isActive ? 'active' : 'deactivated'}">
                         <div class="sub-card-header">
-                            <h3>${sub.cityName}</h3>
-                            <span class="badge">Every ${sub.notifyBeforeHours}h</span>
+                            <div>
+                                <h3>${sub.cityName}</h3>
+                                <span class="status-indicator">${sub.isActive ? 'Active' : 'Deactivated'}</span>
+                            </div>
+                            <span class="badge">Notify ${sub.notifyBeforeHours}h before</span>
                         </div>
                         <div class="sub-rules">
                             <p class="rule-title">Rules:</p>
@@ -90,37 +102,100 @@ export const Dashboard = {
                         </div>
                         <div class="sub-card-footer">
                             <small>Created: ${new Date(sub.createdAt).toLocaleDateString()}</small>
+                            <div class="card-actions">
+                                <a href="#/subscriptions/edit/${sub.id}" class="edit-link">Edit</a>
+                                ${sub.isActive 
+                                    ? `<button class="deactivate-link-btn" data-id="${sub.id}">Deactivate</button>` 
+                                    : `<button class="activate-link-btn" data-id="${sub.id}">Activate</button>`}
+                                <button class="delete-link-btn" data-id="${sub.id}">Delete</button>
+                            </div>
                         </div>
                     </div>
                 `).join('');
+
+                // Add listeners to delete buttons
+                document.querySelectorAll('.delete-link-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        subToProcess = btn.dataset.id;
+                        confirmModal.classList.remove('hidden');
+                    };
+                });
+
+                // Add listeners to deactivate buttons
+                document.querySelectorAll('.deactivate-link-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        subToProcess = btn.dataset.id;
+                        deactivateModal.classList.remove('hidden');
+                    };
+                });
+
+                // Add listeners to activate buttons
+                document.querySelectorAll('.activate-link-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        subToProcess = btn.dataset.id;
+                        activateModal.classList.remove('hidden');
+                    };
+                });
 
             } catch (err) {
                 listEl.innerHTML = `<p class="error">Failed to load subscriptions: ${err.message}</p>`;
             }
         };
 
-        await loadSubscriptions();
+        // Delete Modal actions
+        document.getElementById('cancel-delete').onclick = () => {
+            confirmModal.classList.add('hidden');
+            subToProcess = null;
+        };
 
-        // Handle form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const payload = {
-                cityId: parseInt(document.getElementById('cityId').value),
-                notifyBeforeHours: parseInt(document.getElementById('notifyHours').value),
-                rules: [
-                    { parameterType: 'TEMPERATURE', operator: 'LESS_THAN', value1: 0 },
-                    { parameterType: 'RAIN', operator: 'EQUALS', value1: 1 }
-                ]
-            };
-
-            try {
-                await apiClient.post('/api/v1/subscriptions/create', payload);
-                modal.classList.add('hidden');
-                form.reset();
-                await loadSubscriptions();
-            } catch (err) {
-                alert('Error creating subscription: ' + err.message);
+        document.getElementById('confirm-delete').onclick = async () => {
+            if (subToProcess) {
+                try {
+                    await apiClient.fetch(`/api/v1/subscriptions/hard/${subToProcess}`, { method: 'DELETE' });
+                    confirmModal.classList.add('hidden');
+                    await loadSubscriptions();
+                } catch (err) {
+                    alert('Delete failed: ' + err.message);
+                }
             }
-        });
+        };
+
+        // Deactivate Modal actions
+        document.getElementById('cancel-deactivate').onclick = () => {
+            deactivateModal.classList.add('hidden');
+            subToProcess = null;
+        };
+
+        document.getElementById('confirm-deactivate').onclick = async () => {
+            if (subToProcess) {
+                try {
+                    await apiClient.fetch(`/api/v1/subscriptions/soft/${subToProcess}`, { method: 'DELETE' });
+                    deactivateModal.classList.add('hidden');
+                    await loadSubscriptions();
+                } catch (err) {
+                    alert('Deactivation failed: ' + err.message);
+                }
+            }
+        };
+
+        // Activate Modal actions
+        document.getElementById('cancel-activate').onclick = () => {
+            activateModal.classList.add('hidden');
+            subToProcess = null;
+        };
+
+        document.getElementById('confirm-activate').onclick = async () => {
+            if (subToProcess) {
+                try {
+                    await apiClient.fetch(`/api/v1/subscriptions/${subToProcess}/activate`, { method: 'PUT' });
+                    activateModal.classList.add('hidden');
+                    await loadSubscriptions();
+                } catch (err) {
+                    alert('Activation failed: ' + err.message);
+                }
+            }
+        };
+
+        await loadSubscriptions();
     }
 };

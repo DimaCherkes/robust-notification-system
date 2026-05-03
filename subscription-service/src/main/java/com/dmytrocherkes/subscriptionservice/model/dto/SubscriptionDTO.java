@@ -16,6 +16,7 @@ public class SubscriptionDTO {
     private Integer cityId;
     private String cityName;
     private Integer notifyBeforeHours;
+    private Boolean isActive;
     private List<RuleDTO> rules;
 
     private OffsetDateTime createdAt;
