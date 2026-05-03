@@ -63,10 +63,9 @@ class AuthService {
         const refreshToken = this.getRefreshToken();
         if (!refreshToken) throw new Error('No refresh token');
 
-        const response = await fetch('/api/v1/iam-service/auth/refresh/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refreshToken })
+        const response = await fetch(`/api/v1/iam-service/auth/refresh/token?token=${refreshToken}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (!response.ok) {
@@ -75,7 +74,6 @@ class AuthService {
         }
 
         const data = await response.json();
-        // Assuming refresh returns the same structure as login
         this.setTokens(data.body.token, data.body.refreshToken || '');
         return data.body.token;
     }

@@ -52,8 +52,6 @@ public class SubscriptionService {
         Subscription subscription = SubscriptionMapper.toEntity(request, city);
         subscription.setCreatedByUserId(userId);
         subscription.setUpdatedByUserId(userId);
-        subscription.setCreatedAt(OffsetDateTime.now());
-        subscription.setUpdatedAt(OffsetDateTime.now());
 
         Subscription savedSubscription = subscriptionRepository.save(subscription);
         SubscriptionDTO subscriptionDto = SubscriptionMapper.toDTO(savedSubscription);
@@ -194,5 +192,27 @@ public class SubscriptionService {
                 SubscriptionMapper.toDTO(subscription),
                 Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_CREATED.getType())
         );
+    }
+
+    @Transactional
+    public void deactivateAfterTrigger(UUID id) {
+        log.info("Deactivating subscription after trigger. ID: {}", id);
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ApiErrorMessage.SUBSCRIPTION_NOT_FOUND_BY_ID.getMessage(id)));
+
+        if (Boolean.FALSE.equals(subscription.getIsActive())) {
+            return;
+        }
+
+        subscription.setIsActive(false);
+        subscription.setTriggeredTimes(subscription.getTriggeredTimes() + 1);
+        subscription.setUpdatedAt(OffsetDateTime.now());
+        subscriptionRepository.save(subscription);
+
+        // decrement active subscriptions count
+        City city = subscription.getCity();
+        cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() - 1);
+
+        log.info("Subscription {} deactivated. Triggered {} times.", id, subscription.getTriggeredTimes());
     }
 }

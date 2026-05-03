@@ -15,6 +15,7 @@ public class SubscriptionMapper {
                 .createdByUserId(request.getUserId())
                 .updatedByUserId(request.getUserId())
                 .city(city)
+                .triggeredTimes(0)
                 .notifyBeforeHours(request.getNotifyBeforeHours())
                 .isActive(request.getIsActive())
                 .build();

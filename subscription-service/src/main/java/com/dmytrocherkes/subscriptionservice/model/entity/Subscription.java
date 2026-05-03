@@ -31,6 +31,9 @@ public class Subscription {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "triggered_times")
+    private Integer triggeredTimes = 0;
+
     @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<SubscriptionRule> rules = new ArrayList<>();

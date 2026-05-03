@@ -199,11 +199,6 @@ services:
       context: ./frontend
       dockerfile: docker/Dockerfile
     container_name: frontend-app
-    depends_on:
-      iam-service:
-        condition: service_healthy
-      subscription-service:
-        condition: service_healthy
     ports:
       - "80:80"
     networks:

@@ -39,9 +39,9 @@ CREATE TABLE weather_hourly
 );
 
 -- Index for the Condition Checker (Performance optimization)
-CREATE INDEX idx_weather_lookup ON weather_hourly (city_id, forecast_time);
+-- CREATE INDEX idx_weather_lookup ON weather_hourly (city_id, forecast_time);
 
-INSERT INTO monitored_cities (city_id, name, latitude, longitude, is_active, last_api_call, timezone)
-VALUES (1, 'London', 51.5073, -0.1276, false, current_timestamp,  'Europe/London'),
-       (2, 'Bratislava',48.1435, 17.1083, true, current_timestamp,  'Europe/Bratislava'),
-       (3, 'Prague',50.0874, 14.4212, false, current_timestamp,  'Europe/Prague');
+-- INSERT INTO monitored_cities (city_id, name, latitude, longitude, is_active, last_api_call, timezone)
+-- VALUES (1, 'London', 51.5073, -0.1276, false, current_timestamp,  'Europe/London'),
+--        (2, 'Bratislava',48.1435, 17.1083, false, current_timestamp,  'Europe/Bratislava'),
+--        (3, 'Prague',50.0874, 14.4212, false, current_timestamp,  'Europe/Prague');

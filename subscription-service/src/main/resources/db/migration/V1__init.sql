@@ -20,6 +20,7 @@ CREATE TABLE subscriptions
     city_id             INT NOT NULL REFERENCES cities (id),
     notify_before_hours INT                      DEFAULT 0,
     is_active           BOOLEAN                  DEFAULT true,
+    triggered_times     INT NOT NULL             DEFAULT 0,
     created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     created_by_user_id  INT NOT NULL, -- Reference to IAM User

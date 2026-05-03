@@ -34,8 +34,8 @@ import java.util.Optional;
 public class DefaultControllerAdvice {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String LOGIN_PATH = "/auth/login";
-    private static final String REGISTER_PATH = "/auth/register";
+    private static final String LOGIN_PATH = "/api/v1/iam-service/auth/login";
+    private static final String REGISTER_PATH = "/api/v1/iam-service/auth/register";
 
     private final JwtTokenProvider jwtTokenProvider;
 

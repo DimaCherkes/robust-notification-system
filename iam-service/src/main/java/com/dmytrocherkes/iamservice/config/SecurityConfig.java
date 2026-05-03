@@ -52,6 +52,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/swagger-ui.html"),
             new AntPathRequestMatcher("/webjars/**"),
+            new AntPathRequestMatcher("/actuator/**"),
     };
 
     @Bean
