@@ -6,17 +6,21 @@ import com.dmytrocherkes.subscriptionservice.model.entity.SubscriptionRule;
 import com.dmytrocherkes.subscriptionservice.model.request.SubscriptionRequest;
 import com.dmytrocherkes.subscriptionservice.model.dto.SubscriptionDTO;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class SubscriptionMapper {
 
     public static Subscription toEntity(SubscriptionRequest request, City city) {
         Subscription subscription = Subscription.builder()
-                .createdByUserId(request.getUserId())
-                .updatedByUserId(request.getUserId())
                 .city(city)
+                .triggeredTimes(0)
                 .notifyBeforeHours(request.getNotifyBeforeHours())
                 .isActive(request.getIsActive())
+                .createdByUserId(request.getUserId())
+                .updatedByUserId(request.getUserId())
+                .createdAt(OffsetDateTime.now())
+                .updatedAt(OffsetDateTime.now())
                 .build();
 
         List<SubscriptionRule> rules = request.getRules().stream()

@@ -13,7 +13,7 @@ CREATE TABLE subscriptions
 CREATE TABLE subscription_rules
 (
     id              UUID PRIMARY KEY,        -- Original ID from Subscription Service
-    subscription_id UUID           NOT NULL,
+    subscription_id UUID           NOT NULL REFERENCES subscriptions (id) ON DELETE CASCADE,
     parameter_type  VARCHAR(50)    NOT NULL, -- e.g., TEMPERATURE, RAIN, WIND_SPEED
     operator        VARCHAR(20)    NOT NULL, -- e.g., GREATER_THAN, LESS_THAN, BETWEEN
     value_1         DECIMAL(10, 2) NOT NULL,
@@ -38,16 +38,15 @@ CREATE TABLE weather_forecast
 );
 
 -- Alert History
--- Prevents spamming: "One notification per rule per specific forecast hour"
 CREATE TABLE alert_history
 (
-    id            SERIAL PRIMARY KEY,
-    rule_id       UUID                     NOT NULL REFERENCES subscription_rules (id) ON DELETE CASCADE,
-    forecast_time TIMESTAMP WITH TIME ZONE NOT NULL, -- The forecast timestamp that triggered the alert
-    triggered_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    id              SERIAL PRIMARY KEY,
+    subscription_id UUID                     NOT NULL,
+    forecast_time   TIMESTAMP WITH TIME ZONE NOT NULL, -- The forecast timestamp that triggered the alert
+    triggered_at    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    UNIQUE (rule_id, forecast_time)                  -- Unique key to block duplicate alerts
+    UNIQUE (subscription_id, forecast_time)            -- Unique key to block duplicate alerts
 );
 
 -- Table comments for documentation

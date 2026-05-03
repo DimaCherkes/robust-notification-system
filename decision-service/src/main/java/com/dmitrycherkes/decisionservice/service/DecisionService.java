@@ -9,8 +9,12 @@ import com.dmitrycherkes.decisionservice.model.enums.RuleOperator;
 import com.dmitrycherkes.decisionservice.repository.AlertHistoryRepository;
 import com.dmitrycherkes.decisionservice.repository.SubscriptionRepository;
 import com.dmitrycherkes.decisionservice.repository.WeatherForecastRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +31,11 @@ public class DecisionService {
     private final SubscriptionRepository subscriptionRepository;
     private final WeatherForecastRepository weatherForecastRepository;
     private final AlertHistoryRepository alertHistoryRepository;
+    private final SqsTemplate sqsTemplate;
+    private final ObjectMapper objectMapper;
+
+    @Value("${app.aws.sqs.subscription-queue}")
+    private String subscriptionQueue;
 
     @Scheduled(fixedDelayString = "${app.decision.process-delay-ms:60000}")
     @Transactional
@@ -59,36 +68,63 @@ public class DecisionService {
 
         // Filter forecasts that fall within the notification window
         List<WeatherForecast> relevantForecasts = forecasts.stream()
-                .filter(f -> f.getForecastTime().isBefore(maxNotificationTime) || f.getForecastTime().isEqual(maxNotificationTime))
+                .filter(f -> !f.getForecastTime().isAfter(maxNotificationTime))
                 .toList();
 
-        for (SubscriptionRule rule : subscription.getRules()) {
-            for (WeatherForecast forecast : relevantForecasts) {
-                if (isRuleSatisfied(rule, forecast)) {
-                    triggerAlert(rule, forecast);
-                }
+        for (WeatherForecast forecast : relevantForecasts) {
+            // Check if we already triggered an alert for this subscription and this specific forecast time
+            if (alertHistoryRepository.existsBySubscriptionIdAndForecastTime(subscription.getId(), forecast.getForecastTime())) {
+                continue;
+            }
+
+            // All rules must be satisfied (AND logic)
+            boolean allRulesSatisfied = subscription.getRules().stream()
+                    .allMatch(rule -> isRuleSatisfied(rule, forecast));
+
+            if (allRulesSatisfied && !subscription.getRules().isEmpty()) {
+                triggerAlert(subscription, forecast);
+                break;
             }
         }
     }
 
-    private void triggerAlert(SubscriptionRule rule, WeatherForecast forecast) {
-        // Check if we already triggered an alert for this rule and this specific forecast time
-        if (alertHistoryRepository.existsByRuleIdAndForecastTime(rule.getId(), forecast.getForecastTime())) {
-            return;
-        }
-
-        log.info("Rule satisfied! Subscription: {}, Rule: {}, City: {}, Time: {}", 
-                rule.getSubscription().getId(), rule.getId(), rule.getSubscription().getCityId(), forecast.getForecastTime());
+    private void triggerAlert(Subscription subscription, WeatherForecast forecast) {
+        log.info("All rules satisfied! Subscription: {}, City: {}, Forecast Time: {}",
+                subscription.getId(), subscription.getCityId(), forecast.getForecastTime());
 
         AlertHistory alert = AlertHistory.builder()
-                .ruleId(rule.getId())
+                .subscriptionId(subscription.getId())
                 .forecastTime(forecast.getForecastTime())
                 .triggeredAt(OffsetDateTime.now())
                 .build();
-        
+
         alertHistoryRepository.save(alert);
-        
+
+        // Deactivate subscription to prevent spamming
+        deactivateSubscription(subscription);
+
         // TODO: Send notification to SNS/SQS for Notification Service
+    }
+
+    private void deactivateSubscription(Subscription subscription) {
+        log.info("Sending deactivation event for subscription: {}", subscription.getId());
+
+        try {
+            String message = objectMapper.writeValueAsString(subscription.getId());
+
+            sqsTemplate.send(to -> to
+                    .queue(subscriptionQueue)
+                    .payload(message)
+                    .header("action", "subscription_deactivate"));
+
+            log.info("Deactivation event sent. Deleting subscription {} from local DB.", subscription.getId());
+            subscriptionRepository.delete(subscription);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize message payload", e);
+            throw new RuntimeException("SQS serialization error", e);
+        } catch (Exception e) {
+            log.error("Failed to send deactivation event for subscription: {}", subscription.getId(), e);
+        }
     }
 
     private boolean isRuleSatisfied(SubscriptionRule rule, WeatherForecast forecast) {

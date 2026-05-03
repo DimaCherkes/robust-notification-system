@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface AlertHistoryRepository extends JpaRepository<AlertHistory, Long> {
 
-    boolean existsByRuleIdAndForecastTime(UUID ruleId, OffsetDateTime forecastTime);
+    boolean existsBySubscriptionIdAndForecastTime(UUID subscriptionId, OffsetDateTime forecastTime);
 
 }

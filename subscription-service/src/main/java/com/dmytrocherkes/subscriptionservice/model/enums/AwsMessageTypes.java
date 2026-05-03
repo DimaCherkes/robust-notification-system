@@ -10,6 +10,7 @@ public enum AwsMessageTypes {
     SUBSCRIPTION_CREATED("subscription_created"),
     SUBSCRIPTION_UPDATED("subscription_updated"),
     SUBSCRIPTION_DELETED("subscription_deleted"),
+    SUBSCRIPTION_DEACTIVATE("subscription_deactivate"),
     ;
 
     private final String messageType;

@@ -20,8 +20,8 @@ public class AlertHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "rule_id", nullable = false)
-    private UUID ruleId;
+    @Column(name = "subscription_id", nullable = false)
+    private UUID subscriptionId;
 
     @Column(name = "forecast_time", nullable = false)
     private OffsetDateTime forecastTime;
@@ -29,4 +29,8 @@ public class AlertHistory {
     @CreationTimestamp
     @Column(name = "triggered_at")
     private OffsetDateTime triggeredAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private OffsetDateTime createdAt;
 }

@@ -24,7 +24,7 @@ public class SubscriptionListener {
     private final WeatherForecastService weatherForecastService;
     private final ObjectMapper objectMapper;
 
-    @SqsListener("${app.aws.sqs.subscription-queue-name}")
+    @SqsListener("${app.aws.sqs.decision-consume-queue}")
     public void listen(@Payload String rawPayload, 
                        @Header(value = "action", required = false) String sqsHeaderAction) {
         log.debug("Received raw payload: {}", rawPayload);
