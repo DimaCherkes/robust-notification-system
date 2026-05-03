@@ -83,6 +83,7 @@ public class DecisionService {
 
             if (allRulesSatisfied && !subscription.getRules().isEmpty()) {
                 triggerAlert(subscription, forecast);
+                break;
             }
         }
     }
