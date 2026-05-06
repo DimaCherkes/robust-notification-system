@@ -118,6 +118,10 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       AWS_ENDPOINT: http://localstack:4566
       WEATHER_API_KEY: ${WEATHER_API_KEY:-dummy_key}
+      DATABASE_NAME: ${DATABASE_NAME:-bachelor}
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_USER: ${DATABASE_USER}
     ports:
       - "8182:8182"
     networks:

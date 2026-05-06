@@ -25,7 +25,7 @@ class ApiClient {
                 response = await fetch(url, { ...options, headers });
             } catch (error) {
                 // If refresh fails, force logout
-                authService.logout();
+                await authService.logout();
                 throw error;
             }
         }

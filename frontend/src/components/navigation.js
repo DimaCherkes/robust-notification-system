@@ -23,8 +23,8 @@ export const Navigation = () => {
  * Since navigation is re-rendered on every route change, 
  * we use global event delegation for the logout button.
  */
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
     if (e.target && e.target.id === 'logout-btn') {
-        authService.logout();
+        await authService.logout();
     }
 });

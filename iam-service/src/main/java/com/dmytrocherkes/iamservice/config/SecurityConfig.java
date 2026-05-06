@@ -47,6 +47,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + ApiPath.API_LOGIN_PATH, POST),
             new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + ApiPath.API_REGISTER_PATH, POST),
             new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + ApiPath.API_REFRESH_TOKEN_PATH, GET),
+            new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + "/logout", POST),
 
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),

@@ -1,23 +1,18 @@
-const ACCESS_TOKEN_KEY = 'access_token';
-const REFRESH_TOKEN_KEY = 'refresh_token';
-
 class AuthService {
+    constructor() {
+        this.accessToken = null;
+    }
+
     getAccessToken() {
-        return localStorage.getItem(ACCESS_TOKEN_KEY);
+        return this.accessToken;
     }
 
-    getRefreshToken() {
-        return localStorage.getItem(REFRESH_TOKEN_KEY);
+    setAccessToken(token) {
+        this.accessToken = token;
     }
 
-    setTokens(accessToken, refreshToken) {
-        localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-    }
-
-    clearTokens() {
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
+    clearAccessToken() {
+        this.accessToken = null;
     }
 
     isAuthenticated() {
@@ -37,11 +32,10 @@ class AuthService {
 
         const data = await response.json();
         
-        // Handle DefaultApiResponse and UserProfileDTO structure from backend
+        // Access token from response body
         const token = data.body.token; 
-        const refreshToken = data.body.refreshToken || ''; 
+        this.setAccessToken(token);
         
-        this.setTokens(token, refreshToken);
         return data.body;
     }
 
@@ -56,30 +50,44 @@ class AuthService {
             throw new Error('Registration failed');
         }
 
-        return await response.json();
+        const data = await response.json();
+        if (data.body && data.body.token) {
+            this.setAccessToken(data.body.token);
+        }
+        return data;
     }
 
     async refresh() {
-        const refreshToken = this.getRefreshToken();
-        if (!refreshToken) throw new Error('No refresh token');
-
-        const response = await fetch(`/api/v1/iam-service/auth/refresh/token?token=${refreshToken}`, {
+        // We don't need to pass the refresh token manually anymore, 
+        // it's sent automatically via HttpOnly cookie
+        const response = await fetch('/api/v1/iam-service/auth/refresh/token', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
 
         if (!response.ok) {
-            this.clearTokens();
+            this.clearAccessToken();
             throw new Error('Refresh failed');
         }
 
         const data = await response.json();
-        this.setTokens(data.body.token, data.body.refreshToken || '');
-        return data.body.token;
+        const newToken = data.body.token;
+        this.setAccessToken(newToken);
+        return newToken;
     }
 
-    logout() {
-        this.clearTokens();
+    async logout() {
+        this.clearAccessToken();
+        
+        // Call backend to clear refresh token cookie
+        try {
+            await fetch('/api/v1/iam-service/auth/logout', {
+                method: 'POST'
+            });
+        } catch (error) {
+            console.error('Logout failed on server', error);
+        }
+        
         window.location.hash = '#/login';
     }
 }

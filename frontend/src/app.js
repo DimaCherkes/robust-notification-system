@@ -32,8 +32,12 @@ async function router() {
 
     // Route Guard: Redirect to login if route is private and user is not authenticated
     if (route.private && !authService.isAuthenticated()) {
-        window.location.hash = '#/login';
-        return;
+        try {
+            await authService.refresh();
+        } catch (error) {
+            window.location.hash = '#/login';
+            return;
+        }
     }
 
     // Render navigation component
