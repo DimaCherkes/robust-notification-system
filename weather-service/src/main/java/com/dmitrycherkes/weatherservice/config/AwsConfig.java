@@ -27,17 +27,14 @@ public class AwsConfig {
     @Value("${spring.cloud.aws.region.static}")
     private String region;
 
+    @Value("${spring.cloud.aws.endpoint}")
+    private String endpoint;
+
     @Value("${spring.cloud.aws.credentials.access-key:}")
     private String accessKey;
 
     @Value("${spring.cloud.aws.credentials.secret-key:}")
     private String secretKey;
-
-    @Value("${aws.use-static-credentials:false}")
-    private boolean useStaticCredentials;
-
-    @Value("${spring.cloud.aws.endpoint:}")
-    private String endpoint;
 
     /**
      * Provides credentials based on the current environment.
@@ -46,7 +43,7 @@ public class AwsConfig {
      */
     @Bean
     public AwsCredentialsProvider awsCredentialsProvider() {
-        if (useStaticCredentials && !accessKey.isEmpty() && !secretKey.isEmpty()) {
+        if (!accessKey.isEmpty() && !secretKey.isEmpty()) {
             return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
         }
         return DefaultCredentialsProvider.create();
