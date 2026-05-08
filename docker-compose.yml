@@ -27,11 +27,9 @@ services:
     depends_on:
       iam-service-db:
         condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://iam-service-db:5432/iam_db
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    env_file:
+      - .env
+      - ./iam-service/.env
     ports:
       - "8180:8180"
     networks:
@@ -68,13 +66,9 @@ services:
         condition: service_healthy
       localstack:
         condition: service_healthy
-    environment:
-      PROFILE: ${PROFILE:-docker}
-      SPRING_DATASOURCE_URL: jdbc:postgresql://subscription-service-db:5432/subscription_db
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      AWS_ENDPOINT: http://localstack:4566
+    env_file:
+      - .env
+      - ./subscription-service/.env
     ports:
       - "8181:8181"
     networks:
@@ -110,18 +104,9 @@ services:
         condition: service_healthy
       localstack:
         condition: service_healthy
-    environment:
-      PROFILE: ${PROFILE:-docker}
-      SPRING_DATASOURCE_URL: jdbc:postgresql://weather-service-db:5432/weather_db
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      AWS_ENDPOINT: http://localstack:4566
-      WEATHER_API_KEY: ${WEATHER_API_KEY:-dummy_key}
-      DATABASE_NAME: ${DATABASE_NAME:-bachelor}
-      DATABASE_URL: ${DATABASE_URL}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_USER: ${DATABASE_USER}
+    env_file:
+      - .env
+      - ./weather-service/.env
     ports:
       - "8182:8182"
     networks:
@@ -157,14 +142,9 @@ services:
         condition: service_healthy
       localstack:
         condition: service_healthy
-    environment:
-      PROFILE: ${PROFILE:-docker}
-      SPRING_DATASOURCE_URL: jdbc:postgresql://decision-service-db:5432/decision_db
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      AWS_ENDPOINT: http://localstack:4566
-      WEATHER_API_KEY: ${WEATHER_API_KEY:-dummy_key}
+    env_file:
+      - .env
+      - ./decision-service/.env
     ports:
       - "8183:8183"
     networks:
