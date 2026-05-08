@@ -16,3 +16,38 @@ The **IAM (Identity and Access Management) Service** is responsible for user aut
     - Centralized security configurations.
     - Global exception handling for authentication and authorization errors.
 - **Tech Stack**: Spring Boot, Spring Security, JPA, PostgreSQL, Flyway.
+
+
+## Deployment to AWS Cloud
+
+Follow these steps to build, containerize, and deploy the service to the AWS environment.
+
+### 1. Push image to ECR 
+Build the Docker image.
+If you use MacOS on Silicon chip, add --platform flag:
+```shell
+docker build --platform linux/amd64 -f docker/Dockerfile -t bachelor/iam-service .
+```
+
+Tag the image for Amazon ECR repository:
+```shell
+docker tag bachelor/iam-service:latest 631124976834.dkr.ecr.eu-central-1.amazonaws.com/bachelor/iam-service:latest
+```
+
+Authenticate into AWS ECR
+```shell
+export AWS_PROFILE=your-aws-profile-name # optional, if you have multiple AWS profiles configured
+```
+
+```shell
+aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 631124976834.dkr.ecr.eu-central-1.amazonaws.com
+```
+
+Push the image to ECR
+```shell
+docker push 631124976834.dkr.ecr.eu-central-1.amazonaws.com/bachelor/iam-service:latest
+```
+
+### 2. Deploy to ECS
+
+instructions to update the ECS service
