@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.dmitrycherkes</groupId>
     <artifactId>weather-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>weather-service</name>
     <description>weather-service</description>
@@ -33,6 +33,10 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>

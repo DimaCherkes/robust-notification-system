@@ -1,9 +1,9 @@
 #!/bin/bash
-# Настройки
+# Settings
 REGION="eu-central-1"
 PROFILE="bachelor"
 
-# Проверка наличия AWS CLI и профиля
+# Check if AWS CLI is installed and profile exists
 if ! aws sts get-caller-identity --profile $PROFILE >/dev/null 2>&1; then
     echo "Error: AWS profile '$PROFILE' not found or credentials invalid."
     exit 1
@@ -18,7 +18,7 @@ echo "Region:     $REGION"
 echo "Profile:    $PROFILE"
 echo "------------------------------------------"
 
-# 1. Создание SNS Topics
+# 1. Create SNS Topics
 echo "Creating SNS Topics..."
 IAM_TOPIC_ARN=$(aws sns create-topic --name iam-produce-topic --region $REGION --profile $PROFILE --query TopicArn --output text)
 SUB_TOPIC_ARN=$(aws sns create-topic --name subscription-produce-topic --region $REGION --profile $PROFILE --query TopicArn --output text)
@@ -27,14 +27,14 @@ echo "SNS Topics created:"
 echo " - $IAM_TOPIC_ARN"
 echo " - $SUB_TOPIC_ARN"
 
-# 2. Создание SQS Queues
+# 2. Create SQS Queues
 echo "Creating SQS Queues..."
 SUB_QUEUE_URL=$(aws sqs create-queue --queue-name subscription-consume-queue --region $REGION --profile $PROFILE --query QueueUrl --output text)
 WEATHER_QUEUE_URL=$(aws sqs create-queue --queue-name weather-consume-queue --region $REGION --profile $PROFILE --query QueueUrl --output text)
 DECISION_QUEUE_URL=$(aws sqs create-queue --queue-name decision-consume-queue --region $REGION --profile $PROFILE --query QueueUrl --output text)
 NOTIF_QUEUE_URL=$(aws sqs create-queue --queue-name notification-consume-queue --region $REGION --profile $PROFILE --query QueueUrl --output text)
 
-# Получаем ARN очередей (нужны для подписки)
+# Get queue ARNs (required for subscriptions)
 SUB_QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url $SUB_QUEUE_URL --attribute-names QueueArn --region $REGION --profile $PROFILE --query Attributes.QueueArn --output text)
 WEATHER_QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url $WEATHER_QUEUE_URL --attribute-names QueueArn --region $REGION --profile $PROFILE --query Attributes.QueueArn --output text)
 DECISION_QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url $DECISION_QUEUE_URL --attribute-names QueueArn --region $REGION --profile $PROFILE --query Attributes.QueueArn --output text)
@@ -42,10 +42,10 @@ NOTIF_QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url $NOTIF_QUEUE_URL --at
 
 echo "SQS Queues created."
 
-# 3. Настройка разрешений (Allow SNS to send to SQS)
+# 3. Configure permissions (Allow SNS to send to SQS)
 echo "Setting Access Policies (allowing SNS to send messages to SQS)..."
 for q_url in $SUB_QUEUE_URL $WEATHER_QUEUE_URL $DECISION_QUEUE_URL $NOTIF_QUEUE_URL; do
-    # Получаем ARN текущей очереди для политики
+    # Get current queue ARN for the policy
     CURRENT_Q_ARN=$(aws sqs get-queue-attributes --queue-url $q_url --attribute-names QueueArn --region $REGION --profile $PROFILE --query Attributes.QueueArn --output text)
     
     POLICY='{
@@ -66,7 +66,7 @@ for q_url in $SUB_QUEUE_URL $WEATHER_QUEUE_URL $DECISION_QUEUE_URL $NOTIF_QUEUE_
     aws sqs set-queue-attributes --queue-url $q_url --attributes "{\"Policy\":\"$(echo $POLICY | sed 's/"/\\"/g')\"}" --region $REGION --profile $PROFILE
 done
 
-# 4. Подписки (Subscriptions) с фильтрами
+# 4. Configure Subscriptions with filters
 echo "Configuring Subscriptions..."
 
 # IAM Topic -> Subscriptions

@@ -10,11 +10,12 @@ RUN mvn clean package -DskipTests
 
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-alpine
+RUN apk add --no-cache curl
 WORKDIR /srv
 # Copy only the built JAR from the builder stage
 COPY --from=build /app/target/*.jar /srv/decision-service.jar
 COPY docker/decision-service.sh /srv/
 RUN chmod +x /srv/decision-service.sh
 
-EXPOSE 8183
+EXPOSE 8080
 ENTRYPOINT ["/srv/decision-service.sh"]

@@ -10,11 +10,12 @@ RUN mvn clean package -DskipTests
 
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-alpine
+RUN apk add --no-cache curl
 WORKDIR /srv
 # Copy only the built JAR from the builder stage
 COPY --from=build /app/target/*.jar /srv/weather-service.jar
 COPY docker/weather-service.sh /srv/
 RUN chmod +x /srv/weather-service.sh
 
-EXPOSE 8182
+EXPOSE 8080
 ENTRYPOINT ["/srv/weather-service.sh"]

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.dmytrocherkes</groupId>
     <artifactId>subscription-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>subscription-service</name>
     <description>subscription-service</description>
