@@ -51,3 +51,11 @@ docker push 631124976834.dkr.ecr.eu-central-1.amazonaws.com/bachelor/iam-service
 ### 2. Deploy to ECS
 
 instructions to update the ECS service
+
+```shell
+aws ecs update-service --cluster bachelor-cluster --service bachelor-iam-task-service --force-new-deployment --profile bachelor
+```
+
+```shell
+aws logs tail /ecs/bachelor-iam-task --follow --region eu-central-1 --profile bachelor
+```
