@@ -34,6 +34,24 @@ public class ApiUtils {
         return authorizationCookie;
     }
 
+    public static Cookie createRefreshTokenCookie(String value) {
+        Cookie refreshTokenCookie = new Cookie("refresh_token", value);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(604800); // 7 days
+        return refreshTokenCookie;
+    }
+
+    public static Cookie clearRefreshTokenCookie() {
+        Cookie refreshTokenCookie = new Cookie("refresh_token", "");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        return refreshTokenCookie;
+    }
+
     public static String generateUuidWithoutDash() {
         return UUID.randomUUID().toString().replace(ApiConstants.DASH, StringUtils.EMPTY);
     }

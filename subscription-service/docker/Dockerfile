@@ -16,5 +16,5 @@ COPY --from=build /app/target/*.jar /srv/subscription-service.jar
 COPY docker/subscription-service.sh /srv/
 RUN chmod +x /srv/subscription-service.sh
 
-EXPOSE 8181
+EXPOSE 8080
 ENTRYPOINT ["/srv/subscription-service.sh"]

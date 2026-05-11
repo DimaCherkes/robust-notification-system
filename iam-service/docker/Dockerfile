@@ -16,5 +16,5 @@ COPY --from=build /app/target/*.jar /srv/iam-service.jar
 COPY docker/iam-service.sh /srv/
 RUN chmod +x /srv/iam-service.sh
 
-EXPOSE 8180
+EXPOSE 8080
 ENTRYPOINT ["/srv/iam-service.sh"]

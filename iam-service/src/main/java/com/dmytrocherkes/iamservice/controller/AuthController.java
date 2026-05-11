@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,29 +28,38 @@ public class AuthController {
 
     @PostMapping(ApiPath.API_LOGIN_PATH)
     public ResponseEntity<DefaultApiResponse<UserProfileDTO>> login(
-            @RequestBody @Valid LoginRequest request) {
+            @RequestBody @Valid LoginRequest request,
+            HttpServletResponse response) {
         log.trace(ApiLogMessage.NAME_OF_CURRENT_METHOD.getValue(), ApiUtils.getMethodName());
 
         UserProfileDTO userProfileDTO = authService.login(request);
         DefaultApiResponse<UserProfileDTO> result = DefaultApiResponse.createSuccessfulResponse(ApiMessage.USER_LOGIN_SUCCESSFUL.getMessage(), userProfileDTO);
-        Cookie authorizationCookie = ApiUtils.createAuthCookie(result.getBody().getToken());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.SET_COOKIE, authorizationCookie.toString());
+        if (userProfileDTO.getRefreshToken() != null) {
+            Cookie refreshTokenCookie = ApiUtils.createRefreshTokenCookie(userProfileDTO.getRefreshToken());
+            response.addCookie(refreshTokenCookie);
+        }
 
-        return ResponseEntity.ok().headers(headers).body(result);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping(ApiPath.API_REFRESH_TOKEN_PATH)
     public ResponseEntity<DefaultApiResponse<UserProfileDTO>> refreshToken(
-            @RequestParam(name = "token") String refreshToken,
+            @CookieValue(name = "refresh_token", required = false) String refreshToken,
             HttpServletResponse response) {
         log.trace(ApiLogMessage.NAME_OF_CURRENT_METHOD.getValue(), ApiUtils.getMethodName());
 
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         UserProfileDTO userProfileDTO = authService.refreshAccessToken(refreshToken);
         DefaultApiResponse<UserProfileDTO> result = DefaultApiResponse.createSuccessfulResponse(ApiMessage.USER_CREATED_OR_UPDATED.getMessage(), userProfileDTO);
-        Cookie authorizationCookie = ApiUtils.createAuthCookie(userProfileDTO.getToken());
-        response.addCookie(authorizationCookie);
+
+        if (userProfileDTO.getRefreshToken() != null) {
+            Cookie refreshTokenCookie = ApiUtils.createRefreshTokenCookie(userProfileDTO.getRefreshToken());
+            response.addCookie(refreshTokenCookie);
+        }
 
         return ResponseEntity.ok(result);
     }
@@ -63,10 +72,20 @@ public class AuthController {
 
         UserProfileDTO userProfileDTO = authService.registerUser(request);
         DefaultApiResponse<UserProfileDTO> result = DefaultApiResponse.createSuccessfulResponse(ApiMessage.USER_CREATED_OR_UPDATED.getMessage(), userProfileDTO);
-        Cookie authorizationCookie = ApiUtils.createAuthCookie(userProfileDTO.getToken());
-        response.addCookie(authorizationCookie);
+
+        if (userProfileDTO.getRefreshToken() != null) {
+            Cookie refreshTokenCookie = ApiUtils.createRefreshTokenCookie(userProfileDTO.getRefreshToken());
+            response.addCookie(refreshTokenCookie);
+        }
 
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        log.trace(ApiLogMessage.NAME_OF_CURRENT_METHOD.getValue(), ApiUtils.getMethodName());
+        response.addCookie(ApiUtils.clearRefreshTokenCookie());
+        return ResponseEntity.ok().build();
     }
 
 }
