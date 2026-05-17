@@ -36,7 +36,7 @@ docker tag bachelor/iam-service:latest 631124976834.dkr.ecr.eu-central-1.amazona
 
 Authenticate into AWS ECR
 ```shell
-export AWS_PROFILE=your-aws-profile-name # optional, if you have multiple AWS profiles configured
+export AWS_PROFILE=bachelor # your aws profile, optional, use it if you have multiple AWS profiles configured
 ```
 
 ```shell

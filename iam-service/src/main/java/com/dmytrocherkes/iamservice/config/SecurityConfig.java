@@ -6,6 +6,7 @@ import com.dmytrocherkes.iamservice.security.handler.AccessRestrictionHandler;
 import com.dmytrocherkes.iamservice.service.impl.UserServiceImpl;
 import com.dmytrocherkes.iamservice.service.model.IamServiceUserRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,6 +43,9 @@ public class SecurityConfig {
 
     private static final String GET = "GET";
     private static final String POST = "POST";
+
+    @Value("${app.allowedorigins:http://localhost}")
+    private String allowedOrigins;
 
     private static final AntPathRequestMatcher[] NOT_SECURED_URLS = new AntPathRequestMatcher[]{
             new AntPathRequestMatcher(ApiPath.BASE_PATH + ApiPath.API_AUTH_PATH + ApiPath.API_LOGIN_PATH, POST),
@@ -83,7 +87,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost"));
+
+        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        configuration.setAllowedOrigins(origins);
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);
