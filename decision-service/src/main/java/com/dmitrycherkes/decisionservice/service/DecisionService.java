@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -64,6 +65,18 @@ public class DecisionService {
 
     private void processSubscription(Subscription subscription, List<WeatherForecast> forecasts) {
         OffsetDateTime now = OffsetDateTime.now();
+
+        // Throttling: Check if we already sent an alert in the last 12 hours
+        Optional<AlertHistory> lastAlert = alertHistoryRepository.findFirstBySubscriptionIdOrderByTriggeredAtDesc(subscription.getId());
+        if (lastAlert.isPresent()) {
+            OffsetDateTime lastTriggeredAt = lastAlert.get().getTriggeredAt();
+            if (lastTriggeredAt.isAfter(now.minusHours(12))) {
+                log.debug("Throttling active for subscription {}. Last alert was at {}. Skipping.", 
+                        subscription.getId(), lastTriggeredAt);
+                return;
+            }
+        }
+
         OffsetDateTime maxNotificationTime = now.plusHours(subscription.getNotifyBeforeHours());
 
         // Filter forecasts that fall within the notification window
@@ -100,10 +113,8 @@ public class DecisionService {
 
         alertHistoryRepository.save(alert);
 
-        // Deactivate subscription to prevent spamming
-        deactivateSubscription(subscription);
-
         // TODO: Send notification to SNS/SQS for Notification Service
+        // Removed automatic deactivation to allow recurring alerts with throttling
     }
 
     private void deactivateSubscription(Subscription subscription) {
