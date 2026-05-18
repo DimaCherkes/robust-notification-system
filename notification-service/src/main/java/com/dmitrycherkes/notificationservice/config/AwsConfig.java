@@ -10,6 +10,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ses.SesAsyncClient;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 import java.net.URI;
@@ -40,6 +41,17 @@ public class AwsConfig {
     @Bean
     public SqsAsyncClient sqsAsyncClient(AwsCredentialsProvider credentialsProvider) {
         var builder = SqsAsyncClient.builder()
+                .region(Region.of(region))
+                .credentialsProvider(credentialsProvider);
+        if (!endpoint.isEmpty()) {
+            builder.endpointOverride(URI.create(endpoint));
+        }
+        return builder.build();
+    }
+
+    @Bean
+    public SesAsyncClient sesAsyncClient(AwsCredentialsProvider credentialsProvider) {
+        var builder = SesAsyncClient.builder()
                 .region(Region.of(region))
                 .credentialsProvider(credentialsProvider);
         if (!endpoint.isEmpty()) {

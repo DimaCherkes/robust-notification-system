@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS v1_notification_service;
 
 CREATE TABLE IF NOT EXISTS v1_notification_service.users (
-    id UUID PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     username VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS v1_notification_service.users (
 
 CREATE TABLE IF NOT EXISTS v1_notification_service.notification_history (
     id UUID PRIMARY KEY,
-    user_id UUID NOT NULL,
+    user_id BIGINT NOT NULL,
     subscription_id UUID NOT NULL,
     recipient_email VARCHAR(255) NOT NULL,
     subject VARCHAR(255) NOT NULL,
