@@ -33,7 +33,6 @@ public class NotificationQueueListener {
         log.debug("Received raw payload: {}", rawPayload);
 
         try {
-            // 1. Determine the action (either from SQS header or from SNS JSON body)
             String action = sqsHeaderAction;
             JsonNode root = null;
 
@@ -53,18 +52,10 @@ public class NotificationQueueListener {
 
             log.info("Processing action: {}", action);
 
-            // 2. Handle different actions
             switch (action) {
-                case "sent_email" -> {
-                    if (root == null) root = objectMapper.readTree(rawPayload);
-                    String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
-                    handleSendEmail(messageContent);
-                }
-                case "upsert_user" -> {
-                    if (root == null) root = objectMapper.readTree(rawPayload);
-                    String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
-                    handleUpsertUser(messageContent);
-                }
+                case "sent_email" -> handleSendEmail(rawPayload);
+                case "upsert_user" -> handleUpsertUser(rawPayload);
+                // todo: add "delete_user"
                 default -> log.warn("Unknown action type: {}", action);
             }
 
@@ -85,7 +76,7 @@ public class NotificationQueueListener {
             NotificationHistory history = NotificationHistory.builder()
                     .user(user)
                     .subscriptionId(emailDto.getSubscriptionId())
-                    .recipientEmail(emailDto.getRecipientEmail())
+                    .recipientEmail(user.getEmail())
                     .subject(emailDto.getSubject())
                     .content(emailDto.getContent())
                     .status(NotificationStatus.PENDING)
@@ -93,7 +84,7 @@ public class NotificationQueueListener {
             history = notificationHistoryRepository.save(history);
 
             final NotificationHistory finalHistory = history;
-            emailService.sendEmail(emailDto.getRecipientEmail(), emailDto.getSubject(), emailDto.getContent())
+            emailService.sendEmail(user.getEmail(), emailDto.getSubject(), emailDto.getContent())
                     .whenComplete((response, error) -> {
                         if (error != null) {
                             finalHistory.setStatus(NotificationStatus.FAILED);

@@ -86,3 +86,26 @@ docker exec -it aws-infra awslocal sqs purge-queue \
     --queue-url http://localhost:4566/000000000000/weather-consume-queue \
     --region eu-central-1
 ```
+
+## AWS environment
+
+```shell
+aws sqs send-message \
+    --profile bachelor \
+    --queue-url https://sqs.eu-central-1.amazonaws.com/631124976834/notification-consume-queue \
+    --message-body '{
+      "userId": 10, 
+      "subscriptionId": "00000000-0000-0000-0000-000000000000", 
+      "subject": "Test SES", 
+      "content": "Hello from direct SQS!"
+    }' \
+    --message-group-id "cam-1" \
+    --message-deduplication-id "$(date +%s%N)" \
+    --message-attributes '{
+      "action": {
+        "DataType": "String",
+        "StringValue": "sent_email"
+      }
+    }'
+
+```

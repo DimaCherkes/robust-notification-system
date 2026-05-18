@@ -7,7 +7,6 @@ import java.util.UUID;
 public class EmailMessageDto {
     private Long userId;
     private UUID subscriptionId;
-    private String recipientEmail;
     private String subject;
     private String content;
 }

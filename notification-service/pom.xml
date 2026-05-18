@@ -44,6 +44,12 @@
             <artifactId>spring-cloud-aws-starter-ses</artifactId>
         </dependency>
 
+        <!-- web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <!-- persistence layer -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

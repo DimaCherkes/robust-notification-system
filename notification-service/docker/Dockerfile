@@ -14,7 +14,7 @@ RUN apk add --no-cache curl
 WORKDIR /srv
 # Copy only the built JAR from the builder stage
 COPY --from=build /app/target/*.jar /srv/notification-service.jar
-COPY docker/decision-service.sh /srv/
+COPY docker/notification-service.sh /srv/
 RUN chmod +x /srv/notification-service.sh
 
 EXPOSE 8080

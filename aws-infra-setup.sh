@@ -71,7 +71,7 @@ echo "Configuring Subscriptions..."
 
 # IAM Topic -> Subscriptions
 aws sns subscribe --topic-arn $IAM_TOPIC_ARN --protocol sqs --notification-endpoint $SUB_QUEUE_ARN --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\"]}"}' --region $REGION --profile $PROFILE > /dev/null
-aws sns subscribe --topic-arn $IAM_TOPIC_ARN --protocol sqs --notification-endpoint $NOTIF_QUEUE_ARN --attributes '{"FilterPolicy": "{\"action\": [\"user_create\", \"user_update\", \"user_delete\"]}"}' --region $REGION --profile $PROFILE > /dev/null
+aws sns subscribe --topic-arn $IAM_TOPIC_ARN --protocol sqs --notification-endpoint $NOTIF_QUEUE_ARN --attributes '{"FilterPolicy": "{\"action\": [\"user_upsert\", \"user_delete\"]}"}' --region $REGION --profile $PROFILE > /dev/null
 aws sns subscribe --topic-arn $IAM_TOPIC_ARN --protocol sqs --notification-endpoint $DECISION_QUEUE_ARN --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\"]}"}' --region $REGION --profile $PROFILE > /dev/null
 
 # Subscription Topic -> Subscriptions
