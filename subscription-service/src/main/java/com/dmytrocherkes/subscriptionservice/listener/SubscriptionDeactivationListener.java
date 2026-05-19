@@ -53,8 +53,8 @@ public class SubscriptionDeactivationListener {
                     log.debug("Extracted UUID string: {}", idStr);
                     subscriptionService.deactivateAfterTrigger(UUID.fromString(idStr));
                 }
-                case "future potential event type" -> {
-                    log.debug("This is future potential case");
+                case "user_delete" -> {
+                    // todo: impl removing user by id (should be configured cascade delete for related entities in sql V1__init.sql if it is still not implemented)
                 }
                 default -> log.warn("Unknown action type: {}", action);
             }

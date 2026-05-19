@@ -1,4 +1,4 @@
-package com.dmytrocherkes.iamservice.service.impl;
+package com.dmytrocherkes.iamservice.service;
 
 import com.dmytrocherkes.iamservice.mapper.UserMapper;
 import com.dmytrocherkes.iamservice.model.constants.ApiErrorMessage;

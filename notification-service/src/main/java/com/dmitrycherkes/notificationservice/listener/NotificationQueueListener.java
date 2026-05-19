@@ -54,14 +54,18 @@ public class NotificationQueueListener {
 
             switch (action) {
                 case "sent_email" -> handleSendEmail(rawPayload);
-                case "upsert_user" -> handleUpsertUser(rawPayload);
-                // todo: add "delete_user"
+                case "user_upsert" -> handleUpsertUser(rawPayload);
+                case "user_delete" -> handleDeleteUser(rawPayload);
                 default -> log.warn("Unknown action type: {}", action);
             }
 
         } catch (Exception e) {
             log.error("Failed to parse or process message: {}", rawPayload, e);
         }
+    }
+
+    private void handleDeleteUser(String messageContent) {
+        // todo: impl removing user by id (should be configured cascade delete for related entities in sql V1__init.sql)
     }
 
     private void handleSendEmail(String messageContent) {

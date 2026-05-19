@@ -70,6 +70,9 @@ public class SubscriptionListener {
                     WeatherUpdateEvent event = objectMapper.readValue(messageContent, WeatherUpdateEvent.class);
                     weatherForecastService.upsertWeatherForecast(event);
                 }
+                case "user_delete" -> {
+                    // todo: impl removing user by id (should be configured cascade delete for related entities in sql V1__init.sql if it is still not implemented)
+                }
                 default -> log.warn("Unknown action type: {}", action);
             }
 
