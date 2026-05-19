@@ -35,7 +35,7 @@ public class SubscriptionService {
     private final SnsPublisher snsPublisher;
     private final CityService cityService;
 
-    @Value("${app.aws.sns.subscription-topic-arn}")
+    @Value("${app.aws.sns.subscription-topic-arn:}")
     private String subscriptionTopicArn;
 
     @Transactional
@@ -214,5 +214,29 @@ public class SubscriptionService {
         cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() - 1);
 
         log.info("Subscription {} deactivated. Triggered {} times.", id, subscription.getTriggeredTimes());
+    }
+
+    @Transactional
+    public void deleteAllByUserId(Integer userId) {
+        log.info("Deleting all subscriptions for user ID: {}", userId);
+        List<Subscription> userSubscriptions = subscriptionRepository.findAllByCreatedByUserId(userId);
+        
+        for (Subscription subscription : userSubscriptions) {
+            City city = subscription.getCity();
+            if (Boolean.TRUE.equals(subscription.getIsActive())) {
+                cityService.updateActiveSubscriptionsCount(city, city.getActiveSubscriptionsCount() - 1);
+            }
+            
+            UUID subscriptionId = subscription.getId();
+            subscriptionRepository.delete(subscription);
+
+            // Notify other services about subscription deletion
+            snsPublisher.publishMessage(
+                    subscriptionTopicArn,
+                    subscriptionId,
+                    Map.of(AwsMessageTypes.ACTION.getType(), AwsMessageTypes.SUBSCRIPTION_DELETED.getType())
+            );
+        }
+        log.info("Successfully deleted {} subscriptions for user ID: {}", userSubscriptions.size(), userId);
     }
 }

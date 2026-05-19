@@ -1,4 +1,4 @@
-package com.dmytrocherkes.iamservice.service.impl;
+package com.dmytrocherkes.iamservice.service;
 
 import com.dmytrocherkes.iamservice.mapper.UserMapper;
 import com.dmytrocherkes.iamservice.model.constants.ApiErrorMessage;
@@ -6,6 +6,7 @@ import com.dmytrocherkes.iamservice.model.dto.user.UserProfileDTO;
 import com.dmytrocherkes.iamservice.model.entity.RefreshToken;
 import com.dmytrocherkes.iamservice.model.entity.Role;
 import com.dmytrocherkes.iamservice.model.entity.User;
+import com.dmytrocherkes.iamservice.model.enums.AwsMessageTypes;
 import com.dmytrocherkes.iamservice.model.exception.InvalidDataException;
 import com.dmytrocherkes.iamservice.model.exception.NotFoundException;
 import com.dmytrocherkes.iamservice.model.request.LoginRequest;
@@ -40,6 +41,7 @@ public class AuthServiceImpl {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessValidator accessValidator;
+    private final SnsPublisher snsPublisher;
 
     public UserProfileDTO login(LoginRequest request) {
         try {
@@ -85,7 +87,8 @@ public class AuthServiceImpl {
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
         newUser.setRoles(roles);
-        userRepository.save(newUser);
+        User persistedUser = userRepository.save(newUser);
+        snsPublisher.publishUserChangesEventToSns(persistedUser, AwsMessageTypes.USER_UPSERT);
 
         RefreshToken refreshToken = refreshTokenService.generateOrUpdateRefreshToken(newUser);
         String token = jwtTokenProvider.generateToken(newUser);

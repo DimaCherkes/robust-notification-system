@@ -8,7 +8,7 @@ import com.dmytrocherkes.iamservice.model.request.UpdateUserRequest;
 import com.dmytrocherkes.iamservice.model.request.UserSearchRequest;
 import com.dmytrocherkes.iamservice.model.response.DefaultApiResponse;
 import com.dmytrocherkes.iamservice.model.response.PaginationResponse;
-import com.dmytrocherkes.iamservice.service.impl.UserServiceImpl;
+import com.dmytrocherkes.iamservice.service.UserServiceImpl;
 import com.dmytrocherkes.iamservice.utils.ApiUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

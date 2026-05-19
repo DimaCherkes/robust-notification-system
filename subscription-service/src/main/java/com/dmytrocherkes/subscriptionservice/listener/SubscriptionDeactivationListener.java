@@ -53,8 +53,12 @@ public class SubscriptionDeactivationListener {
                     log.debug("Extracted UUID string: {}", idStr);
                     subscriptionService.deactivateAfterTrigger(UUID.fromString(idStr));
                 }
-                case "future potential event type" -> {
-                    log.debug("This is future potential case");
+                case "user_delete" -> {
+                    if (root == null) root = objectMapper.readTree(rawPayload);
+                    String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
+                    JsonNode messageNode = objectMapper.readTree(messageContent);
+                    Integer userId = messageNode.has("userId") ? messageNode.get("userId").asInt() : messageNode.get("id").asInt();
+                    subscriptionService.deleteAllByUserId(userId);
                 }
                 default -> log.warn("Unknown action type: {}", action);
             }

@@ -41,6 +41,13 @@ awslocal sns subscribe \
     --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:decision-consume-queue \
     --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\"]}"}'
 
+### send message to decision-queue when user delete account
+awslocal sns subscribe \
+    --topic-arn arn:aws:sns:eu-central-1:000000000000:iam-produce-topic \
+    --protocol sqs \
+    --notification-endpoint arn:aws:sqs:eu-central-1:000000000000:notification-consume-queue \
+    --attributes '{"FilterPolicy": "{\"action\": [\"user_delete\", \"user_upsert\"]}"}'
+
 ##  Configure Subscription Topic
 
 ### send message to weather-queue when city.active_status change (ON_USE (1), NOT_USED (1))

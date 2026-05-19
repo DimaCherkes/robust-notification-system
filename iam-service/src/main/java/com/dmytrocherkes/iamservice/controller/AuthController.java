@@ -6,7 +6,7 @@ import com.dmytrocherkes.iamservice.model.dto.user.UserProfileDTO;
 import com.dmytrocherkes.iamservice.model.request.LoginRequest;
 import com.dmytrocherkes.iamservice.model.request.RegistrationUserRequest;
 import com.dmytrocherkes.iamservice.model.response.DefaultApiResponse;
-import com.dmytrocherkes.iamservice.service.impl.AuthServiceImpl;
+import com.dmytrocherkes.iamservice.service.AuthServiceImpl;
 import com.dmytrocherkes.iamservice.utils.ApiUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

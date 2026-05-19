@@ -54,8 +54,8 @@ public class NotificationQueueListener {
 
             switch (action) {
                 case "sent_email" -> handleSendEmail(rawPayload);
-                case "upsert_user" -> handleUpsertUser(rawPayload);
-                // todo: add "delete_user"
+                case "user_upsert" -> handleUpsertUser(rawPayload);
+                case "user_delete" -> handleDeleteUser(rawPayload);
                 default -> log.warn("Unknown action type: {}", action);
             }
 
@@ -64,9 +64,27 @@ public class NotificationQueueListener {
         }
     }
 
-    private void handleSendEmail(String messageContent) {
+    private void handleDeleteUser(String rawPayload) {
         try {
+            JsonNode root = objectMapper.readTree(rawPayload);
+            String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
+            JsonNode messageNode = objectMapper.readTree(messageContent);
+            
+            Long userId = messageNode.has("userId") ? messageNode.get("userId").asLong() : messageNode.get("id").asLong();
+            
+            userRepository.deleteById(userId);
+            log.info("User {} deleted successfully from notification-service", userId);
+        } catch (Exception e) {
+            log.error("Failed to process user_delete action", e);
+        }
+    }
+
+    private void handleSendEmail(String rawPayload) {
+        try {
+            JsonNode root = objectMapper.readTree(rawPayload);
+            String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
             EmailMessageDto emailDto = objectMapper.readValue(messageContent, EmailMessageDto.class);
+
             User user = userRepository.findById(emailDto.getUserId()).orElse(null);
             if (user == null) {
                 log.warn("User not found: {}", emailDto.getUserId());
@@ -100,22 +118,26 @@ public class NotificationQueueListener {
         }
     }
 
-    private void handleUpsertUser(String messageContent) {
+    private void handleUpsertUser(String rawPayload) {
         try {
-            UserMessageDto userDto = objectMapper.readValue(messageContent, UserMessageDto.class);
-            User user = userRepository.findById(userDto.getId())
-                    .orElse(new User());
+            JsonNode root = objectMapper.readTree(rawPayload);
+            String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
+            JsonNode messageNode = objectMapper.readTree(messageContent);
             
-            if (user.getId() == null) {
-                user.setId(userDto.getId());
-            }
-            user.setEmail(userDto.getEmail());
-            user.setUsername(userDto.getUsername());
+            Long userId = messageNode.has("userId") ? messageNode.get("userId").asLong() : messageNode.get("id").asLong();
+            String email = messageNode.get("email").asText();
+            String username = messageNode.has("username") ? messageNode.get("username").asText() : null;
+
+            User user = userRepository.findById(userId).orElse(new User());
+            
+            user.setId(userId);
+            user.setEmail(email);
+            user.setUsername(username);
             
             userRepository.save(user);
-            log.info("User {} upserted successfully", userDto.getId());
+            log.info("User {} upserted successfully in notification-service", userId);
         } catch (Exception e) {
-            log.error("Failed to process upsert_user action", e);
+            log.error("Failed to process user_upsert action", e);
         }
     }
 }

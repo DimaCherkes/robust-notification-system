@@ -3,7 +3,7 @@ package com.dmytrocherkes.iamservice.config;
 import com.dmytrocherkes.iamservice.controller.ApiPath;
 import com.dmytrocherkes.iamservice.security.filter.JwtRequestFilter;
 import com.dmytrocherkes.iamservice.security.handler.AccessRestrictionHandler;
-import com.dmytrocherkes.iamservice.service.impl.UserServiceImpl;
+import com.dmytrocherkes.iamservice.service.UserServiceImpl;
 import com.dmytrocherkes.iamservice.service.model.IamServiceUserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

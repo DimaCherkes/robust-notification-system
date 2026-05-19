@@ -2,27 +2,26 @@ import { authService } from '../services/authService.js';
 
 export const Navigation = () => {
     const isAuth = authService.isAuthenticated();
-    
+    const isDashboard = window.location.hash === '#/dashboard';
+
     return `
         <header>
             <h1>Robust Notification System</h1>
-            <nav id="nav">
+            <div class="nav-links">
                 ${isAuth ? `
-                    <a href="#/dashboard">Dashboard</a>
-                    <button id="logout-btn">Logout</button>
+                    <a href="#/dashboard" class="nav-link" style="${isDashboard ? 'color: #9333ea;' : ''}">Dashboard</a>
+                    <button id="logout-btn" class="primary-btn logout-btn">Logout</button>
                 ` : `
-                    <a href="#/login">Login</a>
-                    <a href="#/register">Register</a>
+                    <div style="display:flex; gap:1rem;">
+                        <a href="#/login" class="nav-link">Login</a>
+                        <a href="#/register" class="nav-link">Register</a>
+                    </div>
                 `}
-            </nav>
+            </div>
         </header>
     `;
 };
 
-/**
- * Since navigation is re-rendered on every route change, 
- * we use global event delegation for the logout button.
- */
 document.addEventListener('click', async (e) => {
     if (e.target && e.target.id === 'logout-btn') {
         await authService.logout();

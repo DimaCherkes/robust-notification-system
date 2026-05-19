@@ -70,6 +70,13 @@ public class SubscriptionListener {
                     WeatherUpdateEvent event = objectMapper.readValue(messageContent, WeatherUpdateEvent.class);
                     weatherForecastService.upsertWeatherForecast(event);
                 }
+                case "user_delete" -> {
+                    if (root == null) root = objectMapper.readTree(rawPayload);
+                    String messageContent = root.has("Message") ? root.get("Message").asText() : rawPayload;
+                    JsonNode messageNode = objectMapper.readTree(messageContent);
+                    Integer userId = messageNode.has("userId") ? messageNode.get("userId").asInt() : messageNode.get("id").asInt();
+                    subscriptionSyncService.deleteAllByUserId(userId);
+                }
                 default -> log.warn("Unknown action type: {}", action);
             }
 

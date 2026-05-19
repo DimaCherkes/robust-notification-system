@@ -1,4 +1,4 @@
-package com.dmytrocherkes.iamservice.service.impl;
+package com.dmytrocherkes.iamservice.service;
 
 import com.dmytrocherkes.iamservice.mapper.UserMapper;
 import com.dmytrocherkes.iamservice.model.constants.ApiErrorMessage;
@@ -6,6 +6,7 @@ import com.dmytrocherkes.iamservice.model.dto.user.UserDTO;
 import com.dmytrocherkes.iamservice.model.dto.user.UserSearchDTO;
 import com.dmytrocherkes.iamservice.model.entity.Role;
 import com.dmytrocherkes.iamservice.model.entity.User;
+import com.dmytrocherkes.iamservice.model.enums.AwsMessageTypes;
 import com.dmytrocherkes.iamservice.model.exception.DataExistException;
 import com.dmytrocherkes.iamservice.model.exception.NotFoundException;
 import com.dmytrocherkes.iamservice.model.request.NewUserRequest;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final AccessValidator accessValidator;
+    private final SnsPublisher snsPublisher;
 
     public UserDTO getById(@NonNull Integer userId) {
         User user = userRepository.findByIdAndDeletedFalse(userId)
@@ -79,6 +81,8 @@ public class UserServiceImpl implements UserDetailsService {
         user.setRoles(roles);
 
         User persistedUser = userRepository.save(user);
+        snsPublisher.publishUserChangesEventToSns(persistedUser, AwsMessageTypes.USER_UPSERT);
+
         return userMapper.toDto(persistedUser);
     }
 
@@ -97,9 +101,11 @@ public class UserServiceImpl implements UserDetailsService {
 
         userMapper.updateUser(user, request);
         user.setUpdatedAt(LocalDateTime.now());
-        user = userRepository.save(user);
 
-        return userMapper.toDto(user);
+        User persistedUser = userRepository.save(user);
+        snsPublisher.publishUserChangesEventToSns(persistedUser, AwsMessageTypes.USER_UPSERT);
+
+        return userMapper.toDto(persistedUser);
     }
 
     @Transactional
@@ -110,6 +116,7 @@ public class UserServiceImpl implements UserDetailsService {
         accessValidator.validateAdminOrOwnerAccess(userId);
 
         user.setDeleted(true);
+        snsPublisher.publishUserChangesEventToSns(user, AwsMessageTypes.USER_DELETE);
         userRepository.save(user);
     }
 

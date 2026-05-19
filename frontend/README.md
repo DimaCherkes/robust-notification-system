@@ -103,7 +103,7 @@ docker push 631124976834.dkr.ecr.eu-central-1.amazonaws.com/bachelor/frontend:la
 
 instructions to update the ECS service
 ```shell
-aws ecs update-service --cluster bachelor-cluster --service bachelor-frontend-task-service --force-new-deployment --profile bachelor
+aws ecs update-service --cluster bachelor-cluster --service bachelor-frontend-service --force-new-deployment --profile bachelor
 ```
 
 ```shell
