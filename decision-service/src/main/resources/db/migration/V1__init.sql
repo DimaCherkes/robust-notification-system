@@ -6,6 +6,7 @@ CREATE TABLE subscriptions
     id                  UUID PRIMARY KEY,
     user_id             INT NOT NULL,
     city_id             INT NOT NULL,
+    city_name           VARCHAR(100),
     notify_before_hours INT                      DEFAULT 0,
     last_synced_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

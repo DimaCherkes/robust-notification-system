@@ -6,7 +6,7 @@
 
     <groupId>com.dmytrocherkes</groupId>
     <artifactId>robust-notification-system</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <name>robust-notification-system</name>
@@ -18,6 +18,7 @@
         <module>subscription-service</module>
         <module>weather-service</module>
         <module>decision-service</module>
+        <module>notification-service</module>
     </modules>
 
     <properties>

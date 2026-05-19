@@ -1,5 +1,6 @@
 package com.dmitrycherkes.decisionservice.service;
 
+import com.dmitrycherkes.decisionservice.model.dto.NotificationMessageDTO;
 import com.dmitrycherkes.decisionservice.model.entity.AlertHistory;
 import com.dmitrycherkes.decisionservice.model.entity.Subscription;
 import com.dmitrycherkes.decisionservice.model.entity.SubscriptionRule;
@@ -35,8 +36,8 @@ public class DecisionService {
     private final SqsTemplate sqsTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${app.aws.sqs.subscription-queue}")
-    private String subscriptionQueue;
+    @Value("${app.aws.sqs.notification-queue}")
+    private String notificationQueue;
 
     @Scheduled(fixedDelayString = "${app.decision.process-delay-ms:60000}")
     @Transactional
@@ -113,29 +114,51 @@ public class DecisionService {
 
         alertHistoryRepository.save(alert);
 
-        // TODO: Send notification to SNS/SQS for Notification Service
-        // Removed automatic deactivation to allow recurring alerts with throttling
-    }
+        String subject = String.format("Weather Alert for %s", subscription.getCityName());
+        String content = buildAlertContent(subscription, forecast);
 
-    private void deactivateSubscription(Subscription subscription) {
-        log.info("Sending deactivation event for subscription: {}", subscription.getId());
+        NotificationMessageDTO message = NotificationMessageDTO.builder()
+                .userId(subscription.getUserId())
+                .subscriptionId(subscription.getId())
+                .subject(subject)
+                .content(content)
+                .build();
 
         try {
-            String message = objectMapper.writeValueAsString(subscription.getId());
-
+            String jsonPayload = objectMapper.writeValueAsString(message);
             sqsTemplate.send(to -> to
-                    .queue(subscriptionQueue)
-                    .payload(message)
-                    .header("action", "subscription_deactivate"));
-
-            log.info("Deactivation event sent. Deleting subscription {} from local DB.", subscription.getId());
-            subscriptionRepository.delete(subscription);
+                    .queue(notificationQueue)
+                    .payload(jsonPayload)
+                    .header("action", "sent_email"));
+            log.info("Notification sent for subscription: {}", subscription.getId());
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize message payload", e);
-            throw new RuntimeException("SQS serialization error", e);
-        } catch (Exception e) {
-            log.error("Failed to send deactivation event for subscription: {}", subscription.getId(), e);
+            log.error("Failed to serialize notification message", e);
         }
+    }
+
+    private String buildAlertContent(Subscription subscription, WeatherForecast forecast) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Weather alert triggered for %s at %s.\n\n",
+                subscription.getCityName(), forecast.getForecastTime()));
+        sb.append("Details:\n");
+        sb.append(String.format("- Temperature: %s°C\n", forecast.getTemp()));
+        if (forecast.getHumidity() != null) {
+            sb.append(String.format("- Humidity: %s%%\n", forecast.getHumidity()));
+        }
+        sb.append(String.format("- Wind Speed: %s m/s\n", forecast.getWindSpeed()));
+        sb.append(String.format("- Rain Probability: %s%%\n", forecast.getPop().multiply(new BigDecimal(100))));
+
+        sb.append("\nYour rules:\n");
+        for (SubscriptionRule rule : subscription.getRules()) {
+            sb.append(String.format("- %s %s %s",
+                    rule.getParameterType(), rule.getOperator(), rule.getValue1()));
+            if (rule.getValue2() != null) {
+                sb.append(String.format(" and %s", rule.getValue2()));
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     private boolean isRuleSatisfied(SubscriptionRule rule, WeatherForecast forecast) {

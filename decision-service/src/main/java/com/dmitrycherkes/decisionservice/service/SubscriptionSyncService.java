@@ -30,6 +30,7 @@ public class SubscriptionSyncService {
         subscription.setId(dto.getId());
         subscription.setUserId(dto.getCreatedByUserId());
         subscription.setCityId(dto.getCityId());
+        subscription.setCityName(dto.getCityName());
         subscription.setNotifyBeforeHours(dto.getNotifyBeforeHours());
         
         // Clear old rules and add new ones (proper way for orphanRemoval = true)
