@@ -14,6 +14,7 @@ import java.util.UUID;
 public class SubscriptionMessageDTO {
     private UUID id;
     private Integer cityId;
+    private String cityName;
     private Integer createdByUserId;
     private Integer notifyBeforeHours;
     private List<RuleMessageDTO> rules;

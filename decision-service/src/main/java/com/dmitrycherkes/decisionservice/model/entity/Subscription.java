@@ -27,6 +27,9 @@ public class Subscription {
     @Column(name = "city_id", nullable = false)
     private Integer cityId;
 
+    @Column(name = "city_name")
+    private String cityName;
+
     @Column(name = "notify_before_hours")
     private Integer notifyBeforeHours;
 
