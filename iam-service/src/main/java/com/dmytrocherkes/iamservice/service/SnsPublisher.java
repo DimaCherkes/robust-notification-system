@@ -24,7 +24,7 @@ public class SnsPublisher {
     private final SnsClient snsClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${app.aws.sns.iam-topic-arn}")
+    @Value("${app.aws.sns.iam-topic-arn:}")
     private String iamTopicArn;
 
 

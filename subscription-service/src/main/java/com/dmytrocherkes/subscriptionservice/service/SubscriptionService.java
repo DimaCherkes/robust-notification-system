@@ -35,7 +35,7 @@ public class SubscriptionService {
     private final SnsPublisher snsPublisher;
     private final CityService cityService;
 
-    @Value("${app.aws.sns.subscription-topic-arn}")
+    @Value("${app.aws.sns.subscription-topic-arn:}")
     private String subscriptionTopicArn;
 
     @Transactional
