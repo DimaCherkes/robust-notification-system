@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS v1_notification_service.notification_history (
     sent_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     retry_count INT DEFAULT 0,
     
-    CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES v1_notification_service.users(id)
+    CONSTRAINT fk_notification_user FOREIGN KEY (user_id) REFERENCES v1_notification_service.users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_users_email ON v1_notification_service.users(email);

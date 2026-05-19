@@ -15,4 +15,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     List<Integer> findDistinctCityIds();
 
     List<Subscription> findAllByCityId(Integer cityId);
+
+    void deleteAllByUserId(Integer userId);
 }

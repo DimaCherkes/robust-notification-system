@@ -62,4 +62,10 @@ public class SubscriptionSyncService {
         log.info("Hard deleting subscription from decision-service: {}", id);
         subscriptionRepository.deleteById(id);
     }
+
+    @Transactional
+    public void deleteAllByUserId(Integer userId) {
+        log.info("Deleting all subscriptions for user ID: {} in decision-service", userId);
+        subscriptionRepository.deleteAllByUserId(userId);
+    }
 }
