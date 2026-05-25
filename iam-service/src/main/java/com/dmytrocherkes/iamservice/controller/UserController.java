@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @PutMapping(ApiPath.API_ID_PATH)
-    public ResponseEntity<DefaultApiResponse<UserDTO>> updatePost(
+    public ResponseEntity<DefaultApiResponse<UserDTO>> updateUser(
             @PathVariable(name = "id") Integer userId,
             @RequestBody @Valid UpdateUserRequest request) {
         log.trace(ApiLogMessage.NAME_OF_CURRENT_METHOD.getValue(), ApiUtils.getMethodName());

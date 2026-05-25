@@ -91,11 +91,12 @@ public class UserServiceImpl implements UserDetailsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ApiErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
-        if (userRepository.existsByUsername(request.getUsername()))
-            throw new DataExistException(ApiErrorMessage.USERNAME_ALREADY_EXISTS.getMessage(request.getUsername()));
-
-        if (userRepository.existsByEmail(request.getEmail()))
-            throw new DataExistException(ApiErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
+        userRepository.findByUsername(request.getNickname())
+                .ifPresent(existingUser -> {
+                    if (!existingUser.getId().equals(userId)) {
+                        throw new DataExistException(ApiErrorMessage.USERNAME_ALREADY_EXISTS.getMessage(request.getNickname()));
+                    }
+                });
 
         accessValidator.validateAdminOrOwnerAccess(userId);
 

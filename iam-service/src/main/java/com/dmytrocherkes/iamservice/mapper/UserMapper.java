@@ -37,6 +37,8 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "username", source = "nickname")
     void updateUser(@MappingTarget User user, UpdateUserRequest request);
 
     @Mapping(target = "roles", expression = "java(mapRoles(user.getRoles()))")
