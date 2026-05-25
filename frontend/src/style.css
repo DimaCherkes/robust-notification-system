@@ -44,6 +44,23 @@
 .animate-scaleIn {
     animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+/* Navigation Fallbacks */
+.desktop-nav {
+    display: none;
+}
+
+.mobile-toggle {
+    display: flex;
+}
+
+@media (min-width: 768px) {
+    .desktop-nav {
+        display: flex !important;
+    }
+    .mobile-toggle {
+        display: none !important;
+    }
+}
 
 /* Hide number input spinners (arrows) */
 ...

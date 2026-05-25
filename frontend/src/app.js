@@ -19,6 +19,12 @@ const routes = {
 async function router() {
     const content = document.getElementById('main-content');
     const navContainer = document.getElementById('nav-container');
+    
+    // Always render navigation first to ensure visibility
+    if (navContainer) {
+        navContainer.innerHTML = Navigation();
+    }
+
     let hash = window.location.hash || '#/login';
 
     // Handle dynamic routes like #/subscriptions/edit/UUID
@@ -41,9 +47,6 @@ async function router() {
             return;
         }
     }
-
-    // Render navigation component
-    navContainer.innerHTML = Navigation();
 
     // Render page component
     content.innerHTML = await route.component.render(params);
