@@ -34,10 +34,7 @@ public class UserSearchCriteria implements Specification<User> {
             predicateList.add(criteriaBuilder.like(root.get(User.EMAIL_FIELD), "%" + request.getEmail() + "%"));
 
         if (Objects.nonNull(request.getRegistrationStatus()))
-            predicateList.add(criteriaBuilder.equal(root.get(User.REGISTRATION_STATUS_FILED), "%" + request.getRegistrationStatus() + "%"));
-
-        if (Objects.nonNull(request.getDeleted()))
-            predicateList.add(criteriaBuilder.equal(root.get(User.DELETED_FIELD), request.getDeleted()));
+            predicateList.add(criteriaBuilder.equal(root.get(User.REGISTRATION_STATUS_FILED), request.getRegistrationStatus()));
 
         if (Objects.nonNull(request.getKeyword())) {
             Predicate keywordPredicate = criteriaBuilder.or(

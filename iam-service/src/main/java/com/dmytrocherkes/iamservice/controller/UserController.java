@@ -67,11 +67,11 @@ public class UserController {
     }
 
     @DeleteMapping(ApiPath.API_ID_PATH)
-    public ResponseEntity<Void> softDeleteById(
+    public ResponseEntity<Void> deleteById(
             @PathVariable(name = "id") Integer userId) {
         log.trace(ApiLogMessage.NAME_OF_CURRENT_METHOD.getValue(), ApiUtils.getMethodName());
 
-        userService.softDeleteUser(userId);
+        userService.deleteUser(userId);
         return ResponseEntity.ok().build();
     }
 

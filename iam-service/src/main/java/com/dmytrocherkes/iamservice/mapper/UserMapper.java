@@ -39,7 +39,6 @@ public interface UserMapper {
     @Mapping(target = "createdAt", ignore = true)
     void updateUser(@MappingTarget User user, UpdateUserRequest request);
 
-    @Mapping(target = "isDeleted", source = "deleted")
     @Mapping(target = "roles", expression = "java(mapRoles(user.getRoles()))")
     UserSearchDTO toUserSearchDTO(User user);
 

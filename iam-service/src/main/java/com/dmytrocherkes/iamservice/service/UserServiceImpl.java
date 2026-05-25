@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserDetailsService {
     private final SnsPublisher snsPublisher;
 
     public UserDTO getById(@NonNull Integer userId) {
-        User user = userRepository.findByIdAndDeletedFalse(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ApiErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         return userMapper.toDto(user);
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserDetailsService {
 
     @Transactional
     public UserDTO updateUser(Integer userId, UpdateUserRequest request) {
-        User user = userRepository.findByIdAndDeletedFalse(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ApiErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         if (userRepository.existsByUsername(request.getUsername()))
@@ -109,15 +109,14 @@ public class UserServiceImpl implements UserDetailsService {
     }
 
     @Transactional
-    public void softDeleteUser(Integer userId) {
-        User user = userRepository.findByIdAndDeletedFalse(userId)
+    public void deleteUser(Integer userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ApiErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         accessValidator.validateAdminOrOwnerAccess(userId);
 
-        user.setDeleted(true);
+        userRepository.delete(user);
         snsPublisher.publishUserChangesEventToSns(user, AwsMessageTypes.USER_DELETE);
-        userRepository.save(user);
     }
 
     public PaginationResponse<UserSearchDTO> findAllUsers(Pageable pageable) {
