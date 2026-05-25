@@ -52,7 +52,7 @@ public class AuthServiceImpl {
             throw new InvalidDataException(ApiErrorMessage.INVALID_USER_OR_PASSWORD.getMessage());
         }
 
-        User user = userRepository.findUserByEmailAndDeletedFalse(request.getEmail())
+        User user = userRepository.findUserByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidDataException(ApiErrorMessage.INVALID_USER_OR_PASSWORD.getMessage()));
 
         RefreshToken refreshToken = refreshTokenService.generateOrUpdateRefreshToken(user);

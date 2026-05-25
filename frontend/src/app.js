@@ -4,12 +4,14 @@ import { Register } from './pages/register.js';
 import { Dashboard } from './pages/dashboard.js';
 import { CreateSubscription } from './pages/createSubscription.js';
 import { UpdateSubscription } from './pages/updateSubscription.js';
+import { Profile } from './pages/profile.js';
 import { Navigation } from './components/navigation.js';
 
 const routes = {
     '#/login': { component: Login, private: false },
     '#/register': { component: Register, private: false },
     '#/dashboard': { component: Dashboard, private: true },
+    '#/profile': { component: Profile, private: true },
     '#/subscriptions/create': { component: CreateSubscription, private: true },
     '#/subscriptions/edit': { component: UpdateSubscription, private: true },
 };

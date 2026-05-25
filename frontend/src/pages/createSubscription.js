@@ -3,48 +3,61 @@ import { apiClient } from '../api/apiClient.js';
 export const CreateSubscription = {
     render: async () => {
         return `
-            <section id="create-subscription">
-                <div class="header-with-back">
-                    <a href="#/dashboard" class="back-link">&larr; Back to Dashboard</a>
-                    <h2>New Subscription</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8">
+                    <a href="#/dashboard" class="text-sm font-bold text-slate-400 hover:text-blue-600 uppercase tracking-widest flex items-center transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Back to Dashboard
+                    </a>
+                    <h2 class="text-3xl font-extrabold text-slate-800 mt-4">New Subscription</h2>
                 </div>
 
-                <div id="message-container"></div>
-
-                <form id="create-sub-form" class="standard-form">
-                    <div class="form-section">
-                        <h3>General Settings</h3>
-                        <div class="form-group">
-                            <label for="city-select">Select City</label>
-                            <select id="city-select" required>
-                                <option value="" disabled selected>Loading cities...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="notify-before">Notify Before (Hours)</label>
-                            <input type="number" id="notify-before" value="2" min="1" max="48" required>
-                            <small class="info-text">1 to 48 hours</small>
-                            <div class="error-text" id="notify-before-error"></div>
+                <form id="create-sub-form" class="space-y-8">
+                    <!-- General Settings -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                            <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                            General Settings
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Select City</label>
+                                <select id="city-select" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-medium">
+                                    <option value="" disabled selected>Loading cities...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Notify Before (Hours)</label>
+                                <input type="number" id="notify-before" value="2" min="1" max="48" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-medium">
+                                <p class="text-xs text-slate-400 mt-2 font-medium">Range: 1 to 48 hours</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <div class="section-header">
-                            <h3>Weather Rules</h3>
+                    <!-- Weather Rules -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                                <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                                Weather Rules
+                            </h3>
+                            <button type="button" id="add-rule-btn" class="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-lg hover:bg-slate-200 text-sm transition-colors uppercase tracking-wider">+ Add Rule</button>
                         </div>
-                        <div id="rules-container">
+                        <p class="text-sm text-slate-500 mb-6 italic">Define what weather events you want to be notified about. (Max 4 rules)</p>
+                        
+                        <div id="rules-container" class="space-y-4">
                             <!-- Rules will be injected here -->
                         </div>
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <button type="button" id="add-rule-btn" class="secondary-btn">+ Add Rule</button>
-                        </div>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="submit" id="submit-btn" class="primary-btn">Create Subscription</button>
+                    <div class="flex justify-end pt-4">
+                        <button type="submit" class="px-10 py-4 bg-blue-600 text-white font-extrabold rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-95 uppercase tracking-widest text-sm">
+                            Create Subscription
+                        </button>
                     </div>
                 </form>
-            </section>
+                <div id="message-container" class="mt-6"></div>
+            </div>
         `;
     },
 
@@ -53,83 +66,10 @@ export const CreateSubscription = {
         const rulesContainer = document.getElementById('rules-container');
         const addRuleBtn = document.getElementById('add-rule-btn');
         const form = document.getElementById('create-sub-form');
-        const submitBtn = document.getElementById('submit-btn');
         const messageContainer = document.getElementById('message-container');
 
-        const PARAM_CONFIG = {
-            TEMPERATURE: { label: 'Temperature (°C)', min: -50, max: 60, step: 0.1 },
-            RAIN: { label: 'Rain Prob. (%)', min: 0, max: 100, step: 1 },
-            WIND_SPEED: { label: 'Wind Speed (m/s)', min: 0, max: 100, step: 0.1 },
-            HUMIDITY: { label: 'Humidity (%)', min: 0, max: 100, step: 1 }
-        };
+        let ruleCount = 0;
 
-        const validateAll = () => {
-            let isValid = true;
-            
-            // Validate Notify Before
-            const notifyInput = document.getElementById('notify-before');
-            const notifyError = document.getElementById('notify-before-error');
-            const notifyVal = parseInt(notifyInput.value);
-            if (isNaN(notifyVal) || notifyVal < 1 || notifyVal > 48) {
-                notifyError.textContent = 'Must be between 1 and 48';
-                isValid = false;
-            } else {
-                notifyError.textContent = '';
-            }
-
-            // Validate Rules
-            const ruleRows = document.querySelectorAll('.rule-row');
-            if (ruleRows.length === 0) isValid = false;
-
-            ruleRows.forEach(row => {
-                const param = row.querySelector('.param-type').value;
-                const op = row.querySelector('.op-type').value;
-                const v1Input = row.querySelector('.val1');
-                const v2Input = row.querySelector('.val2');
-                const v1Error = row.querySelector('.v1-error');
-                const v2Error = row.querySelector('.v2-error');
-                
-                if (!param) {
-                    isValid = false;
-                    return;
-                }
-
-                const config = PARAM_CONFIG[param];
-                const v1 = parseFloat(v1Input.value);
-                const v2 = parseFloat(v2Input.value);
-
-                // Check V1
-                if (isNaN(v1) || v1 < config.min || v1 > config.max) {
-                    v1Error.textContent = `Range: ${config.min} to ${config.max}`;
-                    isValid = false;
-                } else {
-                    v1Error.textContent = '';
-                }
-
-                // Check V2 if Between
-                if (op === 'BETWEEN') {
-                    if (isNaN(v2) || v2 < config.min || v2 > config.max) {
-                        v2Error.textContent = `Range: ${config.min} to ${config.max}`;
-                        isValid = false;
-                    } else if (v1 >= v2) {
-                        v2Error.textContent = 'Must be > Value 1';
-                        isValid = false;
-                    } else {
-                        v2Error.textContent = '';
-                    }
-                }
-            });
-
-            submitBtn.disabled = !isValid;
-            submitBtn.style.opacity = isValid ? '1' : '0.6';
-            return isValid;
-        };
-
-        const getUsedParameters = () => {
-            return Array.from(document.querySelectorAll('.param-type')).map(s => s.value);
-        };
-
-        // Fetch cities
         try {
             const cities = await apiClient.get('/api/v1/cities/all');
             citySelect.innerHTML = '<option value="" disabled selected>-- Select a City --</option>' + 
@@ -138,141 +78,102 @@ export const CreateSubscription = {
             citySelect.innerHTML = '<option value="" disabled>Error loading cities</option>';
         }
 
-        const addRule = () => {
-            const usedParams = getUsedParameters();
-            if (usedParams.length >= Object.keys(PARAM_CONFIG).length) return;
-
-            const ruleId = Date.now();
-            const div = document.createElement('div');
-            div.className = 'rule-row';
-            div.innerHTML = `
-                <button type="button" class="remove-rule-btn">&times;</button>
-                <div class="form-group">
-                    <label>Parameter</label>
-                    <select class="param-type" required>
-                        <option value="" disabled selected>Select...</option>
-                        ${Object.keys(PARAM_CONFIG).map(p => 
-                            `<option value="${p}" ${usedParams.includes(p) ? 'disabled' : ''}>${PARAM_CONFIG[p].label}</option>`
-                        ).join('')}
+        const createRuleHtml = (id) => `
+            <div class="rule-row bg-slate-50 border border-slate-200 rounded-xl p-6 flex flex-wrap md:flex-nowrap gap-4 items-end relative group" data-id="${id}">
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-2 tracking-widest">Parameter</label>
+                    <select class="param-type w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-sm">
+                        <option value="TEMPERATURE">Temperature</option>
+                        <option value="RAIN">Rain</option>
+                        <option value="WIND_SPEED">Wind Speed</option>
+                        <option value="HUMIDITY">Humidity</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Operator</label>
-                    <select class="op-type" required>
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-2 tracking-widest">Operator</label>
+                    <select class="op-type w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-sm">
                         <option value="LESS_THAN">Less Than</option>
                         <option value="GREATER_THAN">Greater Than</option>
                         <option value="EQUALS">Equals</option>
                         <option value="BETWEEN">Between</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="val1-label">Value</label>
-                    <input type="number" step="0.1" class="val1" required placeholder="Value">
-                    <div class="error-text v1-error"></div>
+                <div class="w-24">
+                    <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-2 tracking-widest text-center">Value 1</label>
+                    <input type="number" step="0.1" class="val1 w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-center text-sm" required>
                 </div>
-                <div class="form-group val2-group hidden">
-                    <label>Max Value</label>
-                    <input type="number" step="0.1" class="val2" placeholder="Max value">
-                    <div class="error-text v2-error"></div>
+                <div class="val2-group hidden w-24">
+                    <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-2 tracking-widest text-center">Value 2</label>
+                    <input type="number" step="0.1" class="val2 w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-center text-sm">
                 </div>
-            `;
+                <button type="button" class="remove-rule-btn bg-white border border-slate-200 text-red-500 hover:bg-red-50 hover:border-red-200 w-9 h-9 rounded-lg flex items-center justify-center transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+            </div>
+        `;
+
+        const addRule = () => {
+            if (ruleCount >= 4) return;
+            ruleCount++;
+            const div = document.createElement('div');
+            div.innerHTML = createRuleHtml(Date.now());
+            const ruleRow = div.firstElementChild;
+            rulesContainer.appendChild(ruleRow);
+
+            const opSelect = ruleRow.querySelector('.op-type');
+            const val2Group = ruleRow.querySelector('.val2-group');
+            const val2Input = ruleRow.querySelector('.val2');
             
-            rulesContainer.appendChild(div);
-
-            const paramSelect = div.querySelector('.param-type');
-            const opSelect = div.querySelector('.op-type');
-            const v1Input = div.querySelector('.val1');
-            const v2Input = div.querySelector('.val2');
-            const val2Group = div.querySelector('.val2-group');
-            const val1Label = div.querySelector('.val1-label');
-
-            const handleUpdate = () => {
-                const config = PARAM_CONFIG[paramSelect.value];
-                if (config) {
-                    v1Input.min = config.min;
-                    v1Input.max = config.max;
-                    v2Input.min = config.min;
-                    v2Input.max = config.max;
-                }
-                
+            opSelect.addEventListener('change', () => {
                 if (opSelect.value === 'BETWEEN') {
                     val2Group.classList.remove('hidden');
-                    v2Input.required = true;
-                    val1Label.textContent = 'Min Value';
+                    val2Input.required = true;
                 } else {
                     val2Group.classList.add('hidden');
-                    v2Input.required = false;
-                    v2Input.value = '';
-                    val1Label.textContent = 'Value';
+                    val2Input.required = false;
+                    val2Input.value = '';
                 }
-                validateAll();
-            };
-
-            paramSelect.addEventListener('change', () => {
-                handleUpdate();
-                updateParameterOptions();
             });
-            opSelect.addEventListener('change', handleUpdate);
-            v1Input.addEventListener('input', validateAll);
-            v2Input.addEventListener('input', validateAll);
 
-            div.querySelector('.remove-rule-btn').onclick = () => {
-                div.remove();
-                updateParameterOptions();
-                validateAll();
+            ruleRow.querySelector('.remove-rule-btn').onclick = () => {
+                ruleRow.remove();
+                ruleCount--;
+                updateAddButtonState();
             };
-
-            handleUpdate();
-            validateAll();
+            updateAddButtonState();
         };
 
-        const updateParameterOptions = () => {
-            const usedParams = getUsedParameters();
-            document.querySelectorAll('.param-type').forEach(select => {
-                const currentVal = select.value;
-                Array.from(select.options).forEach(opt => {
-                    if (opt.value && opt.value !== currentVal) {
-                        opt.disabled = usedParams.includes(opt.value);
-                    }
-                });
-            });
-            addRuleBtn.disabled = usedParams.length >= Object.keys(PARAM_CONFIG).length;
+        const updateAddButtonState = () => {
+            addRuleBtn.disabled = ruleCount >= 4;
+            addRuleBtn.style.opacity = ruleCount >= 4 ? '0.5' : '1';
         };
 
-        document.getElementById('notify-before').addEventListener('input', validateAll);
-
+        addRule();
         addRuleBtn.onclick = addRule;
-        addRule(); // Add first rule automatically
 
         form.onsubmit = async (e) => {
             e.preventDefault();
-            if (!validateAll()) return;
-
-            const rules = Array.from(document.querySelectorAll('.rule-row')).map(row => {
-                const param = row.querySelector('.param-type').value;
-                const v1 = parseFloat(row.querySelector('.val1').value);
-                const v2Val = row.querySelector('.val2').value;
-                const v2 = v2Val ? parseFloat(v2Val) : null;
-                
-                return {
-                    parameterType: param,
+            const rules = [];
+            document.querySelectorAll('.rule-row').forEach(row => {
+                rules.push({
+                    parameterType: row.querySelector('.param-type').value,
                     operator: row.querySelector('.op-type').value,
-                    value1: param === 'RAIN' ? v1 / 100 : v1,
-                    value2: param === 'RAIN' && v2 !== null ? v2 / 100 : v2
-                };
+                    value1: parseFloat(row.querySelector('.val1').value),
+                    value2: row.querySelector('.val2').value ? parseFloat(row.querySelector('.val2').value) : null
+                });
             });
 
+            if (rules.length === 0) { alert('At least one rule is required'); return; }
+
+            const notifyBeforeHours = parseInt(document.getElementById('notify-before').value);
+            if (notifyBeforeHours < 1 || notifyBeforeHours > 48) { alert('Notification period must be between 1 and 48 hours.'); return; }
+
             try {
-                await apiClient.post('/api/v1/subscriptions/create', {
-                    cityId: parseInt(citySelect.value),
-                    notifyBeforeHours: parseInt(document.getElementById('notify-before').value),
-                    rules: rules,
-                    isActive: true
-                });
-                messageContainer.innerHTML = '<div class="success-msg">Subscription created!</div>';
-                setTimeout(() => window.location.hash = '#/dashboard', 1000);
+                await apiClient.post('/api/v1/subscriptions/create', { cityId: parseInt(citySelect.value), notifyBeforeHours, rules, isActive: true });
+                messageContainer.innerHTML = '<div class="bg-green-50 text-green-700 p-4 rounded-xl border border-green-200 font-bold text-center">Subscription created successfully! Redirecting...</div>';
+                setTimeout(() => window.location.hash = '#/dashboard', 1500);
             } catch (err) {
-                messageContainer.innerHTML = `<div class="error-msg">${err.message}</div>`;
+                messageContainer.innerHTML = `<div class="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 font-bold text-center">Error: ${err.message}</div>`;
             }
         };
     }
