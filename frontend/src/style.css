@@ -63,7 +63,6 @@
 }
 
 /* Hide number input spinners (arrows) */
-...
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
