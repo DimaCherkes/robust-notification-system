@@ -50,15 +50,6 @@ frontend/
 └── README.md
 ```
 
-## ⏳ Next Steps (To-Do)
-
-- [ ] **Enhanced Security**: Transition from LocalStorage to `HttpOnly` cookies for Refresh Tokens to mitigate XSS risks.
-- [ ] **UI/UX Polishing**: Implement a more modern design (e.g., using CSS Grid/Flexbox more extensively or a minimal CSS framework).
-- [ ] **Subscription Management**: Add features to delete or pause subscriptions directly from the Dashboard.
-- [ ] **User Profile**: Create a page to view and edit user details.
-- [ ] **Global Error Handling**: Implement a "Toast" notification system for displaying API errors to the user.
-- [ ] **Loading States**: Add skeleton screens or spinners during API requests.
-
 ## 📦 How to Run
 
 The frontend is integrated into the root `docker-compose.yml`. To start:
