@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateUserRequest {
 
-    @NotBlank(message = "Username cannot be empty.")
-    private String username;
-    @NotBlank(message = "Email cannot be empty.")
-    private String email;
+    @NotBlank(message = "Nickname cannot be empty.")
+    private String nickname;
 
 }

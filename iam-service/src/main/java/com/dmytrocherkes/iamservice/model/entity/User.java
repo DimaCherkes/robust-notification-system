@@ -20,7 +20,6 @@ public class User {
     public static final String EMAIL_FIELD = "email";
     public static final String CREATED_AT_FIELD = "createdAt";
     public static final String REGISTRATION_STATUS_FILED = "registrationStatus";
-    public static final String DELETED_FIELD = "deleted";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,9 +49,6 @@ public class User {
 
     @Column()
     private LocalDateTime lastLogin;
-
-    @Column(nullable = false)
-    private Boolean deleted = false;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

@@ -19,6 +19,21 @@ class AuthService {
         return !!this.getAccessToken();
     }
 
+    getUserInfo() {
+        const token = this.getAccessToken();
+        if (!token) return null;
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (e) {
+            return null;
+        }
+    }
+
     async login(email, password) {
         const response = await fetch('/api/v1/iam-service/auth/login', {
             method: 'POST',
@@ -58,8 +73,6 @@ class AuthService {
     }
 
     async refresh() {
-        // We don't need to pass the refresh token manually anymore, 
-        // it's sent automatically via HttpOnly cookie
         const response = await fetch('/api/v1/iam-service/auth/refresh/token', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
@@ -79,7 +92,6 @@ class AuthService {
     async logout() {
         this.clearAccessToken();
         
-        // Call backend to clear refresh token cookie
         try {
             await fetch('/api/v1/iam-service/auth/logout', {
                 method: 'POST'

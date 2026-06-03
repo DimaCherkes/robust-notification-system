@@ -11,7 +11,6 @@ public class UserSearchRequest {
     private String email;
     private RegistrationStatus registrationStatus;
 
-    private Boolean deleted;
     private String keyword;
     private UserSortField sortField;
 }

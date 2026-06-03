@@ -21,7 +21,6 @@ public class UserSearchDTO implements Serializable {
     private String email;
 
     private LocalDateTime createdAt;
-    private Boolean isDeleted;
     private RegistrationStatus registrationStatus;
     private List<RoleDTO> roles;
 

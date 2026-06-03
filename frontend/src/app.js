@@ -4,12 +4,14 @@ import { Register } from './pages/register.js';
 import { Dashboard } from './pages/dashboard.js';
 import { CreateSubscription } from './pages/createSubscription.js';
 import { UpdateSubscription } from './pages/updateSubscription.js';
+import { Profile } from './pages/profile.js';
 import { Navigation } from './components/navigation.js';
 
 const routes = {
     '#/login': { component: Login, private: false },
     '#/register': { component: Register, private: false },
     '#/dashboard': { component: Dashboard, private: true },
+    '#/profile': { component: Profile, private: true },
     '#/subscriptions/create': { component: CreateSubscription, private: true },
     '#/subscriptions/edit': { component: UpdateSubscription, private: true },
 };
@@ -17,6 +19,12 @@ const routes = {
 async function router() {
     const content = document.getElementById('main-content');
     const navContainer = document.getElementById('nav-container');
+    
+    // Always render navigation first to ensure visibility
+    if (navContainer) {
+        navContainer.innerHTML = Navigation();
+    }
+
     let hash = window.location.hash || '#/login';
 
     // Handle dynamic routes like #/subscriptions/edit/UUID
@@ -39,9 +47,6 @@ async function router() {
             return;
         }
     }
-
-    // Render navigation component
-    navContainer.innerHTML = Navigation();
 
     // Render page component
     content.innerHTML = await route.component.render(params);
