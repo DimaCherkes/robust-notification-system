@@ -33,7 +33,7 @@ CREATE TABLE subscription_rules
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     subscription_id UUID           NOT NULL REFERENCES subscriptions (id) ON DELETE CASCADE,
     parameter_type  VARCHAR(20)    NOT NULL, -- e.g., 'TEMPERATURE', 'HUMIDITY', 'RAIN'
-    operator        VARCHAR(20)    NOT NULL, -- e.g., 'GT', 'LT', 'BETWEEN'
+    operator        VARCHAR(10)    NOT NULL, -- e.g., 'GT', 'LT', 'BETWEEN'
     value_1         DECIMAL(10, 2) NOT NULL,
     value_2         DECIMAL(10, 2)           -- Used for 'BETWEEN' operator
 );
